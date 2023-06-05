@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="quyi-pressure-client" />
+        <module name="quyi-test-result" />
+        <module name="quyi-api-autotest" />
+        <module name="service-gateway" />
+        <module name="service-base" />
+        <module name="quyi-acl" />
+        <module name="common-utils" />
+        <module name="quyi-user" />
+        <module name="quyi-test-config" />
+        <module name="quyi-ui-autotest" />
+        <module name="pressure-server" />
+        <module name="quyi-pressure-server" />
+        <module name="quyi-test-task" />
+        <module name="pressure-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="quyi-pressure-client" target="1.8" />
+      <module name="quyi-pressure-server" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="QuYiTest" options="" />
+      <module name="common" options="" />
+      <module name="common-utils" options="-parameters" />
+      <module name="infrastructure" options="" />
+      <module name="pressure-client" options="-parameters" />
+      <module name="pressure-server" options="-parameters" />
+      <module name="quyi-acl" options="-parameters" />
+      <module name="quyi-api-autotest" options="-parameters" />
+      <module name="quyi-pressure-client" options="-parameters" />
+      <module name="quyi-pressure-server" options="-parameters" />
+      <module name="quyi-test-config" options="-parameters" />
+      <module name="quyi-test-result" options="-parameters" />
+      <module name="quyi-test-task" options="-parameters" />
+      <module name="quyi-ui-autotest" options="-parameters" />
+      <module name="quyi-user" options="-parameters" />
+      <module name="service" options="" />
+      <module name="service-base" options="-parameters" />
+      <module name="service-gateway" options="-parameters" />
+    </option>
+  </component>
+</project>

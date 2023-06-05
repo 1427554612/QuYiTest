@@ -1,0 +1,9 @@
+# Project exclude paths
+/common/common-utils/target/
+/common/service-base/target/
+/infrastructure/service-gateway/target/
+/service/quyi-api-autotest/target/
+/service/quyi-test-config/target/
+/service/quyi-test-result/target/
+/service/quyi-test-task/target/
+/service/quyi-user/target/

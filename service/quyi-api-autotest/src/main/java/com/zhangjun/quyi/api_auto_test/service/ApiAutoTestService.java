@@ -1,0 +1,42 @@
+package com.zhangjun.quyi.api_auto_test.service;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
+import com.zhangjun.quyi.utils.ResultModel;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public interface ApiAutoTestService {
+
+    /**
+     * 执行列表中所有的用例
+     * @param caseList
+     */
+    void runCase(ArrayList<String> caseList,String configId) throws Exception;
+
+
+    /**
+     * 执行指定名称的用例
+     * @param caseName
+     */
+    void runCase(String caseName, String configId) throws IOException;
+
+
+    /**
+     * 获取所有用例
+     * @return
+     */
+    List<ApiTestCaseEntity> selectAllCase() throws IOException;
+
+    /**
+     * 上传文件到本地
+     * @param request
+     * @return
+     */
+    Map<String,Object> upload(MultipartHttpServletRequest request) throws IOException;
+}

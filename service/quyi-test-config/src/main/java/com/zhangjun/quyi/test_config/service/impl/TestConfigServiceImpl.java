@@ -1,0 +1,82 @@
+package com.zhangjun.quyi.test_config.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
+import com.zhangjun.quyi.test_config.entity.TestConfig;
+import com.zhangjun.quyi.test_config.entity.vo.TestConfigQueryVo;
+import com.zhangjun.quyi.test_config.mapper.TestConfigMapper;
+import com.zhangjun.quyi.test_config.service.TestConfigService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangjun.quyi.utils.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author testjava
+ * @since 2023-05-04
+ */
+@Service
+public class TestConfigServiceImpl extends ServiceImpl<TestConfigMapper, TestConfig> implements TestConfigService {
+
+    private Logger logger  = LoggerFactory.getLogger(TestConfigServiceImpl.class);
+
+
+    /**
+     * 添加配置信息
+     * @param testConfig
+     * @return
+     */
+    public TestConfig saveConfig(TestConfig testConfig){
+        if(this.save(testConfig)==false) throw new ExceptionEntity(20001,"添加配置失败....");
+        QueryWrapper<TestConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("config_name",testConfig.getConfigName());
+        return this.getOne(queryWrapper);
+    }
+
+    /**
+     * 组合查询带分页查询配置
+     * @param current
+     * @param size
+     * @param testConfigQueryVo
+     * @return
+     */
+    @Override
+    public List<TestConfig> selectConfig(Integer current, Integer size, TestConfigQueryVo testConfigQueryVo) {
+        Page<TestConfig> page = new Page<>(current,size);
+        String configId = testConfigQueryVo.getConfigId();
+        String configName = testConfigQueryVo.getConfigName();
+        String configType = testConfigQueryVo.getConfigType();
+        Date beginTime = testConfigQueryVo.getBeginTime();
+        Date endTime = testConfigQueryVo.getEndTime();
+        String updateUp = testConfigQueryVo.getUpdateUp();
+        QueryWrapper wrapper = new QueryWrapper<TestConfig>();
+        if (!StringUtils.isEmpty(configId)) wrapper.eq("config_id",configId);
+        if (!StringUtils.isEmpty(configName)) wrapper.eq("config_name",configName);
+        if (!StringUtils.isEmpty(configType)) wrapper.eq("config_type",configType);
+        if (null!=beginTime) wrapper.le("create_time",beginTime);
+        if (null!=endTime) wrapper.ge("create_time",endTime);
+        if (!StringUtils.isEmpty(updateUp)) wrapper.eq("update_up",updateUp);
+        wrapper.orderByDesc("create_time");
+        IPage resultPage = this.page(page, wrapper);
+        resultPage.getRecords().stream().forEach(item->{
+            try {
+                logger.info(JsonUtil.objectMapper.writeValueAsString(item));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
+        return resultPage.getRecords();
+    }
+}
