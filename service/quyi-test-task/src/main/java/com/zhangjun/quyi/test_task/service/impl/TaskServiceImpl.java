@@ -232,11 +232,12 @@ public class TaskServiceImpl extends ServiceImpl<CronTaskMapper, Task> implement
      * @return
      */
     @Override
-    public boolean addCronTask(Task task) {
+    public Task addCronTask(Task task) {
         QueryWrapper<Task> cronTaskQueryWrapper = new QueryWrapper<>();
         cronTaskQueryWrapper.eq("name", task.getName());
-        if (baseMapper.selectCount(cronTaskQueryWrapper) > 0 ) throw new ExceptionEntity(20001,"定时任务已存在");
-        return this.save(task);
+        if (this.save(task)==false) throw new ExceptionEntity(20001,"定时任务已存在");
+        Task resultTask = (Task) this.getOne(cronTaskQueryWrapper);
+        return resultTask;
     }
 
     /**

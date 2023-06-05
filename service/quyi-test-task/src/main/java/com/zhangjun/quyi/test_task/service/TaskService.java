@@ -25,7 +25,7 @@ public interface TaskService extends IService<Task> {
      * @param task
      * @return
      */
-    boolean addCronTask(Task task);
+    Task addCronTask(Task task);
 
     /**
      * 删除定时任务

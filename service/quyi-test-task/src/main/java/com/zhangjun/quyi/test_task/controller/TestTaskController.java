@@ -14,6 +14,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +31,6 @@ public class TestTaskController {
     @Autowired
     private TaskService taskService;
 
-    @Autowired
-    private TaskRunLogService taskRunLogService;
-
-    @Autowired
-    private ApiAutoTestApi apiAutoTestApi;
 
     /**
      * 添加定时任务
@@ -40,11 +38,13 @@ public class TestTaskController {
      * @return
      */
     @PostMapping("/addTask")
+    @Cacheable(value = "TestTask",key = "#result.data.get('task').id",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "添加定时任务")
     public ResultModel addTask(@ApiParam(name = "task",value = "任务对象")
                                        @RequestBody Task task){
         if (task.equals("cron")) task.setDate(0);
-        return taskService.addCronTask(task) == true ? ResultModel.ok() : ResultModel.error();
+        Task resultTask = taskService.addCronTask(task);
+        return ResultModel.ok().data("task",resultTask);
     }
 
     /**
@@ -54,6 +54,7 @@ public class TestTaskController {
      * @return
      */
     @PutMapping("/updateTask/{taskId}")
+    @CachePut(value = "TestTask",key = "#taskId",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "编辑定时任务")
     public ResultModel updateTask(@ApiParam(name = "taskId",value = "任务id")
                                     @PathVariable String taskId,
@@ -70,6 +71,7 @@ public class TestTaskController {
      * @return
      */
     @PostMapping("/relationCase/{taskId}/{configId}")
+    @CachePut(value = "RelationCase",key = "#taskId",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "关联测试用例")
     public ResultModel relationCase(@ApiParam(name = "taskId",value = "定时任务id")
                                         @PathVariable(value = "taskId") String taskId,
@@ -87,10 +89,10 @@ public class TestTaskController {
      * @return
      */
     @GetMapping("/getRelationCase/{taskId}")
+    @Cacheable(value = "RelationCase",key = "#taskId",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "获取已关联的用例")
     public ResultModel getRelationCase(@ApiParam(name = "taskId",value = "定时任务id")
                                     @PathVariable String taskId){
-        System.out.println("任务id：" + taskId);
         return ResultModel.ok().data("list",taskService.getRelationCase(taskId));
     }
 
@@ -101,6 +103,7 @@ public class TestTaskController {
      * @return
      */
     @DeleteMapping("/deleteCronTask/{taskId}")
+    @CacheEvict(value = "TestTask",key = "#taskId")
     @ApiOperation(value = "删除定时任务")
     public ResultModel deleteTask(@ApiParam(name = "taskId",value = "定时任务id")
                                       @PathVariable String taskId){
@@ -112,6 +115,7 @@ public class TestTaskController {
      * @return
      */
     @GetMapping("/selectAllTask")
+    @Cacheable(value = "TestTask",key = "'list'",cacheManager = "cacheManager1Day")
     @ApiOperation(value = "获取所有定时任务")
     public ResultModel selectAllTask(){
         List<Task> taskList = taskService.selectAllTask();
@@ -123,6 +127,7 @@ public class TestTaskController {
      * @return
      */
     @PostMapping("/selectAllTask/{current}/{size}")
+    @Cacheable(value = "TestTask",key = "'page_'+#current+'_'+#size",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "分页查询带插件")
     public ResultModel selectAllTaskPage(@PathVariable Integer current,
                                          @PathVariable Integer size,
