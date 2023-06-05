@@ -69,6 +69,7 @@ public class TestConfigController {
     @ApiOperation(value = "添加测试配置")
     public ResultModel saveTestConfig(@ApiParam(name = "testConfig",value = "配置对象")
                                           @Validated @RequestBody TestConfig testConfig){
+        System.out.println("呵呵呵");
         return ResultModel.ok().data("testConfig",testConfigService.saveConfig(testConfig));
     }
 
