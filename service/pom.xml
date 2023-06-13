@@ -23,6 +23,7 @@
         <module>quyi-test-config</module>
         <module>quyi-test-task</module>
         <module>quyi-acl</module>
+        <module>quyi-currency-test</module>
     </modules>
 
     <properties>

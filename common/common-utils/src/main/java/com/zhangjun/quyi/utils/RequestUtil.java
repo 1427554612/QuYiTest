@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.utils;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sun.org.apache.regexp.internal.RE;
 import com.zhangjun.quyi.constans.PressureConstant;
 import com.zhangjun.quyi.entity.RequestParamEntity;
 import okhttp3.*;
@@ -109,5 +111,54 @@ public class RequestUtil {
         return RequestUtil.client.newCall(request).execute().body().string();
     }
 
+    /**
+     * 基础发送请求
+     * @param ip
+     * @param requestType
+     * @param requestBody
+     * @return
+     */
+    public static String sendRequest(String ip,String requestType,Map<String,Object> requestBody,Map<String,Object> headers) throws IOException {
+        return sendRequest(ip,requestType,JsonUtil.objectMapper.writeValueAsString(requestBody),headers);
+    }
 
-}
+    /**
+     * 基础发送请求
+     * @param ip
+     * @param requestType
+     * @param requestBody
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    public static String sendRequest(String ip,String requestType,String requestBody,Map<String,Object> headers) throws IOException {
+        Request.Builder builder = new Request.Builder().url(ip);
+        builder.addHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36");
+        String responseBody = null;
+        if (null != headers){
+            for (Map.Entry<String, Object> stringObjectEntry : headers.entrySet()) {
+                String key = stringObjectEntry.getKey();
+                builder.addHeader(key, (String) stringObjectEntry.getValue());
+            }
+        }
+        // 构建post请求
+        if (requestType.equals("POST")){
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(MediaType.parse("application/json; charset=utf-8"),requestBody);
+            Request postRequest = builder.method("POST", body).build();
+            responseBody = RequestUtil.client.newCall(postRequest).execute().body().string();
+
+            // 构建get请求
+        }else if (requestType.equals("GET")){
+            Request getRequest = builder.build();
+            responseBody = RequestUtil.client.newCall(getRequest).execute().body().string();
+        }else if (requestType.equals("DELETE")){
+
+        }else {
+
+        }
+        return responseBody;
+    }
+
+
+
+    }

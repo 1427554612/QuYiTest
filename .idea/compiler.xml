@@ -13,6 +13,7 @@
         <module name="service-gateway" />
         <module name="service-base" />
         <module name="quyi-acl" />
+        <module name="quyi-currency-test" />
         <module name="common-utils" />
         <module name="quyi-user" />
         <module name="quyi-test-config" />
@@ -38,6 +39,7 @@
       <module name="pressure-server" options="-parameters" />
       <module name="quyi-acl" options="-parameters" />
       <module name="quyi-api-autotest" options="-parameters" />
+      <module name="quyi-currency-test" options="-parameters" />
       <module name="quyi-pressure-client" options="-parameters" />
       <module name="quyi-pressure-server" options="-parameters" />
       <module name="quyi-test-config" options="-parameters" />
@@ -45,7 +47,7 @@
       <module name="quyi-test-task" options="-parameters" />
       <module name="quyi-ui-autotest" options="-parameters" />
       <module name="quyi-user" options="-parameters" />
-      <module name="service" options="" />
+      <module name="service" options="-parameters" />
       <module name="service-base" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
     </option>

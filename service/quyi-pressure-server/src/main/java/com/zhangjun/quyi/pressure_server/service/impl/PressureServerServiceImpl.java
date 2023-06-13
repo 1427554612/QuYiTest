@@ -126,8 +126,8 @@ public class PressureServerServiceImpl implements PressureServerService {
 
         // 前台
         runApi(requestParamEntity,"注册",PressureConstant.REQUEST_TYPE_POST,apiRunVoList);
-//        runApi(requestParamEntity,"登录",PressureConstant.REQUEST_TYPE_POST,apiRunVoList,ParamsUtil.getParams(apiRunVoList, "注册", "account", "password","grecaptcha_token"));
-//        runApi(requestParamEntity,"充值",PressureConstant.REQUEST_TYPE_POST,apiRunVoList,ParamsUtil.getParams(apiRunVoList, "登录", "_id", "token"));
+        runApi(requestParamEntity,"登录",PressureConstant.REQUEST_TYPE_POST,apiRunVoList,ParamsUtil.getParams(apiRunVoList, "注册", "account", "password","grecaptcha_token"));
+        runApi(requestParamEntity,"充值",PressureConstant.REQUEST_TYPE_POST,apiRunVoList,ParamsUtil.getParams(apiRunVoList, "登录", "_id", "token"));
 //
 //        // 后台
 //        runApi(requestParamEntity,"后台-查询",PressureConstant.REQUEST_TYPE_POST,apiRunVoList,ParamsUtil.getParams(apiRunVoList, "登录", "_id"));
@@ -254,7 +254,7 @@ public class PressureServerServiceImpl implements PressureServerService {
     public static void main(String[] args) throws Exception {
         RequestParamEntity requestParamEntity = new RequestParamEntity();
         requestParamEntity.setRequestUrl(PressureConstant.BASE_CLIENT_URL);
-        requestParamEntity.setRequestNumber(800);// 线程用户数
+        requestParamEntity.setRequestNumber(1);// 线程用户数
         requestParamEntity.setIps(Arrays.asList("192.168.5.12:8057"));
         new PressureServerServiceImpl().testUserCode(requestParamEntity);
 
