@@ -17,6 +17,7 @@
         <module name="common-utils" />
         <module name="quyi-user" />
         <module name="quyi-test-config" />
+        <module name="quyi-script-java" />
         <module name="quyi-ui-autotest" />
         <module name="pressure-server" />
         <module name="quyi-pressure-server" />
@@ -42,12 +43,13 @@
       <module name="quyi-currency-test" options="-parameters" />
       <module name="quyi-pressure-client" options="-parameters" />
       <module name="quyi-pressure-server" options="-parameters" />
+      <module name="quyi-script-java" options="-parameters" />
       <module name="quyi-test-config" options="-parameters" />
       <module name="quyi-test-result" options="-parameters" />
       <module name="quyi-test-task" options="-parameters" />
       <module name="quyi-ui-autotest" options="-parameters" />
       <module name="quyi-user" options="-parameters" />
-      <module name="service" options="-parameters" />
+      <module name="service" options="" />
       <module name="service-base" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
     </option>

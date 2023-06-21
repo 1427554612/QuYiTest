@@ -25,6 +25,7 @@ public class ParamsSetUtil {
             for (String s : split) {
                 jsonNode = jsonNode.get(s);
             }
+            System.out.println("jsonNode.asText() = " + jsonNode.asText());
             list.add(new ParamsEntity(key,"responseBody",value,jsonNode.asText()));
         }
         return list;

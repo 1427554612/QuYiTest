@@ -29,6 +29,7 @@ public class RequestUtil {
      * @param maxConnections
      */
     public static OkHttpClient setOkhttpClient(Integer maxRequest, Integer maxConnections){
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         if (client == null){
             Dispatcher dispatcher = new Dispatcher();
             dispatcher.setMaxRequests(maxRequest);   // 设置最大请求数

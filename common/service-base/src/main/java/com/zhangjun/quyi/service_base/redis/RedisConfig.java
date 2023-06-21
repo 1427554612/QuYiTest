@@ -50,26 +50,25 @@ public class RedisConfig extends CachingConfigurerSupport {
         return template;
     }
 
-//    @Bean
-//    public CacheManager cacheManager(RedisConnectionFactory factory) {
-//        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
-//        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-//        //解决查询缓存转换异常的问题
-//        ObjectMapper om = new ObjectMapper();
-//        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-//        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-//        jackson2JsonRedisSerializer.setObjectMapper(om);
-//        // 配置序列化（解决乱码的问题）,过期时间600秒
-//        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofSeconds(600))
-//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
-//                .disableCachingNullValues();
-//        RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
-//                .cacheDefaults(config)
-//                .build();
-//        return cacheManager;
-//    }
+    /**
+     * 1分钟
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    public RedisCacheManager cacheManager1Minute(RedisConnectionFactory connectionFactory) {
+        return baseManager(connectionFactory,60L);
+    }
+
+    /**
+     * 3分钟
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    public RedisCacheManager cacheManager3Minute(RedisConnectionFactory connectionFactory) {
+        return baseManager(connectionFactory,180L);
+    }
 
     /**
      * 10分钟
@@ -78,11 +77,7 @@ public class RedisConfig extends CachingConfigurerSupport {
      */
     @Bean
     public RedisCacheManager cacheManager10Minute(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = instanceConfig(600L);
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
-                .transactionAware()
-                .build();
+        return baseManager(connectionFactory,600L);
     }
 
     /**
@@ -92,11 +87,7 @@ public class RedisConfig extends CachingConfigurerSupport {
      */
     @Bean
     public RedisCacheManager cacheManager1Hour(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = instanceConfig(3600L);
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
-                .transactionAware()
-                .build();
+        return baseManager(connectionFactory,3600L);
     }
 
     /**
@@ -108,7 +99,17 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Bean
     @Primary
     public RedisCacheManager cacheManager1Day(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = instanceConfig(3600 * 24L);
+        return baseManager(connectionFactory,3600 * 24L);
+    }
+
+    /**
+     * 基础缓存管理器
+     * @param connectionFactory
+     * @param ttlTime
+     * @return
+     */
+    private RedisCacheManager baseManager(RedisConnectionFactory connectionFactory,long ttlTime){
+        RedisCacheConfiguration config = instanceConfig(ttlTime);
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
                 .transactionAware()

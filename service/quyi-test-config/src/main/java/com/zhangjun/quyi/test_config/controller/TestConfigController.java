@@ -57,6 +57,9 @@ public class TestConfigController {
     @Value("${python.api.runtime.path}")
     private String pythonApiRuntimePath;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
 
     /**
@@ -83,6 +86,7 @@ public class TestConfigController {
     @ApiOperation(value = "删除测试配置")
     public ResultModel deleteTestConfig(@ApiParam(name = "configId",value = "配置id")
                                       @PathVariable String configId){
+        redisTemplate.delete("TestConfig::page_1_10");
         return testConfigService.removeById(configId) ? ResultModel.ok() : ResultModel.error();
     }
 

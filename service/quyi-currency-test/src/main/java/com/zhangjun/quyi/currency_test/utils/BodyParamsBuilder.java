@@ -26,7 +26,7 @@ public class BodyParamsBuilder implements ParamsBuilder{
         }
         else jsonNode = JsonUtil.objectMapper.readTree((String) target);
         Iterator<String> stringIterator = jsonNode.fieldNames();
-        String resultJson = (String) target;;
+        String resultJson = (String) target;
         while (stringIterator.hasNext()){
             String key = stringIterator.next();
             String value = jsonNode.get(key).asText().replaceAll("\"","");
@@ -34,6 +34,10 @@ public class BodyParamsBuilder implements ParamsBuilder{
                 for (ParamsEntity paramsEntity : paramsEntities) {
                     if (key.equals(paramsEntity.getUseName())){
                         resultJson = updateElStr(resultJson,paramsEntity.getKeyValue(),"${"+key+"}");
+                    }
+                    // 特殊处理player_id不对应
+                    else if (key.equals("player_id")){
+                        resultJson = updateElStr(resultJson,paramsEntity.getKeyValue(),"${user_id}");
                     }
                 }
             }

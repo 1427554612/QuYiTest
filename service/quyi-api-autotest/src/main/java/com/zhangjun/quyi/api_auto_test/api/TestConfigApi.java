@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * test-config服务接口
  */
-@Component
 @FeignClient(value = "test-config")
 public interface TestConfigApi {
 

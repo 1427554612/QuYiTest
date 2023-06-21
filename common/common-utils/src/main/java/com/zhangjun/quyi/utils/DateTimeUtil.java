@@ -28,7 +28,7 @@ public class DateTimeUtil {
      * @throws ParseException
      */
     public static Date stringForDate(String dateStr) throws ParseException {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,sss").parse(dateStr);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateStr);
     }
 
 

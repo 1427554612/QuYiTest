@@ -7,6 +7,11 @@ public class PathParamsBuilder implements ParamsBuilder{
 
     @Override
     public Object parseParams(List<ParamsEntity> paramsEntities, Object target) {
-        return null;
+        String targetStr = (String)target;
+        targetStr = targetStr.replaceAll("\\$","").replaceAll("\\{","").replaceAll("}","");
+        for (ParamsEntity paramsEntity : paramsEntities) {
+            if (targetStr.equals(paramsEntity.getUseName())) targetStr = (String) paramsEntity.getKeyValue();
+        }
+        return targetStr;
     }
 }

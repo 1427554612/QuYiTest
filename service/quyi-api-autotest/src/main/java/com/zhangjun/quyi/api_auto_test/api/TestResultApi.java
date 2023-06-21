@@ -34,8 +34,7 @@ public interface TestResultApi {
      * 添加结果
      * @return
      */
-    @PostMapping("/api/test_result//saveResult")
-    @ApiOperation("添加结果")
+    @PostMapping("/api/test_result/saveResult")
     public ResultModel saveResult(@RequestBody TestResultDto testResultDto);
 
 }

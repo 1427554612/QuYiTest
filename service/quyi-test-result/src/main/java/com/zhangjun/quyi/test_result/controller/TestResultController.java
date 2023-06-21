@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,9 @@ public class TestResultController {
 
     @Autowired
     private TestResultService testResultService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 组合查询带分页查询结果
@@ -47,7 +51,7 @@ public class TestResultController {
      */
     @GetMapping("/findResult")
     @ApiOperation("查询所有结果")
-    @Cacheable(value = "test-result",key = "'log'")
+    @Cacheable(value = "test-result",key = "'log'",cacheManager = "cacheManager1Minute")
     public ResultModel findResult(){
         List<TestResultDto> list = testResultService.findResult();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,list);
@@ -99,6 +103,7 @@ public class TestResultController {
     @ApiOperation("更新结果记录")
     public ResultModel updateResult(@ApiParam(name = "testResultDto",value = "测试结构dto")
                                     @RequestBody TestResultDto testResultDto){
+        redisTemplate.delete("test-result::log");
         return testResultService.updateResult(testResultDto) == true ? ResultModel.ok(): ResultModel.error();
     }
 
@@ -110,6 +115,8 @@ public class TestResultController {
     @ApiOperation("添加结果")
     public ResultModel saveResult(@ApiParam(name = "testResultDto",value = "测试结构dto")
                                   @RequestBody TestResultDto testResultDto){
+        redisTemplate.delete("test-result::log");
         return testResultService.saveResult(testResultDto) == true ? ResultModel.ok(): ResultModel.error();
     }
+
 }
