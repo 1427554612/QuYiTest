@@ -20,11 +20,14 @@ public class EchartsDataController {
     @Autowired
     private EchartsDataService echartsDataService;
 
-
+    /**
+     * 获取每个用例的执行成功率
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("/getCaseSuccessRate")
     @ApiOperation(value = "获取每个用例的执行成功率")
     public ResultModel getCaseSuccessRate() throws JsonProcessingException {
-        Map<String, Object> data = echartsDataService.getCaseSuccessRate();
-        return ResultModel.ok().data(data);
+        return ResultModel.ok().data(echartsDataService.getCaseSuccessRate());
     }
 }
