@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.test_result.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,7 +33,9 @@ public class TestResultDto {
     @ApiModelProperty("执行成功率")
     private double run_success_rate;
 
+
     @ApiModelProperty("最后一次执行时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date last_run_date;
 
     @ApiModelProperty("最后一次执行耗时")

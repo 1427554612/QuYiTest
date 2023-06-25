@@ -6,6 +6,7 @@ import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.controller.ApiAutoTestController;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
+import com.zhangjun.quyi.api_auto_test.entity.TestResult;
 import com.zhangjun.quyi.api_auto_test.entity.TestResultInfo;
 import com.zhangjun.quyi.api_auto_test.entity.dto.TestResultDto;
 import com.zhangjun.quyi.api_auto_test.service.ApiAutoTestService;
@@ -65,7 +66,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         }else
             PythonScriptUtil
                     .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
-        this.addOrUpdateResult(caseList);   // 添加或者更新结果
+        this.addOrUpdateResult(configId,caseList);   // 添加或者更新结果
     }
 
 
@@ -129,7 +130,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
 
         // 写入配置文件
         File file = new File(configPath);
-        Map<String,Object> configMap = ( Map<String,Object>)testConfigApi.selectConfigById(configId).getData().get(HttpConstant.RESPONSE_STR_DATA);
+        Map<String,Object> configMap = (Map<String,Object>)testConfigApi.selectConfigById(configId).getData().get(HttpConstant.RESPONSE_STR_DATA);
         Map<String,Object> configData = (Map<String,Object>)configMap.get("configData");
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(configData));
         JsonUtil.objectMapper.writeValue(file,jsonNode);
@@ -139,7 +140,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * 添加或者修改结果
      * @throws IOException
      */
-    private void addOrUpdateResult(ArrayList<String> caseList) throws Exception {
+    private void addOrUpdateResult(String configId,ArrayList<String> caseList) throws Exception {
         logger.info("执行 addOrUpdateResult method");
         // 结果写入库
         ResultModel resultModel = testConfigApi.getConfigPath();
@@ -169,14 +170,19 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                 testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
                 testResultDto.setLast_run_time(run_time);
                 logger.info("testResultDto = " + testResultDto);
-                if (null == testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"))
+                testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
+                String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
+                JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
+                System.out.println("data = " + data);
+                if (null == data || "null".equals(data))
                 {
                     logger.info("执行 saveResult method");
-                    System.out.println(testResultApi.saveResult(testResultDto));
+                    testResultApi.saveResult(configId,testResultDto);
                 }
                 else {
                     logger.info("执行 updateResult method");
-                    System.out.println(testResultApi.updateResult(testResultDto));;
+                    testResultDto.setResult_id(jsonNode.get("result_id").asText());
+                    testResultApi.updateResult(testResultDto,configId);
                 };
             }
         }

@@ -1,6 +1,7 @@
 package com.zhangjun.quyi.test_result.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
@@ -10,11 +11,13 @@ import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +44,14 @@ public class TestResultController {
                                   @ApiParam(name = "size",value = "数量")
                                   @PathVariable int size,
                                   @RequestBody TestResultQueryVo testResultQueryVo) throws Exception {
-        List<TestResultDto> list = testResultService.findResult(current,size,testResultQueryVo);
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,list);
+        Page<TestResult> resultPage = testResultService.findResult(current,size,testResultQueryVo);
+        List<TestResultDto> testResultDtos = new ArrayList<>();
+        resultPage.getRecords().stream().forEach(testResult -> {
+            TestResultDto testResultDto = new TestResultDto();
+            BeanUtils.copyProperties(testResult,testResultDto);
+            testResultDtos.add(testResultDto);
+        });
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultDtos).data(HttpConstant.RESPONSE_STR_TOTAL,resultPage.getTotal());
     }
 
     /**
@@ -99,24 +108,26 @@ public class TestResultController {
      * 修改结果
      * @return
      */
-    @PutMapping("/updateResult")
+    @PutMapping("/updateResult/{configId}")
     @ApiOperation("更新结果记录")
-    public ResultModel updateResult(@ApiParam(name = "testResultDto",value = "测试结构dto")
-                                    @RequestBody TestResultDto testResultDto){
+    public ResultModel updateResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
+                                    @ApiParam(name = "testResultDto",value = "测试结构dto")
+                                    @RequestBody TestResultDto testResultDto) throws Exception {
         redisTemplate.delete("test-result::log");
-        return testResultService.updateResult(testResultDto) == true ? ResultModel.ok(): ResultModel.error();
+        return testResultService.updateResult(testResultDto,configId) == true ? ResultModel.ok(): ResultModel.error();
     }
 
     /**
      * 添加结果
      * @return
      */
-    @PostMapping("/saveResult")
+    @PostMapping("/saveResult/{configId}")
     @ApiOperation("添加结果")
-    public ResultModel saveResult(@ApiParam(name = "testResultDto",value = "测试结构dto")
-                                  @RequestBody TestResultDto testResultDto){
+    public ResultModel saveResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
+                                  @ApiParam(name = "testResultDto",value = "测试结构dto")
+                                  @RequestBody TestResultDto testResultDto) throws Exception {
         redisTemplate.delete("test-result::log");
-        return testResultService.saveResult(testResultDto) == true ? ResultModel.ok(): ResultModel.error();
+        return testResultService.saveResult(configId,testResultDto) == true ? ResultModel.ok(): ResultModel.error();
     }
 
 }

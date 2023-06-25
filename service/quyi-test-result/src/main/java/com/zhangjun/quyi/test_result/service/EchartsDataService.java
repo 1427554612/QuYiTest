@@ -12,4 +12,11 @@ public interface EchartsDataService extends IService<TestResult> {
      * 以用例名称分组获取成功率
      */
     Map<String,Object> getCaseSuccessRate() throws JsonProcessingException;
+
+
+    /**
+     * 以平台区分成功总数和失败总数
+     * @return
+     */
+    Map<String, Object> getPlatformSuccessAndErrorNum() throws JsonProcessingException;
 }

@@ -2,7 +2,9 @@ package com.zhangjun.quyi.test_result.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.resultVo.DataTree;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_result.api.TestConfigApi;
@@ -14,9 +16,11 @@ import com.zhangjun.quyi.test_result.mapper.TestResultServiceMapper;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultService;
 import com.zhangjun.quyi.utils.FileUtil;
+import com.zhangjun.quyi.utils.JsonUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +86,14 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
-    public List<TestResultDto> findResult(int current, int size, TestResultQueryVo testResultQueryVo) {
-        return null;
+    public Page<TestResult> findResult(int current, int size, TestResultQueryVo testResultQueryVo) {
+        Page<TestResult> page = new Page<>(current,size);
+        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(testResultQueryVo.getResult_id()))queryWrapper.eq("result_id",testResultQueryVo.getResult_id());
+        if (!StringUtils.isEmpty(testResultQueryVo.getCase_name()))queryWrapper.eq("case_name",testResultQueryVo.getCase_name());
+        if (!StringUtils.isEmpty(testResultQueryVo.getCase_type()))queryWrapper.eq("case_type",testResultQueryVo.getCase_type());
+        Page<TestResult> resultPage = this.page(page,queryWrapper);
+        return resultPage;
     }
 
     /**
@@ -92,25 +102,44 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
-    public boolean updateResult(TestResultDto testResultDto) {
+    public boolean updateResult(TestResultDto testResultDto,String configId) throws Exception {
         String case_name = testResultDto.getCase_name();
         QueryWrapper<TestResult> wrapper = new QueryWrapper<>();
         wrapper.eq("case_name",case_name);
         TestResult one = this.getOne(wrapper);
         if (null == one) throw new ExceptionEntity(20001,"结果不存在,无法修改......");
-        int runNumber = one.getRun_num()+1;
-        one.setRun_num(runNumber);
-        int runSuccessNumber = one.getRun_success_num()+testResultDto.getRun_success_num();
-        one.setRun_success_num(runSuccessNumber);
-        int runErrorNUmber = one.getRun_error_num()+testResultDto.getRun_error_num();
-        one.setRun_error_num(runErrorNUmber);
-        one.setRun_success_rate(Double.valueOf(String.format("%.2f",runSuccessNumber / Double.valueOf(runNumber))));
-        this.update(one,wrapper);
+        // 先将新的数据插入从表
         testResultDto.getTestResultInfoList().stream().forEach(item->{
             item.setResult_id(one.getResult_id());
+            item.setPlatform_id(configId);
             testResultInfoService.save(item);
         });
-        return true;
+        QueryWrapper<TestResultInfo> testResultInfoQueryWrapperSuccess = new QueryWrapper<>();
+        QueryWrapper<TestResultInfo> testResultInfoQueryError = new QueryWrapper<>();
+
+        // 统计成功总数和失败总数
+        testResultInfoQueryWrapperSuccess.eq("result_id",one.getResult_id());
+        testResultInfoQueryWrapperSuccess.eq("run_result",1);
+        int successCount = testResultInfoService.count(testResultInfoQueryWrapperSuccess);
+        testResultInfoQueryError.eq("result_id",one.getResult_id());
+        testResultInfoQueryError.eq("run_result",0);
+        int errorCount = testResultInfoService.count(testResultInfoQueryError);
+
+        // 查询最近一条状态
+        QueryWrapper<TestResultInfo> testResultInfoQueryWrapper1 = new QueryWrapper<>();
+        testResultInfoQueryWrapper1.eq("result_id",one.getResult_id());
+        testResultInfoQueryWrapper1.orderByDesc("run_begin_time");
+        testResultInfoQueryWrapper1.last("limit 1");
+        List<TestResultInfo> TestResultInfo = testResultInfoService.list(testResultInfoQueryWrapper1);
+        com.zhangjun.quyi.test_result.entity.TestResultInfo testResultInfo = TestResultInfo.get(0);
+
+        // 设置成功率
+        one.setRun_num(successCount + errorCount);
+        one.setRun_success_num(successCount);
+        one.setRun_error_num(errorCount);
+        one.setLast_run_date(testResultInfo.getRun_begin_time());
+        one.setRun_success_rate( Double.valueOf(String.format("%.2f",successCount / Double.valueOf(one.getRun_num()))));
+        return this.update(one,wrapper);
     }
 
     /**
@@ -119,7 +148,7 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
-    public boolean saveResult(TestResultDto testResultDto) {
+    public boolean saveResult(String configId,TestResultDto testResultDto) throws JsonProcessingException {
         QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("case_name",testResultDto.getCase_name());
         TestResult resultTestResult = this.getOne(queryWrapper);
@@ -138,6 +167,7 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();
         testResultInfoList.stream().forEach(item->{
             item.setResult_id(one.getResult_id());
+            item.setPlatform_id(configId);
             testResultInfoService.save(item);
         });
         return true;

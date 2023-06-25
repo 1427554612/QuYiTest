@@ -29,6 +29,9 @@ public class TestResultInfo {
     @ApiModelProperty("执行成功率")
     private boolean run_result;
 
+    @ApiModelProperty("执行配置id")
+    private String platformId;
+
     @ApiModelProperty("执行开始时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date run_begin_time;

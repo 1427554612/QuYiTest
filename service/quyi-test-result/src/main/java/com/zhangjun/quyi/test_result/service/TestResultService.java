@@ -1,6 +1,8 @@
 package com.zhangjun.quyi.test_result.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.resultVo.DataTree;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
@@ -38,19 +40,19 @@ public interface TestResultService extends IService<TestResult> {
      * @param testResultQueryVo
      * @return
      */
-    List<TestResultDto> findResult(int current, int size, TestResultQueryVo testResultQueryVo);
+    Page<TestResult> findResult(int current, int size, TestResultQueryVo testResultQueryVo);
 
 
     /**
      * 修改结果
      * @return
      */
-    boolean updateResult(TestResultDto testResultDto);
+    boolean updateResult(TestResultDto testResultDtom,String configId) throws Exception;
 
     /**
      * 添加结果
      * @param testResultDto
      * @return
      */
-    boolean saveResult(TestResultDto testResultDto);
+    boolean saveResult(String configId ,TestResultDto testResultDto) throws Exception;
 }

@@ -26,15 +26,15 @@ public interface TestResultApi {
      * 修改结果
      * @return
      */
-    @PutMapping("/api/test_result/updateResult")
-    public ResultModel updateResult(@RequestBody TestResultDto testResultDto);
+    @PutMapping("/api/test_result/updateResult/{configId}")
+    public ResultModel updateResult(@RequestBody TestResultDto testResultDto,@PathVariable(name = "configId") String configId);
 
 
     /**
      * 添加结果
      * @return
      */
-    @PostMapping("/api/test_result/saveResult")
-    public ResultModel saveResult(@RequestBody TestResultDto testResultDto);
+    @PostMapping("/api/test_result/saveResult/{configId}")
+    public ResultModel saveResult(@PathVariable(name = "configId") String configId,@RequestBody TestResultDto testResultDto);
 
 }

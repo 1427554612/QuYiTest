@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication()
 @EnableDiscoveryClient
-@MapperScan("com.zhangjun.quyi.test_result.mapper")
 @ComponentScan(basePackages = {"com.zhangjun.quyi"})
 @EnableFeignClients(basePackages = "com.zhangjun.quyi.test_result.api")
 public class TestResultApplication {
