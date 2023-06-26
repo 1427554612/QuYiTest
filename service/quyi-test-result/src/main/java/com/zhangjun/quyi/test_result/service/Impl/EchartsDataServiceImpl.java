@@ -3,7 +3,6 @@ package com.zhangjun.quyi.test_result.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangjun.quyi.test_result.api.TestConfigApi;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
@@ -76,7 +75,6 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
                 "sum(case when run_result=0 then 1 else 0 end) as 'errorNum'");
 
         List<Map<String, Object>> maps = testResultInfoServiceMapper.selectMaps(wrapper);
-        System.out.println("maps = " + JsonUtil.objectMapper.writeValueAsString(maps));
         String configName = "";
         for (int i = 0; i < maps.size(); i++) {
             ResultModel resultModel = testConfigApi.selectConfigById((String) maps.get(i).get("platform_Id"));
@@ -86,8 +84,6 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
             System.out.println("map返回的数据：" + JsonUtil.objectMapper.writeValueAsString(maps.get(i)));
             Object successNum = maps.get(i).get("successNum");
             Object errorNum = maps.get(i).get("errorNum");
-            System.out.println("successNum = " + successNum);
-            System.out.println("errorNum = " + errorNum);
             successPlatform.add(Integer.parseInt(String.valueOf(maps.get(i).get("successNum"))));
             errorPlatform.add(Integer.parseInt(String.valueOf(maps.get(i).get("errorNum"))));
         }
@@ -96,5 +92,14 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
         resultMap.put("successNums",successPlatform);
         resultMap.put("errorNums",errorPlatform);
         return resultMap;
+    }
+
+    /**
+     * 获取当前成功和失败的用例
+     * @return
+     */
+    @Override
+    public Map<String, Object> getCurrentSuccessAndErrorNum() {
+        return null;
     }
 }

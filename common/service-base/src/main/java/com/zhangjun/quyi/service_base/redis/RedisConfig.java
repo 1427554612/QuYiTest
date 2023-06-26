@@ -56,6 +56,16 @@ public class RedisConfig extends CachingConfigurerSupport {
      * @return
      */
     @Bean
+    public RedisCacheManager cacheManager10Second(RedisConnectionFactory connectionFactory) {
+        return baseManager(connectionFactory,10L);
+    }
+
+    /**
+     * 1分钟
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
     public RedisCacheManager cacheManager1Minute(RedisConnectionFactory connectionFactory) {
         return baseManager(connectionFactory,60L);
     }

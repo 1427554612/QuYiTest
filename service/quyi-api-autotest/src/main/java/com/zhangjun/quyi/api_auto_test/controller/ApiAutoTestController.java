@@ -44,6 +44,9 @@ public class ApiAutoTestController {
     @Autowired
     private TestConfigApi testConfigApi;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
 
 
@@ -53,7 +56,7 @@ public class ApiAutoTestController {
      */
     @GetMapping("/selectAllCase")
     @ApiOperation(value = "获取所有用例")
-    @Cacheable(value = "TestCase",key = "'list'",cacheManager = "cacheManager1Day")
+    @Cacheable(value = "TestCase",key = "'list'",cacheManager = "cacheManager10Second")
     public ResultModel selectAllCase() throws Exception {
         List<ApiTestCaseEntity> caseList = apiAutoTestService.selectAllCase();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,caseList);
@@ -98,6 +101,7 @@ public class ApiAutoTestController {
     @PostMapping("/upload")
     @ApiOperation(value = "上传接口用例文件")
     public ResultModel upload(MultipartHttpServletRequest request) throws IOException {
+        redisTemplate.delete("TestCase::list");
         Map<String,Object> resultMap = apiAutoTestService.upload(request);
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,resultMap);
     }

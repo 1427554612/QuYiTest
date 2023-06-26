@@ -41,4 +41,15 @@ public class EchartsDataController {
     public ResultModel getPlatformSuccessAndErrorNum() throws JsonProcessingException {
         return ResultModel.ok().data(echartsDataService.getPlatformSuccessAndErrorNum());
     }
+
+    /**
+     * 获取当前成功和失败的用例
+     * @return
+     * @throws JsonProcessingException
+     */
+    @GetMapping("/getCurrentSuccessAndErrorNum")
+    @ApiOperation(value = "获取每个用例的执行成功率")
+    public ResultModel getCurrentSuccessAndErrorNum() throws JsonProcessingException {
+        return ResultModel.ok().data(echartsDataService.getCurrentSuccessAndErrorNum());
+    }
 }

@@ -10,11 +10,13 @@ import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_result.api.TestConfigApi;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
+import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.mapper.TestResultServiceMapper;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultService;
+import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import com.zhangjun.quyi.utils.FileUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +36,9 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
 
     @Autowired
     private TestResultInfoService testResultInfoService;
+
+    @Autowired
+    private TestResultTempInfoService testResultTempInfoService;
 
     /**
      * 查询日志文件树
@@ -168,7 +173,19 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         testResultInfoList.stream().forEach(item->{
             item.setResult_id(one.getResult_id());
             item.setPlatform_id(configId);
+            // 添加到详情表中
             testResultInfoService.save(item);
+            // 添加到临时表中
+            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
+            resultInfoQueryWrapper.eq("result_id",item.getResult_id())
+                    .eq("platform_Id",item.getPlatform_id())
+                    .eq("run_begin_time",item.getRun_begin_time())
+                    .eq("run_end_time",item.getRun_end_time())
+                    .eq("run_time",item.getRun_time());
+            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
+            TestResultTempInfo testResultTempInfo = new TestResultTempInfo();
+            BeanUtils.copyProperties(idTestResult,testResultTempInfo);
+            testResultTempInfoService.save(testResultTempInfo);
         });
         return true;
     }
