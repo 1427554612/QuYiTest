@@ -6,9 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.test_result.api.TestConfigApi;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
+import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
 import com.zhangjun.quyi.test_result.mapper.TestResultInfoServiceMapper;
 import com.zhangjun.quyi.test_result.mapper.TestResultServiceMapper;
+import com.zhangjun.quyi.test_result.mapper.TestResultTempInfoMapper;
 import com.zhangjun.quyi.test_result.service.EchartsDataService;
+import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import org.slf4j.LoggerFactory;
@@ -16,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper, TestResult> implements EchartsDataService  {
@@ -28,6 +28,9 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
 
     @Autowired
     private TestResultInfoServiceMapper testResultInfoServiceMapper;
+
+    @Autowired
+    private TestResultTempInfoService testResultTempInfoService;
 
     @Autowired
     private TestConfigApi testConfigApi;
@@ -95,11 +98,33 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
     }
 
     /**
+     * selectMaps == [{"successNum":14,"errorNum":1}]
      * 获取当前成功和失败的用例
+     * select sum(case when run_result = 1 then 1 else 0 end) as 'successNum',sum(case when run_result = 0 then 1 else 0 end) as 'errorNum' from test_result_temp_info
      * @return
      */
     @Override
-    public Map<String, Object> getCurrentSuccessAndErrorNum() {
-        return null;
+    public Map<String, Object> getCurrentSuccessAndErrorNum() throws JsonProcessingException {
+        List<String> keyList = new ArrayList<>();
+        List<Map<String,Object>> valueList = new ArrayList<>();
+        QueryWrapper<TestResultTempInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("sum(case when run_result = 1 then 1 else 0 end) as 'successNum',sum(case when run_result = 0 then 1 else 0 end) as 'errorNum'");
+        Map<String, Object> map = testResultTempInfoService.getMap(queryWrapper);
+        Set<Map.Entry<String, Object>> entries = map.entrySet();
+        Iterator<Map.Entry<String, Object>> iterator = entries.iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, Object> next = iterator.next();
+            String key = next.getKey();
+            keyList.add(key);
+            Map<String,Object> valueMap = new HashMap<>();
+            valueMap.put("name",key);
+            valueMap.put("value",next.getValue());
+            valueList.add(valueMap);
+        }
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("legends",keyList);
+        resultMap.put("series",valueList);
+        System.out.println("最终数据结构为：" + JsonUtil.objectMapper.writeValueAsString(resultMap));
+        return resultMap;
     }
 }

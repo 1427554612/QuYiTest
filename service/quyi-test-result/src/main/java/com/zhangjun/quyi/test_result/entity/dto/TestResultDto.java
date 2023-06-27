@@ -33,6 +33,8 @@ public class TestResultDto {
     @ApiModelProperty("执行成功率")
     private double run_success_rate;
 
+    @ApiModelProperty("最后一次执行结果")
+    private String last_run_result;
 
     @ApiModelProperty("最后一次执行时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

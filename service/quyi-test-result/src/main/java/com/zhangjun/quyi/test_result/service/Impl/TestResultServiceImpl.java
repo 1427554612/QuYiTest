@@ -1,6 +1,7 @@
 package com.zhangjun.quyi.test_result.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -117,7 +118,28 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         testResultDto.getTestResultInfoList().stream().forEach(item->{
             item.setResult_id(one.getResult_id());
             item.setPlatform_id(configId);
+            // 数据插入详情表
             testResultInfoService.save(item);
+            // 查询添加的详情表数据
+            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
+            resultInfoQueryWrapper.eq("result_id",item.getResult_id())
+                    .eq("platform_Id",item.getPlatform_id())
+                    .eq("run_begin_time",item.getRun_begin_time())
+                    .eq("run_end_time",item.getRun_end_time())
+                    .eq("run_time",item.getRun_time());
+            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
+            // 查询临时表是否存在对应数据
+            QueryWrapper<TestResultTempInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("result_id",idTestResult.getResult_id());
+            TestResultTempInfo queryTempResultInfo = testResultTempInfoService.getOne(queryWrapper);
+            BeanUtils.copyProperties(idTestResult,queryTempResultInfo);
+            // 删除这条记录
+            QueryWrapper<TestResultTempInfo> updateWrapper = new QueryWrapper<>();
+            updateWrapper.eq("result_id",idTestResult.getResult_id());
+            testResultTempInfoService.remove(updateWrapper);
+
+            // 再次插入这条记录
+            testResultTempInfoService.save(queryTempResultInfo);
         });
         QueryWrapper<TestResultInfo> testResultInfoQueryWrapperSuccess = new QueryWrapper<>();
         QueryWrapper<TestResultInfo> testResultInfoQueryError = new QueryWrapper<>();

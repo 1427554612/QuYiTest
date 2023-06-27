@@ -24,5 +24,5 @@ public interface EchartsDataService extends IService<TestResult> {
      * 获取当前成功和失败的用例
      * @return
      */
-    Map<String, Object> getCurrentSuccessAndErrorNum();
+    Map<String, Object> getCurrentSuccessAndErrorNum() throws JsonProcessingException;
 }

@@ -48,7 +48,7 @@ public class EchartsDataController {
      * @throws JsonProcessingException
      */
     @GetMapping("/getCurrentSuccessAndErrorNum")
-    @ApiOperation(value = "获取每个用例的执行成功率")
+    @ApiOperation(value = "获取最近一次执行的接口成功和失败的比例")
     public ResultModel getCurrentSuccessAndErrorNum() throws JsonProcessingException {
         return ResultModel.ok().data(echartsDataService.getCurrentSuccessAndErrorNum());
     }
