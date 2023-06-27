@@ -6,6 +6,7 @@ import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ public class EchartsDataController {
      */
     @GetMapping("/getCaseSuccessRate")
     @ApiOperation(value = "获取每个用例的执行成功率")
+    @Cacheable(value = "test-charts",key = "'successRate'",cacheManager = "cacheManager3Minute")
     public ResultModel getCaseSuccessRate() throws JsonProcessingException {
         return ResultModel.ok().data(echartsDataService.getCaseSuccessRate());
     }
@@ -38,6 +40,7 @@ public class EchartsDataController {
      */
     @GetMapping("/getPlatformSuccessAndErrorNum")
     @ApiOperation(value = "获取每个用例的执行成功率")
+    @Cacheable(value = "test-charts",key = "'platformSuccessAndErrorNum'",cacheManager = "cacheManager3Minute")
     public ResultModel getPlatformSuccessAndErrorNum() throws JsonProcessingException {
         return ResultModel.ok().data(echartsDataService.getPlatformSuccessAndErrorNum());
     }
@@ -49,6 +52,7 @@ public class EchartsDataController {
      */
     @GetMapping("/getCurrentSuccessAndErrorNum")
     @ApiOperation(value = "获取最近一次执行的接口成功和失败的比例")
+    @Cacheable(value = "test-charts",key = "'currentSuccessAndErrorNum'",cacheManager = "cacheManager3Minute")
     public ResultModel getCurrentSuccessAndErrorNum() throws JsonProcessingException {
         return ResultModel.ok().data(echartsDataService.getCurrentSuccessAndErrorNum());
     }

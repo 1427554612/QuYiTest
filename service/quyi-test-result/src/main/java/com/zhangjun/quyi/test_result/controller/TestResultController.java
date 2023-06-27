@@ -7,19 +7,23 @@ import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.service.TestResultService;
+import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @Api(description = "结果管理")
@@ -109,11 +113,14 @@ public class TestResultController {
      * @return
      */
     @PutMapping("/updateResult/{configId}")
+    @Caching(evict = {@CacheEvict(value = "test-result",key = "'log'"),
+            @CacheEvict(value = "test-charts",key = "'successRate'"),
+            @CacheEvict(value = "test-charts",key = "'platformSuccessAndErrorNum'"),
+            @CacheEvict(value = "test-charts",key = "'currentSuccessAndErrorNum'")})
     @ApiOperation("更新结果记录")
     public ResultModel updateResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
                                     @ApiParam(name = "testResultDto",value = "测试结构dto")
                                     @RequestBody TestResultDto testResultDto) throws Exception {
-        redisTemplate.delete("test-result::log");
         return testResultService.updateResult(testResultDto,configId) == true ? ResultModel.ok(): ResultModel.error();
     }
 
