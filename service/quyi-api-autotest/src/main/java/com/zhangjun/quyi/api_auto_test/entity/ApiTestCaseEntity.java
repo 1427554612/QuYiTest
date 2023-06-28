@@ -49,7 +49,7 @@ public class ApiTestCaseEntity {
 
     @ApiModelProperty(value = "请求头")
     @Excel(name = "请求头")
-    @NotNull(value = "必须填写请求头")
+//    @NotNull(value = "必须填写请求头")
     private Object requestHeaders;
 
     @ApiModelProperty(value = "请求体")

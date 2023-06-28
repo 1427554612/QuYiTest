@@ -39,4 +39,11 @@ public interface ApiAutoTestService {
      * @return
      */
     Map<String,Object> upload(MultipartHttpServletRequest request) throws IOException;
+
+
+    /**
+     * 操作接口测试用例
+     * @param testCaseEntity
+     */
+    void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException;
 }

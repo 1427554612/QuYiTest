@@ -101,6 +101,19 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     }
 
     /**
+     * 编辑测试用例
+     * @param testCaseEntitys
+     */
+    @Override
+    public void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
+        ResultModel resultModel = testConfigApi.getConfigPath();
+        String configPath = (String)resultModel.getData().get("configPath");
+        JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
+        String excelPath  = jsonNode.get("excelPath").textValue();
+        EasyExcelUtil.exportExcel(ApiTestCaseEntity.class,testCaseEntitys,excelPath);
+    }
+
+    /**
      * 上传文件到本地
      * @param request
      * @return
@@ -118,6 +131,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         map.put("filePath",parentPath + fileName);
         return map;
     }
+
 
 
     /**

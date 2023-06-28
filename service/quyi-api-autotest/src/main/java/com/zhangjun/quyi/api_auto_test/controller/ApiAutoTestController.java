@@ -62,6 +62,16 @@ public class ApiAutoTestController {
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,caseList);
     }
 
+    // 添加或更新用例
+    @PutMapping("/editCase")
+    @CacheEvict(value = "TestCase",key = "'list'")
+    @ApiOperation(value = "操作用例")
+    public ResultModel editApiTestCase(@ApiParam(name = "testCaseEntitys",value = "测试用例列表")
+                                       @RequestBody List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
+        apiAutoTestService.editApiTestCase(testCaseEntitys);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testCaseEntitys);
+    }
+
 
     /**
      * 批量执行用例
@@ -154,7 +164,6 @@ public class ApiAutoTestController {
         }
         return result;
     }
-
 
 
 
