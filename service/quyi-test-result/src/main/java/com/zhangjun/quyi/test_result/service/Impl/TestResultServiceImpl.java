@@ -168,7 +168,6 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         one.setLast_run_result(testResultInfo.isRun_result());
         one.setLast_run_time(testResultInfo.getRun_time());
         Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
-        System.out.println("成功率："+(aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
         one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
         return this.update(one,wrapper);
     }
