@@ -187,7 +187,6 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                 testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
                 String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
                 JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
-                System.out.println("data = " + data);
                 if (null == data || "null".equals(data))
                 {
                     logger.info("执行 saveResult method");

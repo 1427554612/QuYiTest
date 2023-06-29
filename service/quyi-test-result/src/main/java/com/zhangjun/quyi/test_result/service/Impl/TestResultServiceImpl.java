@@ -165,7 +165,11 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         one.setRun_success_num(successCount);
         one.setRun_error_num(errorCount);
         one.setLast_run_date(testResultInfo.getRun_begin_time());
-        one.setRun_success_rate( Double.valueOf(String.format("%.2f",successCount / Double.valueOf(one.getRun_num()))));
+        one.setLast_run_result(testResultInfo.isRun_result());
+        one.setLast_run_time(testResultInfo.getRun_time());
+        Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
+        System.out.println("成功率："+(aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
+        one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
         return this.update(one,wrapper);
     }
 
@@ -187,8 +191,15 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         if (run_result == true){
             testresult.setRun_success_num(1);
             testresult.setRun_success_rate(100.00);
+            testresult.setLast_run_result(true);
         }
-        else testresult.setRun_error_num(1);
+        else {
+            testresult.setRun_error_num(1);
+            testresult.setRun_success_rate(0.0);
+            testresult.setLast_run_result(false);
+        }
+        testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
+        testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
         this.save(testresult);
         TestResult one = this.getOne(queryWrapper);
         List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();
