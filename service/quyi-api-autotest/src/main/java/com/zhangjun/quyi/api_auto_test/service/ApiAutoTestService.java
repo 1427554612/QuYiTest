@@ -33,6 +33,8 @@ public interface ApiAutoTestService {
      */
     List<ApiTestCaseEntity> selectAllCase() throws IOException;
 
+
+
     /**
      * 上传文件到本地
      * @param request
@@ -46,4 +48,6 @@ public interface ApiAutoTestService {
      * @param testCaseEntity
      */
     void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException;
+
+
 }

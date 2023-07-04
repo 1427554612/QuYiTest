@@ -18,6 +18,9 @@ public class TestResultDto {
     @ApiModelProperty("用例名称")
     private String case_name;
 
+    @ApiModelProperty("用例标题")
+    private String case_title;
+
     @ApiModelProperty("用例类型")
     private String case_type;
 

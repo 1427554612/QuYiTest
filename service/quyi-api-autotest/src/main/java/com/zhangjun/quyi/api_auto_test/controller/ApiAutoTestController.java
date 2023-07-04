@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,7 +52,7 @@ public class ApiAutoTestController {
 
 
     /**
-     * 执行指定名称的用例
+     * 获取所有用例列表
      * @return
      */
     @GetMapping("/selectAllCase")
@@ -62,12 +63,15 @@ public class ApiAutoTestController {
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,caseList);
     }
 
+
+
     // 添加或更新用例
     @PutMapping("/editCase")
     @CacheEvict(value = "TestCase",key = "'list'")
     @ApiOperation(value = "操作用例")
     public ResultModel editApiTestCase(@ApiParam(name = "testCaseEntitys",value = "测试用例列表")
                                        @RequestBody List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
+        System.out.println(JsonUtil.objectMapper.writeValueAsString(testCaseEntitys));
         apiAutoTestService.editApiTestCase(testCaseEntitys);
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testCaseEntitys);
     }

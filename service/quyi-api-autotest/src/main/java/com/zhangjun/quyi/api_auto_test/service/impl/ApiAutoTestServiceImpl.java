@@ -100,6 +100,8 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         return apiTestCaseEntities;
     }
 
+
+
     /**
      * 编辑测试用例
      * @param testCaseEntitys
@@ -141,10 +143,13 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      */
     private void updateFile(String configId,ResultModel resultModel) throws IOException {
         String configPath = (String)resultModel.getData().get(StrConstant.CONFIG_PATH);
+        System.out.println("configPath = " + configPath);
 
         // 写入配置文件
         File file = new File(configPath);
-        Map<String,Object> configMap = (Map<String,Object>)testConfigApi.selectConfigById(configId).getData().get(HttpConstant.RESPONSE_STR_DATA);
+        System.out.println("远程接口的响应：" + JsonUtil.objectMapper.writeValueAsString(testConfigApi.selectConfigById(configId)));
+        Map<String,Object> configMap = (Map<String,Object>)testConfigApi.selectConfigById(configId).getData().get("testConfig");
+        System.out.println("configMap = " + JsonUtil.objectMapper.writeValueAsString(configMap));
         Map<String,Object> configData = (Map<String,Object>)configMap.get("configData");
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(configData));
         JsonUtil.objectMapper.writeValue(file,jsonNode);

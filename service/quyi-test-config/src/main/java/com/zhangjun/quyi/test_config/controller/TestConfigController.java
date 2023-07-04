@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,6 +58,9 @@ public class TestConfigController {
     @Value("${python.api.runtime.path}")
     private String pythonApiRuntimePath;
 
+    @Value("${proxy.config.path}")
+    private String proxyConfigPath;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -69,6 +73,10 @@ public class TestConfigController {
      */
     @PostMapping("/saveTestConfig")
     @CachePut(value = "TestConfig",key="#result.data.get('testConfig').configId",cacheManager = "cacheManager1Hour")
+    @Caching(evict ={@CacheEvict(value = "TestConfig",key = "'list'"),
+            @CacheEvict(value = "TestConfig",key = "'page_1_10'"),
+            @CacheEvict(value = "TestConfig",key = "'page_2_10'"),
+            @CacheEvict(value = "TestConfig",key = "'page_3_10'")})
     @ApiOperation(value = "添加测试配置")
     public ResultModel saveTestConfig(@ApiParam(name = "testConfig",value = "配置对象")
                                           @Validated @RequestBody TestConfig testConfig){
@@ -152,7 +160,8 @@ public class TestConfigController {
                 .data("logPath", logPath)
                 .data("reportPath", reportPath)
                 .data("pythonProjectPath", pythonProjectPath)
-                .data("apiRunTimePath", pythonApiRuntimePath);
+                .data("apiRunTimePath", pythonApiRuntimePath)
+                .data("proxyConfigPath",proxyConfigPath);
     }
 
 
@@ -164,11 +173,11 @@ public class TestConfigController {
      * @return
      */
     @GetMapping("/selectConfig/{configId}")
-    @Cacheable(value = "TestConfig",key = "#configId",cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "TestConfig",key = "#configId",cacheManager = "cacheManager1Minute")
     @ApiOperation(value = "通过id查询配置")
     public ResultModel selectConfigById(@ApiParam(name = "configId",value = "用例id")
                                         @PathVariable String configId){
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testConfigService.getById(configId));
+        return ResultModel.ok().data("testConfig",testConfigService.getById(configId));
     }
 
 
