@@ -184,6 +184,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                 testResultDto.getTestResultInfoList().add(testResultInfo);
                 testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
                 testResultDto.setLast_run_time(run_time);
+                testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").asText(),Map.class));
                 logger.info("testResultDto = " + testResultDto);
                 testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
                 String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
