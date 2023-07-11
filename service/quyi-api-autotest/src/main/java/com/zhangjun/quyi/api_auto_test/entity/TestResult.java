@@ -1,8 +1,10 @@
 package com.zhangjun.quyi.api_auto_test.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.Map;
 
 @TableName(autoResultMap=true)
 @Data
@@ -53,6 +56,10 @@ public class TestResult {
 
     @ApiModelProperty("最后一次执行耗时")
     private int last_run_time;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @ApiModelProperty("响应数据")
+    private Map<String,Object> response_data;
 
 
 }

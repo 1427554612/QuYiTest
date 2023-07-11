@@ -1,5 +1,7 @@
 package com.zhangjun.quyi.api_auto_test.entity.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zhangjun.quyi.api_auto_test.entity.TestResultInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +10,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class TestResultDto {
@@ -48,4 +51,8 @@ public class TestResultDto {
 
     @ApiModelProperty("详情列表")
     private List<TestResultInfo> testResultInfoList = new ArrayList<>();
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @ApiModelProperty("响应数据")
+    private Map<String,Object> response_data;
 }
