@@ -78,17 +78,12 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
                 "sum(case when run_result=0 then 1 else 0 end) as 'errorNum'");
 
         List<Map<String, Object>> maps = testResultInfoServiceMapper.selectMaps(wrapper);
-        System.out.println("查询出来的数据为：" + JsonUtil.objectMapper.writeValueAsString(maps));
         String configName = "";
         for (int i = 0; i < maps.size(); i++) {
             ResultModel resultModel = testConfigApi.selectConfigById((String) maps.get(i).get("platform_Id"));
-            System.out.println("远程接口的响应为:" + JsonUtil.objectMapper.writeValueAsString(resultModel));
             Object data = resultModel.getData().get("testConfig");
             configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("configName").asText();
             keys.add(configName);
-            System.out.println("map返回的数据：" + JsonUtil.objectMapper.writeValueAsString(maps.get(i)));
-            Object successNum = maps.get(i).get("successNum");
-            Object errorNum = maps.get(i).get("errorNum");
             successPlatform.add(Integer.parseInt(String.valueOf(maps.get(i).get("successNum"))));
             errorPlatform.add(Integer.parseInt(String.valueOf(maps.get(i).get("errorNum"))));
         }
@@ -126,7 +121,6 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("legends",keyList);
         resultMap.put("series",valueList);
-        System.out.println("最终数据结构为：" + JsonUtil.objectMapper.writeValueAsString(resultMap));
         return resultMap;
     }
 }
