@@ -39,6 +39,9 @@ public class TestResultDto {
     @ApiModelProperty("执行成功率")
     private double run_success_rate;
 
+    @ApiModelProperty("最后一次执行平台")
+    private String last_run_platform;
+
     @ApiModelProperty("最后一次执行结果")
     private boolean last_run_result;
 

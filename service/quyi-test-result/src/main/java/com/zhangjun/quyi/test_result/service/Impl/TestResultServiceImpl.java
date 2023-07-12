@@ -20,6 +20,7 @@ import com.zhangjun.quyi.test_result.service.TestResultService;
 import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import com.zhangjun.quyi.utils.FileUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
+import com.zhangjun.quyi.utils.ResultModel;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -167,7 +168,15 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         one.setLast_run_date(testResultInfo.getRun_begin_time());
         one.setLast_run_result(testResultInfo.isRun_result());
         one.setLast_run_time(testResultInfo.getRun_time());
+
+        // 设置最近执行平台
+        // 设置最近一次执行的平台
+        String platform_id = testResultInfo.getPlatform_id();
+        ResultModel resultModel = testConfigApi.selectConfigById(platform_id);
+        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel)).get("data").get("testConfig").get("configName").asText();
+        one.setLast_run_platform(configName);
         Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
+        System.out.println("成功率为：" + aDouble);
         one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
         return this.update(one,wrapper);
     }
@@ -199,6 +208,13 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         }
         testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
         testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
+        // 设置最近一次执行的平台
+        String platform_id = testResultDto.getTestResultInfoList().get(0).getPlatform_id();
+        System.out.println("platform_id = " + platform_id);
+        ResultModel resultModel = testConfigApi.selectConfigById(platform_id);
+        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel)).get("data").get("testConfig").get("configName").asText();
+        System.out.println("configName = " + configName);
+
         this.save(testresult);
         TestResult one = this.getOne(queryWrapper);
         List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();

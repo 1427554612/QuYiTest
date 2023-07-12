@@ -149,6 +149,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         Map<String,Object> configData = (Map<String,Object>)configMap.get("configData");
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(configData));
         JsonUtil.objectMapper.writeValue(file,jsonNode);
+
     }
 
     /**
@@ -167,41 +168,49 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         while ((json =bf.readLine())!= null){
             jsonNodes.add(JsonUtil.objectMapper.readTree(json));
         }
-        for (int i = 0;i<caseList.size();++i){
-            TestResultDto testResultDto = new TestResultDto();
-            testResultDto.setCase_name(caseList.get(i));
-            testResultDto.setCase_type("api");
-            if (jsonNodes.get(i).get("case_name").asText().equals(caseList.get(i))){
-                boolean run_result = Boolean.valueOf(jsonNodes.get(i).get("run_result").asText());
-                Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_begin_time").asText());
-                Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_end_time").asText());
-                int run_time = jsonNodes.get(i).get("run_time").asInt();
-                TestResultInfo testResultInfo = new TestResultInfo();
-                testResultInfo.setRun_result(run_result);
-                testResultInfo.setRun_begin_time(beginTime);
-                testResultInfo.setRun_end_time(endTime);
-                testResultInfo.setRun_time(run_time);
-                testResultDto.getTestResultInfoList().add(testResultInfo);
-                testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
-                testResultDto.setLast_run_time(run_time);
-                testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").asText(),Map.class));
-                logger.info("testResultDto = " + testResultDto);
-                testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
-                String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
-                JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
-                if (null == data || "null".equals(data))
-                {
-                    logger.info("执行 saveResult method");
-                    testResultApi.saveResult(configId,testResultDto);
+        try {
+            for (int i = 0;i<caseList.size();++i){
+                TestResultDto testResultDto = new TestResultDto();
+                testResultDto.setCase_name(caseList.get(i));
+                testResultDto.setCase_type("api");
+                if (jsonNodes.get(i).get("case_name").asText().equals(caseList.get(i))){
+                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get("run_result").asText());
+                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_begin_time").asText());
+                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_end_time").asText());
+                    int run_time = jsonNodes.get(i).get("run_time").asInt();
+                    TestResultInfo testResultInfo = new TestResultInfo();
+                    testResultInfo.setRun_result(run_result);
+                    testResultInfo.setRun_begin_time(beginTime);
+                    testResultInfo.setRun_end_time(endTime);
+                    testResultInfo.setRun_time(run_time);
+                    testResultDto.getTestResultInfoList().add(testResultInfo);
+                    testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
+                    testResultDto.setLast_run_time(run_time);
+                    // JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").asText(),Map.class)
+                    testResultDto.setResponse_data(null);
+                    logger.info("testResultDto = " + testResultDto);
+                    testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
+                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
+                    JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
+                    if (null == data || "null".equals(data))
+                    {
+                        logger.info("执行 saveResult method");
+                        testResultApi.saveResult(configId,testResultDto);
+                    }
+                    else {
+                        logger.info("执行 updateResult method");
+                        testResultDto.setResult_id(jsonNode.get("result_id").asText());
+                        testResultApi.updateResult(testResultDto,configId);
+                    };
                 }
-                else {
-                    logger.info("执行 updateResult method");
-                    testResultDto.setResult_id(jsonNode.get("result_id").asText());
-                    testResultApi.updateResult(testResultDto,configId);
-                };
             }
+        }catch (Exception e){
+
         }
-        bf.close();
+        finally {
+            bf.close();
+            logger.info("apiRunTimePath io 已关闭");
+        }
     }
 
 
