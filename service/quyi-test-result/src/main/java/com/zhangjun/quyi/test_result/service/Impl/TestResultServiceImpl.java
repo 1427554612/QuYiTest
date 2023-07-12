@@ -176,7 +176,6 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel)).get("data").get("testConfig").get("configName").asText();
         one.setLast_run_platform(configName);
         Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
-        System.out.println("成功率为：" + aDouble);
         one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
         return this.update(one,wrapper);
     }
