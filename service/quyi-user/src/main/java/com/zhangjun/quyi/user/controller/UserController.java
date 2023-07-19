@@ -18,6 +18,7 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation(value = "用户登录")
     public ResultModel login(){
+        System.out.println("login = login" );
         return ResultModel.ok().data("token","asd56154egd8zw48df");
     }
 

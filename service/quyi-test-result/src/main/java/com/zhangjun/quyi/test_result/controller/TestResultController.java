@@ -137,4 +137,20 @@ public class TestResultController {
         return testResultService.saveResult(configId,testResultDto) == true ? ResultModel.ok(): ResultModel.error();
     }
 
+    /**
+     * 清空所有运行结果数据
+     * @return
+     */
+    @DeleteMapping("/deleteAllResult")
+    @Caching(evict = {
+            @CacheEvict(value = "test-charts",key = "'successRate'"),
+            @CacheEvict(value = "test-charts",key = "'platformSuccessAndErrorNum'"),
+            @CacheEvict(value = "test-charts",key = "'currentSuccessAndErrorNum'"),
+            @CacheEvict(value = "test-result",key = "'log'")
+    })
+    @ApiOperation("清空所有运行结果数据")
+    public ResultModel deleteAllResult(){
+        testResultService.deleteAllResult();
+        return ResultModel.ok();
+    }
 }

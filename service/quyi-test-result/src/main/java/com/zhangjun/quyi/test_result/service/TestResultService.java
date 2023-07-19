@@ -55,4 +55,9 @@ public interface TestResultService extends IService<TestResult> {
      * @return
      */
     boolean saveResult(String configId ,TestResultDto testResultDto) throws Exception;
+
+    /**
+     * 清空所有结果和统计数据
+     */
+    void deleteAllResult();
 }

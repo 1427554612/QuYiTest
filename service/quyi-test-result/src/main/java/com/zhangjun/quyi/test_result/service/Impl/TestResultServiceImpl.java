@@ -208,9 +208,7 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
         testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
         // 设置最近一次执行的平台
-        String platform_id = testResultDto.getTestResultInfoList().get(0).getPlatform_id();
-        System.out.println("platform_id = " + platform_id);
-        ResultModel resultModel = testConfigApi.selectConfigById(platform_id);
+        ResultModel resultModel = testConfigApi.selectConfigById(configId);
         String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel)).get("data").get("testConfig").get("configName").asText();
         System.out.println("configName = " + configName);
 
@@ -235,6 +233,17 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
             testResultTempInfoService.save(testResultTempInfo);
         });
         return true;
+    }
+
+
+    /**
+     * 清空所有统计和结果数据
+     */
+    @Override
+    public void deleteAllResult() {
+        testResultInfoService.remove(null);
+        testResultTempInfoService.remove(null);
+        this.remove(null);
     }
 
 
