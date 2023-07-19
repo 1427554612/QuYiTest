@@ -210,7 +210,8 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         // 设置最近一次执行的平台
         ResultModel resultModel = testConfigApi.selectConfigById(configId);
         String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel)).get("data").get("testConfig").get("configName").asText();
-        System.out.println("configName = " + configName);
+        System.out.println("最近测试平台：" + configName);
+        testresult.setLast_run_platform(configName);
 
         this.save(testresult);
         TestResult one = this.getOne(queryWrapper);
