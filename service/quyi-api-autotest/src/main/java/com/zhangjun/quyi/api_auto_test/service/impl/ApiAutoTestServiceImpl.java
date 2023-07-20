@@ -186,8 +186,13 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                     testResultDto.getTestResultInfoList().add(testResultInfo);
                     testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
                     testResultDto.setLast_run_time(run_time);
-                    // JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").asText(),Map.class)
-                    testResultDto.setResponse_data(null);
+                    testResultDto.setCase_title(jsonNodes.get(i).get("case_title").asText());
+                    System.out.println("111" + testResultDto);
+                    System.out.println("asText = " + jsonNodes.get(i).get("response_data").asText());
+                    System.out.println("toString = " + jsonNodes.get(i).get("response_data").toString());
+                    System.out.println("null = " + jsonNodes.get(i).get("response_data"));
+                    System.out.println("textValue = " + jsonNodes.get(i).get("response_data").textValue());
+                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").toString(),Map.class));
                     logger.info("testResultDto = " + testResultDto);
                     testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
                     String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
@@ -205,7 +210,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                 }
             }
         }catch (Exception e){
-
+            e.printStackTrace();
         }
         finally {
             bf.close();
