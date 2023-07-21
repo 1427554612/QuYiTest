@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
+import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.service.TestResultService;
@@ -12,12 +13,14 @@ import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,13 +31,12 @@ import java.util.Set;
 @RestController
 @Api(description = "结果管理")
 @RequestMapping("/api/test_result")
+@Validated
 public class TestResultController {
 
     @Autowired
     private TestResultService testResultService;
 
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     /**
      * 组合查询带分页查询结果
@@ -44,10 +46,10 @@ public class TestResultController {
     @PostMapping("/findResult/{current}/{size}")
     @ApiOperation("组合查询带分页查询结果")
     public ResultModel findResult(@ApiParam(name = "current",value = "当前页")
-                                      @PathVariable int current,
+                                      @PathVariable Integer current,
                                   @ApiParam(name = "size",value = "数量")
-                                  @PathVariable int size,
-                                  @RequestBody TestResultQueryVo testResultQueryVo) throws Exception {
+                                  @PathVariable Integer size,
+                                  @RequestBody TestResultQueryVo testResultQueryVo){
         Page<TestResult> resultPage = testResultService.findResult(current,size,testResultQueryVo);
         List<TestResultDto> testResultDtos = new ArrayList<>();
         resultPage.getRecords().stream().forEach(testResult -> {
@@ -55,7 +57,25 @@ public class TestResultController {
             BeanUtils.copyProperties(testResult,testResultDto);
             testResultDtos.add(testResultDto);
         });
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultDtos).data(HttpConstant.RESPONSE_STR_TOTAL,resultPage.getTotal());
+        return ResultModel.ok()
+                .data(HttpConstant.RESPONSE_STR_LIST,testResultDtos)
+                .data(HttpConstant.RESPONSE_STR_TOTAL,resultPage.getTotal());
+    }
+
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    @GetMapping ("/findResultInfoList/{resultId}/{sort}")
+    @ApiOperation("结果id查询出所有结果详情")
+    public ResultModel findResultInfoList(@ApiParam(name = "resultId",value = "结果id")
+                                  @PathVariable String resultId,
+                                          @ApiParam(name = "sort",value = "排序方式")
+                                          @Range(max = 2, min = 1,message="排序方式只能为1/2") @PathVariable Integer sort
+                                  ){
+        List<TestResultInfo> testResultInfoList = testResultService.findResultInfoList(resultId,sort);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultInfoList);
     }
 
     /**
@@ -129,11 +149,11 @@ public class TestResultController {
      * @return
      */
     @PostMapping("/saveResult/{configId}")
+    @CacheEvict(value = "test-result",key = "'log'")
     @ApiOperation("添加结果")
     public ResultModel saveResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
                                   @ApiParam(name = "testResultDto",value = "测试结构dto")
                                   @RequestBody TestResultDto testResultDto) throws Exception {
-        redisTemplate.delete("test-result::log");
         return testResultService.saveResult(configId,testResultDto) == true ? ResultModel.ok(): ResultModel.error();
     }
 

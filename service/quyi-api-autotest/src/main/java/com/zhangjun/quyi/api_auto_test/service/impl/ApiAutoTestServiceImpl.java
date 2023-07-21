@@ -50,7 +50,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @param caseList
      */
     @Override
-    public void runCase(ArrayList<String> caseList,String configId) throws Exception {
+    public void runCase(List<ApiTestCaseEntity> caseList,String configId) throws Exception {
         // 更新配置文件
         ResultModel configResultModel = testConfigApi.getConfigPath();
         updateFile(configId,configResultModel);
@@ -66,25 +66,11 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         }else
             PythonScriptUtil
                     .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
+        Thread.sleep(5000);
         this.addOrUpdateResult(configId,caseList);   // 添加或者更新结果
     }
 
 
-    /**
-     * 执行指定配置的用例
-     * @param caseName
-     * @param configId
-     * @throws IOException
-     */
-    @Override
-    public void runCase(String caseName, String configId) throws IOException {
-        logger.info("用例:" + caseName + " 执行了......");
-        logger.info("使用的配置为：" + configId);
-        // 更新配置文件
-        ResultModel configResultModel = testConfigApi.getConfigPath();
-        // pytest -vs --html=d:/report/report.html --capture=sys -p no:warnings -k "test_case_register_errel2 or test_case_register_errel1" testsa.py
-        updateFile(configId,configResultModel);
-    }
 
     /**
      * 获取所有用例
@@ -156,8 +142,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * 添加或者修改结果
      * @throws IOException
      */
-    private void addOrUpdateResult(String configId,ArrayList<String> caseList) throws Exception {
-        logger.info("执行 addOrUpdateResult method");
+    private void addOrUpdateResult(String configId,List<ApiTestCaseEntity> caseList) throws Exception {
         // 结果写入库
         ResultModel resultModel = testConfigApi.getConfigPath();
         String apiRunTimePath = (String)resultModel.getData().get("apiRunTimePath");
@@ -171,9 +156,9 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         try {
             for (int i = 0;i<caseList.size();++i){
                 TestResultDto testResultDto = new TestResultDto();
-                testResultDto.setCase_name(caseList.get(i));
+                testResultDto.setCase_name(caseList.get(i).getCaseName());
                 testResultDto.setCase_type("api");
-                if (jsonNodes.get(i).get("case_name").asText().equals(caseList.get(i))){
+                if (jsonNodes.get(i).get("case_name").asText().equals(caseList.get(i).getCaseName())){
                     boolean run_result = Boolean.valueOf(jsonNodes.get(i).get("run_result").asText());
                     Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_begin_time").asText());
                     Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_end_time").asText());
@@ -187,15 +172,9 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
                     testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
                     testResultDto.setLast_run_time(run_time);
                     testResultDto.setCase_title(jsonNodes.get(i).get("case_title").asText());
-                    System.out.println("111" + testResultDto);
-                    System.out.println("asText = " + jsonNodes.get(i).get("response_data").asText());
-                    System.out.println("toString = " + jsonNodes.get(i).get("response_data").toString());
-                    System.out.println("null = " + jsonNodes.get(i).get("response_data"));
-                    System.out.println("textValue = " + jsonNodes.get(i).get("response_data").textValue());
                     testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").toString(),Map.class));
                     logger.info("testResultDto = " + testResultDto);
-                    testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data");
-                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i)).getData().get("data"));
+                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get("data"));
                     JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
                     if (null == data || "null".equals(data))
                     {

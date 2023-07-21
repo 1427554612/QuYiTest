@@ -85,27 +85,13 @@ public class ApiAutoTestController {
     @PostMapping("/runCase/{configId}")
     @ApiOperation(value = "批量执行测试用例")
     public ResultModel runCase(@ApiParam(name = "caseList",value = "测试用例名称列表")
-                                @RequestBody ArrayList<String> caseList,
+                                @RequestBody List<ApiTestCaseEntity> caseList,
                                @ApiParam(name = "configId",value = "全局配置id")
                                @PathVariable String configId) throws Exception {
         apiAutoTestService.runCase(caseList,configId);
         return ResultModel.ok();
     }
 
-    /**
-     * 执行指定名称的用例
-     * @param caseName
-     * @return
-     */
-    @GetMapping("/runCase/{caseName}/{configId}")
-    @ApiOperation(value = "执行指定id的测试用例")
-    public ResultModel runCase(@ApiParam(name = "caseName",value = "测试用例名称")
-                               @PathVariable String caseName,
-                               @ApiParam(name = "configId",value = "配置id")
-                               @PathVariable String configId) throws IOException {
-        apiAutoTestService.runCase(caseName,configId);
-        return ResultModel.ok();
-    }
 
     /**
      * 上传文件到本地

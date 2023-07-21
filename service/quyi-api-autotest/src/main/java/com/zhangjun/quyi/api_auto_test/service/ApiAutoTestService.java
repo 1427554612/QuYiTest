@@ -17,14 +17,9 @@ public interface ApiAutoTestService {
      * 执行列表中所有的用例
      * @param caseList
      */
-    void runCase(ArrayList<String> caseList,String configId) throws Exception;
+    void runCase(List<ApiTestCaseEntity> caseList,String configId) throws Exception;
 
 
-    /**
-     * 执行指定名称的用例
-     * @param caseName
-     */
-    void runCase(String caseName, String configId) throws IOException;
 
 
     /**

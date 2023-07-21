@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.resultVo.DataTree;
 import com.zhangjun.quyi.test_result.entity.TestResult;
+import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 
@@ -60,4 +61,12 @@ public interface TestResultService extends IService<TestResult> {
      * 清空所有结果和统计数据
      */
     void deleteAllResult();
+
+    /**
+     * 结果id查询出所有结果详情
+     * @param resultId：结果id
+     * @param sort：排序方式 1、正序、2、倒叙
+     * @return
+     */
+    List<TestResultInfo> findResultInfoList(String resultId, Integer sort);
 }

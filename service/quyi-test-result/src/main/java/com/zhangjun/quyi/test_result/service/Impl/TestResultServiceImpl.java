@@ -103,6 +103,7 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         return resultPage;
     }
 
+
     /**
      * 修改测试结果
      * @param testResultDto
@@ -245,6 +246,22 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
         testResultInfoService.remove(null);
         testResultTempInfoService.remove(null);
         this.remove(null);
+    }
+
+
+    /**
+     * 结果id查询出所有结果详情
+     * @param resultId：结果id
+     * @param sort：排序方式 1、正序、2、倒叙
+     * @return
+     */
+    @Override
+    public List<TestResultInfo> findResultInfoList(String resultId, Integer sort) {
+        QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("result_id",resultId);
+        if (sort==1)queryWrapper.orderByAsc("run_begin_time");
+        else queryWrapper.orderByDesc("run_begin_time");
+        return testResultInfoService.list(queryWrapper);
     }
 
 
