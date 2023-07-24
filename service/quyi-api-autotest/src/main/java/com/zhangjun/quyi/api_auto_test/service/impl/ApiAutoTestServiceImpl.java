@@ -14,7 +14,7 @@ import com.zhangjun.quyi.api_auto_test.util.EasyExcelUtil;
 import com.zhangjun.quyi.api_auto_test.util.PythonScriptUtil;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.constans.StrConstant;
-import com.zhangjun.quyi.service_base.websocket.WebSocketServer;
+import com.zhangjun.quyi.enums.CaseTypeEnum;
 import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 
@@ -79,9 +79,9 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     @Override
     public List<ApiTestCaseEntity> selectAllCase() throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
-        String configPath = (String)resultModel.getData().get("configPath");
+        String configPath = (String)resultModel.getData().get(HttpConstant.API_STR_CONFIG_PATH);
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
-        String excelPath  = jsonNode.get("excelPath").textValue();
+        String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
         List<ApiTestCaseEntity> apiTestCaseEntities = EasyExcelUtil.readExcel(new ApiTestCaseEntity(), excelPath);
         return apiTestCaseEntities;
     }
@@ -95,9 +95,9 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     @Override
     public void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
-        String configPath = (String)resultModel.getData().get("configPath");
+        String configPath = (String)resultModel.getData().get(HttpConstant.API_STR_CONFIG_PATH);
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
-        String excelPath  = jsonNode.get("excelPath").textValue();
+        String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
         EasyExcelUtil.exportExcel(ApiTestCaseEntity.class,testCaseEntitys,excelPath);
     }
 
@@ -157,24 +157,29 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
             for (int i = 0;i<caseList.size();++i){
                 TestResultDto testResultDto = new TestResultDto();
                 testResultDto.setCase_name(caseList.get(i).getCaseName());
-                testResultDto.setCase_type("api");
-                if (jsonNodes.get(i).get("case_name").asText().equals(caseList.get(i).getCaseName())){
-                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get("run_result").asText());
-                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_begin_time").asText());
-                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get("run_end_time").asText());
-                    int run_time = jsonNodes.get(i).get("run_time").asInt();
+                testResultDto.setCase_type(CaseTypeEnum.API.value);
+                String case_name = jsonNodes.get(i).get(HttpConstant.API_STR_CASE_NAME).asText();
+                String caseName = caseList.get(i).getCaseName();
+                System.out.println("case_name = " + case_name);
+                System.out.println("caseName = " + caseName);
+                if (case_name.equals(caseName)){
+                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_RESULT).asText());
+                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_BEGIN_TIME).asText());
+                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_END_TIME).asText());
+                    int run_time = jsonNodes.get(i).get(HttpConstant.API_STR_RUN_TIME).asInt();
                     TestResultInfo testResultInfo = new TestResultInfo();
                     testResultInfo.setRun_result(run_result);
                     testResultInfo.setRun_begin_time(beginTime);
                     testResultInfo.setRun_end_time(endTime);
                     testResultInfo.setRun_time(run_time);
+                    testResultInfo.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
                     testResultDto.getTestResultInfoList().add(testResultInfo);
                     testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
                     testResultDto.setLast_run_time(run_time);
-                    testResultDto.setCase_title(jsonNodes.get(i).get("case_title").asText());
-                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get("response_data").toString(),Map.class));
+                    testResultDto.setCase_title(jsonNodes.get(i).get(HttpConstant.API_STR_CASE_TITLE).asText());
+                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
                     logger.info("testResultDto = " + testResultDto);
-                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get("data"));
+                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get(HttpConstant.RESPONSE_STR_DATA));
                     JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
                     if (null == data || "null".equals(data))
                     {
