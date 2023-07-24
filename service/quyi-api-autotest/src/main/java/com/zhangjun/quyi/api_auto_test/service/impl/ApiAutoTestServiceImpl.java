@@ -79,7 +79,8 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     @Override
     public List<ApiTestCaseEntity> selectAllCase() throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
-        String configPath = (String)resultModel.getData().get(HttpConstant.API_STR_CONFIG_PATH);
+        String configPath = (String)resultModel.getData().get("configPath");
+        System.out.println(configPath);
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
         String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
         List<ApiTestCaseEntity> apiTestCaseEntities = EasyExcelUtil.readExcel(new ApiTestCaseEntity(), excelPath);
@@ -95,7 +96,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     @Override
     public void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
-        String configPath = (String)resultModel.getData().get(HttpConstant.API_STR_CONFIG_PATH);
+        String configPath = (String)resultModel.getData().get("configPath");
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
         String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
         EasyExcelUtil.exportExcel(ApiTestCaseEntity.class,testCaseEntitys,excelPath);
