@@ -40,7 +40,7 @@ public interface ApiAutoTestService {
 
     /**
      * 操作接口测试用例
-     * @param testCaseEntity
+     * @param
      */
     void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException;
 

@@ -6,6 +6,7 @@ import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.controller.ApiAutoTestController;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
+import com.zhangjun.quyi.api_auto_test.entity.TestConfigInfo;
 import com.zhangjun.quyi.api_auto_test.entity.TestResult;
 import com.zhangjun.quyi.api_auto_test.entity.TestResultInfo;
 import com.zhangjun.quyi.api_auto_test.entity.dto.TestResultDto;
@@ -45,6 +46,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     private TestResultApi testResultApi;
 
 
+
     /**
      * 批量执行
      * @param caseList
@@ -56,6 +58,12 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         updateFile(configId,configResultModel);
         String pythonProjectPath = (String)configResultModel.getData().get("pythonProjectPath");
         String reportPath = (String)configResultModel.getData().get(StrConstant.REPORT_PATH);
+
+        TestConfigInfo testConfigInfo = new TestConfigInfo();
+        testConfigInfo.setConfigId(configId);
+        System.out.println("configId = " + configId);
+        ResultModel resultModel = testConfigApi.saveTestConfigInfo(testConfigInfo);
+
 
         ResultModel apiCaseResultModel = apiAutoTestController.selectAllCase();
         List<ApiTestCaseEntity> allCaseList = (List<ApiTestCaseEntity>)apiCaseResultModel.getData().get(HttpConstant.RESPONSE_STR_LIST);

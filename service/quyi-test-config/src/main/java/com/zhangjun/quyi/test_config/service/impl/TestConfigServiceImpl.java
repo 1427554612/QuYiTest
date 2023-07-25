@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_config.entity.TestConfig;
 import com.zhangjun.quyi.test_config.entity.vo.TestConfigQueryVo;
@@ -41,7 +42,7 @@ public class TestConfigServiceImpl extends ServiceImpl<TestConfigMapper, TestCon
     public TestConfig saveConfig(TestConfig testConfig){
         if(this.save(testConfig)==false) throw new ExceptionEntity(20001,"添加配置失败....");
         QueryWrapper<TestConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("config_name",testConfig.getConfigName());
+        queryWrapper.eq(HttpConstant.API_STR_CONFIG_NAME,testConfig.getConfigName());
         return this.getOne(queryWrapper);
     }
 
@@ -62,13 +63,13 @@ public class TestConfigServiceImpl extends ServiceImpl<TestConfigMapper, TestCon
         Date endTime = testConfigQueryVo.getEndTime();
         String updateUp = testConfigQueryVo.getUpdateUp();
         QueryWrapper wrapper = new QueryWrapper<TestConfig>();
-        if (!StringUtils.isEmpty(configId)) wrapper.eq("config_id",configId);
-        if (!StringUtils.isEmpty(configName)) wrapper.eq("config_name",configName);
-        if (!StringUtils.isEmpty(configType)) wrapper.eq("config_type",configType);
-        if (null!=beginTime) wrapper.le("create_time",beginTime);
-        if (null!=endTime) wrapper.ge("create_time",endTime);
+        if (!StringUtils.isEmpty(configId)) wrapper.eq(HttpConstant.API_STR_CONFIG_ID,configId);
+        if (!StringUtils.isEmpty(configName)) wrapper.eq(HttpConstant.API_STR_CONFIG_NAME,configName);
+        if (!StringUtils.isEmpty(configType)) wrapper.eq(HttpConstant.API_STR_CONFIG_TYPE,configType);
+        if (null!=beginTime) wrapper.le(HttpConstant.API_STR_CREATE_TIME,beginTime);
+        if (null!=endTime) wrapper.ge(HttpConstant.API_STR_CREATE_TIME,endTime);
         if (!StringUtils.isEmpty(updateUp)) wrapper.eq("update_up",updateUp);
-        wrapper.orderByDesc("create_time");
+        wrapper.orderByDesc(HttpConstant.API_STR_CREATE_TIME);
         IPage resultPage = this.page(page, wrapper);
         resultPage.getRecords().stream().forEach(item->{
             try {

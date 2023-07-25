@@ -1,8 +1,6 @@
 package com.zhangjun.quyi.enums;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zhangjun.quyi.utils.JsonUtil;
 
 /**
  * 接口类型枚举

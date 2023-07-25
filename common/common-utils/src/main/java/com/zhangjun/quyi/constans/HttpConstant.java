@@ -34,6 +34,12 @@ public interface HttpConstant {
     public static final String API_STR_RUN_RESULT = "run_result";
     public static final String API_STR_CONFIG_PATH = "config_path";
     public static final String API_STR_EXCEL_PATH = "excelPath";
+    public static final String API_STR_CREATE_TIME = "create_time";
+    public static final String API_STR_CONFIG_ID = "config_id";
+    public static final String API_STR_CONFIG_NAME = "config_name";
+    public static final String API_STR_CONFIG_TYPE = "config_type";
+
+
 
 
 

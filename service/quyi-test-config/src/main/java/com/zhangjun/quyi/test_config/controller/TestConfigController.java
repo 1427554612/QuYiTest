@@ -4,8 +4,10 @@ package com.zhangjun.quyi.test_config.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_config.entity.TestConfig;
+import com.zhangjun.quyi.test_config.entity.TestConfigInfo;
 import com.zhangjun.quyi.test_config.entity.vo.TestConfigQueryVo;
 import com.zhangjun.quyi.test_config.mapper.TestConfigMapper;
+import com.zhangjun.quyi.test_config.service.TestConfigInfoService;
 import com.zhangjun.quyi.test_config.service.TestConfigService;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
@@ -42,6 +44,9 @@ public class TestConfigController {
 
     @Autowired
     private TestConfigService testConfigService;
+
+    @Autowired
+    private TestConfigInfoService testConfigInfoService;
 
     @Value("${python.config.path}")
     private String configPath;
@@ -161,7 +166,8 @@ public class TestConfigController {
                 .data("reportPath", reportPath)
                 .data("pythonProjectPath", pythonProjectPath)
                 .data("apiRunTimePath", pythonApiRuntimePath)
-                .data("proxyConfigPath",proxyConfigPath);
+                .data("proxyConfigPath",proxyConfigPath)
+                .data("configData",this.findTestConfigInfo().getData());
     }
 
 
@@ -179,6 +185,31 @@ public class TestConfigController {
                                         @PathVariable String configId){
         return ResultModel.ok().data("testConfig",testConfigService.getById(configId));
     }
+
+    /**
+     * 保存配置详情
+     * @return
+     */
+    @PostMapping("/saveTestConfigInfo")
+    @ApiOperation(value = "保存最新配置详情")
+    public ResultModel saveTestConfigInfo(@ApiParam(name = "testConfigInfo",value = "配置详情对象")
+                                          @RequestBody TestConfigInfo testConfigInfo){
+        TestConfigInfo resultConfigInfo = testConfigInfoService.saveTestConfigInfo(testConfigInfo);
+        return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
+    }
+
+    /**
+     * 查询最新一条详情
+     * @return
+     */
+    @GetMapping("/findTestConfigInfo")
+    @ApiOperation(value = "保存最新配置详情")
+    public ResultModel findTestConfigInfo(){
+        TestConfigInfo resultConfigInfo = testConfigInfoService.findTestConfigInfo();
+        return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
+    }
+
+
 
 
 }
