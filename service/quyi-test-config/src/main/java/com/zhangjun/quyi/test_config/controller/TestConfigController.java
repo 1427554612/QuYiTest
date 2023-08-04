@@ -2,6 +2,7 @@ package com.zhangjun.quyi.test_config.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_config.entity.TestConfig;
 import com.zhangjun.quyi.test_config.entity.TestConfigInfo;
@@ -140,7 +141,7 @@ public class TestConfigController {
      * @return
      */
     @PostMapping("/selectConfig/{current}/{size}")
-    @Cacheable(value = "TestConfig",key = "'page_' +#current+'_'+#size",cacheManager = "cacheManager1Hour")
+//    @Cacheable(value = "TestConfig",key = "'page_' +#current+'_'+#size",cacheManager = "cacheManager1Hour")
     @ApiOperation(value = "分页组合条件查询")
     public ResultModel selectConfig(@ApiParam(name = "current",value = "当前页")
                                         @PathVariable Integer current,
@@ -148,8 +149,8 @@ public class TestConfigController {
                                         @PathVariable Integer size,
                                         @ApiParam(name = "testConfigController",value = "查询vo对象")
                                         @Validated @RequestBody TestConfigQueryVo testConfigQueryVo){
-        List<TestConfig> testConfigs = testConfigService.selectConfig(current,size,testConfigQueryVo);
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testConfigs).data(HttpConstant.RESPONSE_STR_TOTAL,testConfigs.size());
+        IPage iPage = testConfigService.selectConfig(current,size,testConfigQueryVo);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,iPage.getRecords()).data(HttpConstant.RESPONSE_STR_TOTAL,iPage.getTotal());
     }
 
     /**
@@ -194,6 +195,7 @@ public class TestConfigController {
     @ApiOperation(value = "保存最新配置详情")
     public ResultModel saveTestConfigInfo(@ApiParam(name = "testConfigInfo",value = "配置详情对象")
                                           @RequestBody TestConfigInfo testConfigInfo){
+        System.out.println("testConfigInfo = " + testConfigInfo);
         TestConfigInfo resultConfigInfo = testConfigInfoService.saveTestConfigInfo(testConfigInfo);
         return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
     }
@@ -208,7 +210,6 @@ public class TestConfigController {
         TestConfigInfo resultConfigInfo = testConfigInfoService.findTestConfigInfo();
         return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
     }
-
 
 
 

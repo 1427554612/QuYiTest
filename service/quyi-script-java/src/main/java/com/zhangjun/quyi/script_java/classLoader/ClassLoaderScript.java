@@ -1,10 +1,7 @@
-package com.zhangjun.quyi.script_java.script;
+package com.zhangjun.quyi.script_java.classLoader;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class ClassLoaderScript {
 

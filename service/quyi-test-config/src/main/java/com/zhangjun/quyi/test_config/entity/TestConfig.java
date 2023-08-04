@@ -42,7 +42,7 @@ public class TestConfig implements Serializable {
 
     @ApiModelProperty(value = "配置名称")
     @NotNull(message = "配置名称不能为空")
-    @Length(min = 3,max = 20,message = "字符串长度在3到20之间")
+    @Length(min = 3,max = 100,message = "字符串长度在3到50之间")
     private String configName;
 
     @ApiModelProperty(value = "配置参数")

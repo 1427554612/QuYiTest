@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.test_config.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhangjun.quyi.test_config.entity.TestConfig;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhangjun.quyi.test_config.entity.vo.TestConfigQueryVo;
@@ -23,7 +24,7 @@ public interface TestConfigService extends IService<TestConfig> {
      * @param testConfigQueryVo
      * @return
      */
-    List<TestConfig> selectConfig(Integer current, Integer size, TestConfigQueryVo testConfigQueryVo);
+    IPage selectConfig(Integer current, Integer size, TestConfigQueryVo testConfigQueryVo);
 
     /**
      * 添加配置

@@ -104,12 +104,13 @@ public class RequestUtil {
      * @param requestBody
      * @return
      */
-    public static String sendPost(String ip,String requestBody) throws Exception {
+    public static String sendPost(String ip,String requestBody) throws IOException {
         okhttp3.RequestBody body = okhttp3.RequestBody.create(MediaType.parse("application/json; charset=utf-8"),requestBody);
         Request request = new Request.Builder().url(ip)
                 .addHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36")
                 .method("POST",body).build();
-        return RequestUtil.client.newCall(request).execute().body().string();
+        String response = RequestUtil.client.newCall(request).execute().body().string();
+        return response;
     }
 
     /**

@@ -1,10 +1,13 @@
-package com.zhangjun.quyi.script_java;
+package com.zhangjun.quyi.script_java.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.utils.JsonUtil;
 
 import java.util.HashMap;
 
+/**
+ * JackSon解析
+ */
 public class JsonScript {
 
     public static void main(String[] args) throws JsonProcessingException {

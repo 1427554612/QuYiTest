@@ -54,7 +54,7 @@ public class TestConfigServiceImpl extends ServiceImpl<TestConfigMapper, TestCon
      * @return
      */
     @Override
-    public List<TestConfig> selectConfig(Integer current, Integer size, TestConfigQueryVo testConfigQueryVo) {
+    public IPage selectConfig(Integer current, Integer size, TestConfigQueryVo testConfigQueryVo) {
         Page<TestConfig> page = new Page<>(current,size);
         String configId = testConfigQueryVo.getConfigId();
         String configName = testConfigQueryVo.getConfigName();
@@ -71,13 +71,6 @@ public class TestConfigServiceImpl extends ServiceImpl<TestConfigMapper, TestCon
         if (!StringUtils.isEmpty(updateUp)) wrapper.eq("update_up",updateUp);
         wrapper.orderByDesc(HttpConstant.API_STR_CREATE_TIME);
         IPage resultPage = this.page(page, wrapper);
-        resultPage.getRecords().stream().forEach(item->{
-            try {
-                logger.info(JsonUtil.objectMapper.writeValueAsString(item));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        });
-        return resultPage.getRecords();
+        return resultPage;
     }
 }
