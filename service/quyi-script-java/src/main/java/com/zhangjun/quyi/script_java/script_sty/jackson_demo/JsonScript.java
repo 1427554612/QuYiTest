@@ -18,5 +18,6 @@ public class JsonScript {
         System.out.println(JsonUtil.objectMapper.writeValueAsString(hashMap));
         System.out.println("增加一行测试代码");
         System.out.println("增加一行测试代码");
+        System.out.println("增加一行代码");
     }
 }
