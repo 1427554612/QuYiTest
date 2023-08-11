@@ -58,7 +58,7 @@ public interface PressureConstant {
     /**
      * 基础url
      */
-    public static final String BASE_CLIENT_URL = MEXLUCKY_RPE_CLIENT_URL;
+    public static final String BASE_CLIENT_URL = PHILUCKY_PRE_CLIENT_URL;
     public static final String BASE_ADMIN_URL = PHILUCKY_PRE_ADMIN_URL;
 
 

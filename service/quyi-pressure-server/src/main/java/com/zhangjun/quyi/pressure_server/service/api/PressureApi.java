@@ -18,7 +18,7 @@ import java.util.Map;
 public class PressureApi {
 
     public static Integer amount = 10000;  // 充值金额
-    public static final String CODE  = "EAB4042A2C12987D433A4FB41";   // 兑换码
+    public static final String CODE  = "8A4935504E8068638DAA5F555";   // 兑换码
 
     /**
      * 注册-不带邀请码
@@ -62,13 +62,22 @@ public class PressureApi {
      * @return
      */
     public static ThreadRunVo userCodeApi(RequestParamEntity entity,Map<String,String> paramsMap) throws IOException {
+        ExchangeCode exchangeCode = null;
+        Request request = null;
+        String bodyString = null;
+        long st = 0l;
+        long ed = 0l;
+        for(int i = 0;i<100;++i){
+            // 兑换码
+            exchangeCode = new ExchangeCode(CODE,paramsMap.get("token"),paramsMap.get("_id"));
+            request = RequestUtil.getRequest("/api/v1/coupon/number/use", entity, exchangeCode, PressureConstant.REQUEST_TYPE_POST,null);
+            st = System.currentTimeMillis();
+            Response response = RequestUtil.client.newCall(request).execute();
+            ed = System.currentTimeMillis();
+            bodyString = response.body().string();
+            System.out.println("code is use : " + bodyString + ",id is : " + paramsMap.get("_id"));
+        }
         // 兑换码
-        ExchangeCode exchangeCode = new ExchangeCode(CODE,paramsMap.get("token"),paramsMap.get("_id"));
-        Request request = RequestUtil.getRequest("/api/v1/coupon/number/use", entity, exchangeCode, PressureConstant.REQUEST_TYPE_POST,null);
-        long st = System.currentTimeMillis();
-        Response response = RequestUtil.client.newCall(request).execute();
-        long ed = System.currentTimeMillis();
-        String bodyString = response.body().string();
         return VoSettingUtil.setThreadRunVo(st,ed,Thread.currentThread().getName(),bodyString,"code",0,null,"data");
     }
 

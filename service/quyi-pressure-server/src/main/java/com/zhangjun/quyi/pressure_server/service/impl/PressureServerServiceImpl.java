@@ -254,7 +254,7 @@ public class PressureServerServiceImpl implements PressureServerService {
     public static void main(String[] args) throws Exception {
         RequestParamEntity requestParamEntity = new RequestParamEntity();
         requestParamEntity.setRequestUrl(PressureConstant.BASE_CLIENT_URL);
-        requestParamEntity.setRequestNumber(100);// 线程用户数
+        requestParamEntity.setRequestNumber(1000);// 线程用户数
         requestParamEntity.setIps(Arrays.asList("192.168.5.12:8057"));
         new PressureServerServiceImpl().testUserCode(requestParamEntity);
 

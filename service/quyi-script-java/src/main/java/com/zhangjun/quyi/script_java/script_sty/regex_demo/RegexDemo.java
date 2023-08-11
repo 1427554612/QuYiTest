@@ -1,7 +1,9 @@
-package com.zhangjun.quyi.script_java.regex;
+package com.zhangjun.quyi.script_java.script_sty.regex_demo;
 
-import org.python.antlr.ast.Str;
+import org.codehaus.commons.compiler.CompileException;
+import org.codehaus.janino.ScriptEvaluator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,16 +47,28 @@ public class RegexDemo {
         return newText;
     }
 
-    public static void main(String[] args) {
-        String body = "{\n" +
-                "  \"configData\": {\"demo\":\"test\"},\n" +
-                "  \"configMark\": \"string\",\n" +
-                "  \"configName\": \"@thread@_@uuid@_@time@\",\n" +
-                "  \"configType\": \"api\",\n" +
-                "  \"updateUp\": \"张军\"\n" +
-                "}";
-        String rex = "@(.*?)@";
-        String replace = RegexDemo.replace(rex, body);
-        System.out.println(replace);
+    public static void test_script() throws Exception {
+        String code = "import com.zhangjun.quyi.script_java.script_sty.janino_class_demo.provader.ClassProvader;" +
+                "String name = \"zhangjun\";"+
+                "int i = 10;"+
+                "new ClassProvader().hasParams(name,i);";
+        ScriptEvaluator scriptEvaluator = new ScriptEvaluator();
+        scriptEvaluator.cook(code);
+        Object evaluate = scriptEvaluator.evaluate(null);
+        System.out.println(evaluate);
+    }
+
+    public static void main(String[] args) throws Exception {
+//        String body = "{\n" +
+//                "  \"configData\": {\"demo\":\"test\"},\n" +
+//                "  \"configMark\": \"string\",\n" +
+//                "  \"configName\": \"@thread@_@uuid@_@time@\",\n" +
+//                "  \"configType\": \"api\",\n" +
+//                "  \"updateUp\": \"张军\"\n" +
+//                "}";
+//        String rex = "@(.*?)@";
+//        String replace = RegexDemo.replace(rex, body);
+//        System.out.println(replace);
+        test_script();
     }
 }

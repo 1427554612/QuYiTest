@@ -1,11 +1,10 @@
-package com.zhangjun.quyi.script_java.thread;
+package com.zhangjun.quyi.script_java.script_sty.thread_demo;
 
-import com.zhangjun.quyi.script_java.regex.RegexDemo;
+import com.zhangjun.quyi.script_java.script_sty.regex_demo.RegexDemo;
 import com.zhangjun.quyi.utils.RequestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.*;
 
 /**
@@ -24,19 +23,15 @@ public class ApiThreadEntity implements Callable {
 
 
     @Override
-    public Object call(){
+    public Object call() throws Exception {
         if (this.body.contains("@")){
             this.body = RegexDemo.replace("@(.*?)@", body);
         }
-        System.out.println(this.body);
         long st = System.currentTimeMillis();
         String s = null;
-        try {
-            s = runApi(url, body);
-            System.out.println(s);
-        }catch (Exception e){
-            System.out.println(e);
-        }
+        s = runApi(url, body);
+        System.out.println(s);
+        int i = 10/0;
         countDownLatch.countDown();
         return Thread.currentThread().getName() + ", is run"  + ", time = " + (System.currentTimeMillis() - st + ",response = " + s);
     }
@@ -50,26 +45,24 @@ public class ApiThreadEntity implements Callable {
 
     public static void main(String[] args) throws Exception {
         long l = System.currentTimeMillis();
-        int Number = 100;
+        int Number = 1000;
         ApiThreadEntity.countDownLatch = new CountDownLatch(Number);
         RequestUtil.setOkhttpClient(Number,10000);
         ExecutorService executorService = Executors.newFixedThreadPool(Number/20);
-        String url = "http://192.168.5.213:8002/api/test_config/saveTestConfig";
+        String url = "https://api.philucky.com/api/v1/coupon/number/use";
         String body = "{\n" +
-                "  \"configData\": {\"demo\":\"test\"},\n" +
-                "  \"configMark\": \"string\",\n" +
-                "  \"configName\": \"@thread@_@uuid@_@time@\",\n" +
-                "  \"configType\": \"api\",\n" +
-                "  \"updateUp\": \"张军\"\n" +
+                "    \"number\": \"20230810test\",\n" +
+                "    \"token\": \"8aa4fd1a448140ee96c418de642495ee\",\n" +
+                "    \"user_id\": \"64a6821aa97a93c9568806de\"\n" +
                 "}";
         for (int i = 0; i < Number; i++) {
             futureList.add(executorService.submit(new ApiThreadEntity(url,body)));
         }
         countDownLatch.await();
         long e = System.currentTimeMillis();
-        for (Future future : futureList) {
-            System.out.println(future.get());
-        }
+//        for (Future future : futureList) {
+//            System.out.println(future.get());
+//        }
         System.out.println("总耗时:" + (e -l));
         executorService.shutdownNow();
     }
