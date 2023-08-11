@@ -17,5 +17,6 @@ public class JsonScript {
         HashMap<String,Object> hashMap = JsonUtil.objectMapper.readValue(json, HashMap.class);
         System.out.println(JsonUtil.objectMapper.writeValueAsString(hashMap));
         System.out.println("增加一行测试代码");
+        System.out.println("增加一行测试代码");
     }
 }
