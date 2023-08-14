@@ -112,10 +112,13 @@
 
 <!--    &lt;!&ndash;此配置优先级 appender>logger>root&ndash;&gt;-->
 <!--    <logger name="com.example.demo.MyController" level="trace"/>-->
-
-    <springProfile name="dev">
+    <!--
+        环境配置使用日志级别
+    -->
+    <springProfile name="dev,test">
         <!--可以输出项目中的debug日志，包括mybatis的sql日志-->
-        <logger name="com.quyi" level="INFO" />
+        <logger name="com.zhangjun.quyi" level="INFO" />
+        <logger name="com.zhangjun.quyi" level="DEBUG" />
         <root level="info">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="DEBUG_FILE"/>
@@ -123,7 +126,8 @@
             <appender-ref ref="ERROR_FILE"/>
         </root>
     </springProfile>
-    <springProfile name="test,prod">
+
+    <springProfile name="prod">
         <root level="TRACE">
             <appender-ref ref="INFO_FILE"/>
             <appender-ref ref="WARN_FILE"/>

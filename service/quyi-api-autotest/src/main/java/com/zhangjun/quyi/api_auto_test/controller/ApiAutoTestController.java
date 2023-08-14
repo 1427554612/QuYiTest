@@ -57,7 +57,6 @@ public class ApiAutoTestController {
      */
     @GetMapping("/selectAllCase")
     @ApiOperation(value = "获取所有用例")
-    @Cacheable(value = "TestCase",key = "'list'",cacheManager = "cacheManager10Second")
     public ResultModel selectAllCase() throws Exception {
         List<ApiTestCaseEntity> caseList = apiAutoTestService.selectAllCase();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,caseList);
@@ -67,7 +66,6 @@ public class ApiAutoTestController {
 
     // 添加或更新用例
     @PutMapping("/editCase")
-    @CacheEvict(value = "TestCase",key = "'list'")
     @ApiOperation(value = "操作用例")
     public ResultModel editApiTestCase(@ApiParam(name = "testCaseEntitys",value = "测试用例列表")
                                        @RequestBody List<ApiTestCaseEntity> testCaseEntitys) throws IOException {

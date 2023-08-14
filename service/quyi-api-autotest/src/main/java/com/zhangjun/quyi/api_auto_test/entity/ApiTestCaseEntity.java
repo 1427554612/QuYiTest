@@ -56,6 +56,14 @@ public class ApiTestCaseEntity {
     @Excel(name = "请求体")
     private Object requestBody;
 
+    @ApiModelProperty(value = "前置脚本")
+    @Excel(name = "前置脚本")
+    private String beforeScript;
+
+    @ApiModelProperty(value = "后置脚本")
+    @Excel(name = "后置脚本")
+    private String afterScript;
+
     @ApiModelProperty(value = "是否执行")
     @Excel(name = "是否执行")
     @NotNull(value = "必须填写是否执行")

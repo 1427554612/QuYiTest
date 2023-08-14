@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
+import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
 import com.zhangjun.quyi.api_auto_test.controller.ApiAutoTestController;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
 import com.zhangjun.quyi.api_auto_test.entity.TestConfigInfo;
@@ -23,6 +24,8 @@ import com.zhangjun.quyi.utils.ResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -67,15 +70,17 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
 
         ResultModel apiCaseResultModel = apiAutoTestController.selectAllCase();
         List<ApiTestCaseEntity> allCaseList = (List<ApiTestCaseEntity>)apiCaseResultModel.getData().get(HttpConstant.RESPONSE_STR_LIST);
-        // 执行所有
-        if (allCaseList.size() == caseList.size()){
-            PythonScriptUtil
-                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
-        }else
-            PythonScriptUtil
-                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
-        Thread.sleep(5000);
-        this.addOrUpdateResult(configId,caseList);   // 添加或者更新结果
+        ApiRunHandler.runApi(caseList,configId);
+//        // 执行所有
+//        if (allCaseList.size() == caseList.size()){
+//            ApiRunHandler.runApi(caseList,configId);
+//            PythonScriptUtil
+//                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
+//        }else
+//            PythonScriptUtil
+//                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
+//        Thread.sleep(5000);
+//        this.addOrUpdateResult(configId,caseList);   // 添加或者更新结果
     }
 
 
@@ -85,6 +90,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @return
      */
     @Override
+    @Cacheable(value = "TestCase",key = "'list'",cacheManager = "cacheManager3Minute")
     public List<ApiTestCaseEntity> selectAllCase() throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
         String configPath = (String)resultModel.getData().get("configPath");
@@ -102,7 +108,11 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @param testCaseEntitys
      */
     @Override
+    @CacheEvict(value = "TestCase",key = "'list'")
     public void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
+        for (ApiTestCaseEntity testCaseEntity : testCaseEntitys) {
+            System.out.println(testCaseEntity);
+        }
         ResultModel resultModel = testConfigApi.getConfigPath();
         String configPath = (String)resultModel.getData().get("configPath");
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));

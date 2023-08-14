@@ -51,7 +51,7 @@
       <module name="quyi-test-task" options="-parameters" />
       <module name="quyi-ui-autotest" options="-parameters" />
       <module name="quyi-user" options="-parameters" />
-      <module name="service" options="-parameters" />
+      <module name="service" options="" />
       <module name="service-base" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
     </option>
