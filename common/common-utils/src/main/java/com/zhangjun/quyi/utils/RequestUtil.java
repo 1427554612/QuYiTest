@@ -161,6 +161,47 @@ public class RequestUtil {
         return responseBody;
     }
 
+    /**
+     * 请求方法
+     * @param ip
+     * @param requestType
+     * @param requestBody
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    public static Object[] sendingRequest(String ip,String requestType,String requestBody,Map<String,Object> headers) throws IOException {
+        Request.Builder builder = new Request.Builder().url(ip);
+        Response response = null;
+        Request request = null;
+        // 请求和响应
+        Object[] netObjects = new Object[2];
+        if (null != headers) {
+            for (Map.Entry<String, Object> stringObjectEntry : headers.entrySet()) {
+                String key = stringObjectEntry.getKey();
+                builder.addHeader(key, (String) stringObjectEntry.getValue());
+            }
+        }
+        // 构建post请求
+        if (requestType.equals("POST")) {
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestBody);
+            request = builder.method("POST", body).build();
+            response = RequestUtil.client.newCall(request).execute();
 
+            // 构建get请求
+        } else if (requestType.equals("GET")) {
+            request = builder.build();
+            response = RequestUtil.client.newCall(request).execute();
+        } else if (requestType.equals("DELETE")) {
 
+        } else {
+
+        }
+        netObjects[0] = request;
+        netObjects[1] = response;
+        return netObjects;
     }
+
+
+
+}

@@ -90,13 +90,17 @@ public class TestConfigController {
         return ResultModel.ok().data("testConfig",testConfigService.saveConfig(testConfig));
     }
 
+
     /**
      * 删除测试配置
      * @param configId
      * @return
      */
     @DeleteMapping("/deleteTestConfig/{configId}")
-    @CacheEvict(value="TestConfig",key = "#configId")
+    @Caching(evict = {
+            @CacheEvict(value="TestConfig",key = "#configId"),
+            @CacheEvict(value = "TestConfig",key = "'list'")
+    })
     @ApiOperation(value = "删除测试配置")
     public ResultModel deleteTestConfig(@ApiParam(name = "configId",value = "配置id")
                                       @PathVariable String configId){
@@ -211,7 +215,6 @@ public class TestConfigController {
         TestConfigInfo resultConfigInfo = testConfigInfoService.findTestConfigInfo();
         return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
     }
-
 
 
 }

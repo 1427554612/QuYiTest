@@ -94,9 +94,12 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     public List<ApiTestCaseEntity> selectAllCase() throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
         String configPath = (String)resultModel.getData().get("configPath");
-        System.out.println(configPath);
+        logger.info("配置文件path：" + configPath);
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(new File(configPath));
+        logger.info("配置信息如下：" +jsonNode);
         String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
+        logger.info("用例文件path：" + excelPath);
+
         List<ApiTestCaseEntity> apiTestCaseEntities = EasyExcelUtil.readExcel(new ApiTestCaseEntity(), excelPath);
         return apiTestCaseEntities;
     }
