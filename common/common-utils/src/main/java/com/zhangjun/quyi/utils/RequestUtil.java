@@ -188,12 +188,15 @@ public class RequestUtil {
             request = builder.method("POST", body).build();
             response = RequestUtil.client.newCall(request).execute();
 
-            // 构建get请求
-        } else if (requestType.equals("GET")) {
+
+        }
+        else if (requestType.equals("GET")) {
             request = builder.build();
             response = RequestUtil.client.newCall(request).execute();
-        } else if (requestType.equals("DELETE")) {
-
+        }
+        else if (requestType.equals("DELETE")) {
+            request = builder.delete().build();
+            response =RequestUtil.client.newCall(request).execute();
         } else {
 
         }

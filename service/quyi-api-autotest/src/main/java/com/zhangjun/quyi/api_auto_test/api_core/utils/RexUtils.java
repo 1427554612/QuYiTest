@@ -1,8 +1,7 @@
 package com.zhangjun.quyi.api_auto_test.api_core.utils;
 
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
-
-import java.util.ArrayList;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsSymbolEnum;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -35,10 +34,10 @@ public class RexUtils {
     public static String getByCollection(String source, List<ApiParamsEntity> paramsEntityList){
         String target = source;
         while (true){
-            if (!target.contains("#") && !target.equals("")){
+            if (!target.contains(ParamsSymbolEnum.DIV_PARAMS_SYMBOL.symbol) && !target.equals("")){
                 return target;
             }
-            target = forReplace(target,paramsEntityList);
+            target = forReplace("#(.*?)#",target,paramsEntityList);
         }
     }
 
@@ -48,11 +47,11 @@ public class RexUtils {
      * @param paramsEntityList
      * @return
      */
-    private static String forReplace(String source, List<ApiParamsEntity> paramsEntityList){
+    private static String forReplace(String rex ,String source, List<ApiParamsEntity> paramsEntityList){
         String target = "";
         String byRex = "";
         for (ApiParamsEntity apiParamsEntity : paramsEntityList) {
-            byRex = getByRex("#(.*?)#", source);
+            byRex = getByRex(rex, source);
             // 找到匹配的对象
             if (byRex.equals(apiParamsEntity.getParamName())){
                 target = source.replace("#"+byRex+"#",apiParamsEntity.getParamValue());
@@ -96,20 +95,12 @@ public class RexUtils {
 
 
 
-    public static void main(String[] args) throws Exception {
-//        String body = "{\"message\":\"成功\",\"code\":20000,\"data\":{\"testConfig\":{\"configId\":\"1691052557096472577\",\"configName\":\"wzzss\",\"configData\":{},\"configType\":\"string\",\"createTime\":\"2023-08-14 19:42:02\",\"updateTime\":\"2023-08-14 19:42:02\",\"updateUp\":\"string\",\"configMark\":\"sdasdasd\"}},\"success\":true}\n";
-//        String rex = "configId\":\"(.*?)\",\"";
-//        String replace = RexUtils.replace(rex, body);
-//        System.out.println(replace);
-        String source = "/api/demo/#zhangjun1#/#zhangjun2#";
-        List<ApiParamsEntity> list = new ArrayList<>();
-        for (int i = 0;i<5;++i){
-            ApiParamsEntity apiParamsEntity = new ApiParamsEntity();
-            apiParamsEntity.setParamName("zhangjun"+i);
-            apiParamsEntity.setParamValue("value = " + i);
-            list.add(apiParamsEntity);
-        }
-        System.out.println(getByCollection(source,list));
+    public static void main(String[] args){
+        String source = "{\"message\":\"成功\",\"code\":20000,\"data\":{\"testConfig\":{\"configId\":\"1692499320026271745\",\"configName\":\"zhanzj_08111816\",\"configData\":{},\"configType\":\"布吉岛\",\"createTime\":\"2023-08-18 19:30:57\",\"updateTime\":\"2023-08-18 19:30:57\",\"updateUp\":\"张军\",\"configMark\":\"wwzzssddd\"}},\"success\":true}";
+        System.out.println(source);
+        String rex = "configId\":\\\"(.*?)\\\",";
+        String byRex = RexUtils.getByRex(rex, source);
+        System.out.println(byRex);
     }
 
 }

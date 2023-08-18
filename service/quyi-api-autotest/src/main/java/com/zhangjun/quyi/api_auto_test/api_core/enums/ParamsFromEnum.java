@@ -7,9 +7,8 @@ public enum ParamsFromEnum {
 
     REQUEST_HEADER("requestHeader"),
     REQUEST_BODY("requestBody"),
-    RESPONSE_CODE("requestCode"),
-    RESPONSE_HEADER("requestHeader"),
-    RESPONSE_BODY("requestBody");
+    RESPONSE_HEADER("responseHeader"),
+    RESPONSE_BODY("responseBody");
 
     public String value;
 

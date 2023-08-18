@@ -61,15 +61,16 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         updateFile(configId,configResultModel);
         String pythonProjectPath = (String)configResultModel.getData().get("pythonProjectPath");
         String reportPath = (String)configResultModel.getData().get(StrConstant.REPORT_PATH);
-
         TestConfigInfo testConfigInfo = new TestConfigInfo();
         testConfigInfo.setConfigId(configId);
-        System.out.println("configId = " + configId);
         ResultModel resultModel = testConfigApi.saveTestConfigInfo(testConfigInfo);
 
 
         ResultModel apiCaseResultModel = apiAutoTestController.selectAllCase();
         List<ApiTestCaseEntity> allCaseList = (List<ApiTestCaseEntity>)apiCaseResultModel.getData().get(HttpConstant.RESPONSE_STR_LIST);
+        // 获取基础配置
+
+        // 执行用例
         ApiRunHandler.runApi(caseList,configId);
 //        // 执行所有
 //        if (allCaseList.size() == caseList.size()){
