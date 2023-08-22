@@ -42,9 +42,16 @@ public class TestResultTempInfo {
     private Date run_end_time;
 
     @ApiModelProperty("执行成功率")
-    private int run_time;
+    private long run_time;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @ApiModelProperty("数据")
+    private Map<String,Object> datas;
 
     @TableField(typeHandler = JacksonTypeHandler.class)
     @ApiModelProperty("响应数据")
-    private Map<String,Object> response_data;
+    private Map<String,Object> resultData;
+
+    @ApiModelProperty("结果日志")
+    private String resultLog;
 }

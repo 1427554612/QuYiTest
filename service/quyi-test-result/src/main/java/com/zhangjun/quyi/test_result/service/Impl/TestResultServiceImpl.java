@@ -13,7 +13,6 @@ import com.zhangjun.quyi.test_result.api.TestConfigApi;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
-import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.mapper.TestResultServiceMapper;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
@@ -70,18 +69,15 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
-    public List<TestResultDto> findResult() {
+    public List<TestResult> findResult() {
         List<TestResult> TestResults = this.list();
-        List<TestResultDto> testResultDtos = new ArrayList<>();
+        List<TestResult> testResultDtos = new ArrayList<>();
         TestResults.stream().forEach( item ->{
-            TestResultDto testResultDto = new TestResultDto();
+            TestResult testResultDto = new TestResult();
             BeanUtils.copyProperties(item,testResultDto);
-            String result_id = testResultDto.getResult_id();
+            String result_id = testResultDto.getResultId();
             QueryWrapper<TestResultInfo> qw = new QueryWrapper<>();
             qw.eq(HttpConstant.API_STR_RESULT_ID,result_id);
-            List<TestResultInfo> list = testResultInfoService.list(qw);
-            testResultDto.setTestResultInfoList(list);
-            testResultDtos.add(testResultDto);
         });
         return testResultDtos;
     }
@@ -107,139 +103,138 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
 
     /**
      * 修改测试结果
-     * @param testResultDto
      * @return
      */
     @Override
-    public boolean updateResult(TestResultDto testResultDto,String configId) throws Exception {
-        String case_name = testResultDto.getCase_name();
-        QueryWrapper<TestResult> wrapper = new QueryWrapper<>();
-        wrapper.eq(HttpConstant.API_STR_CASE_NAME,case_name);
-        TestResult one = this.getOne(wrapper);
-        if (null == one) throw new ExceptionEntity(20001,"结果不存在,无法修改......");
-        // 先将新的数据插入从表
-        testResultDto.getTestResultInfoList().stream().forEach(item->{
-            item.setResult_id(one.getResult_id());
-            item.setPlatform_id(configId);
-            // 数据插入详情表
-            testResultInfoService.save(item);
-            // 查询添加的详情表数据
-            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
-            resultInfoQueryWrapper.eq(HttpConstant.API_STR_RESULT_ID,item.getResult_id())
-                    .eq(HttpConstant.API_STR_PLATFORM_ID,item.getPlatform_id())
-                    .eq(HttpConstant.API_STR_RUN_BEGIN_TIME,item.getRun_begin_time())
-                    .eq(HttpConstant.API_STR_RUN_END_TIME,item.getRun_end_time())
-                    .eq(HttpConstant.API_STR_RUN_TIME,item.getRun_time());
-            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
-            // 查询临时表是否存在对应数据
-            QueryWrapper<TestResultTempInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq(HttpConstant.API_STR_RESULT_ID,idTestResult.getResult_id());
-            TestResultTempInfo queryTempResultInfo = testResultTempInfoService.getOne(queryWrapper);
-            BeanUtils.copyProperties(idTestResult,queryTempResultInfo);
-            // 删除这条记录
-            QueryWrapper<TestResultTempInfo> updateWrapper = new QueryWrapper<>();
-            updateWrapper.eq(HttpConstant.API_STR_RESULT_ID,idTestResult.getResult_id());
-            testResultTempInfoService.remove(updateWrapper);
-
-            // 再次插入这条记录
-            testResultTempInfoService.save(queryTempResultInfo);
-        });
-        QueryWrapper<TestResultInfo> testResultInfoQueryWrapperSuccess = new QueryWrapper<>();
-        QueryWrapper<TestResultInfo> testResultInfoQueryError = new QueryWrapper<>();
-
-        // 统计成功总数和失败总数
-        testResultInfoQueryWrapperSuccess.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
-        testResultInfoQueryWrapperSuccess.eq(HttpConstant.API_STR_RUN_RESULT,1);
-        int successCount = testResultInfoService.count(testResultInfoQueryWrapperSuccess);
-        testResultInfoQueryError.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
-        testResultInfoQueryError.eq(HttpConstant.API_STR_RUN_RESULT,0);
-        int errorCount = testResultInfoService.count(testResultInfoQueryError);
-
-        // 查询最近一条状态
-        QueryWrapper<TestResultInfo> testResultInfoQueryWrapper1 = new QueryWrapper<>();
-        testResultInfoQueryWrapper1.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
-        testResultInfoQueryWrapper1.orderByDesc(HttpConstant.API_STR_RUN_BEGIN_TIME);
-        testResultInfoQueryWrapper1.last("limit 1");
-        List<TestResultInfo> TestResultInfo = testResultInfoService.list(testResultInfoQueryWrapper1);
-        com.zhangjun.quyi.test_result.entity.TestResultInfo testResultInfo = TestResultInfo.get(0);
-
-        // 设置成功率
-        one.setRun_num(successCount + errorCount);
-        one.setRun_success_num(successCount);
-        one.setRun_error_num(errorCount);
-        one.setLast_run_date(testResultInfo.getRun_begin_time());
-        one.setLast_run_result(testResultInfo.isRun_result());
-        one.setLast_run_time(testResultInfo.getRun_time());
-
-        // 设置最近执行平台
-        // 设置最近一次执行的平台
-        String platform_id = testResultInfo.getPlatform_id();
-        ResultModel resultModel = testConfigApi.selectConfigById(platform_id);
-        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel))
-                .get(HttpConstant.RESPONSE_STR_DATA)
-                .get("testConfig")
-                .get("configName").asText();
-        one.setLast_run_platform(configName);
-        Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
-        one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
-        return this.update(one,wrapper);
+    public boolean updateResult(TestResult testResult,String configId) throws Exception {
+//        String case_name = testResultDto.getCase_name();
+//        QueryWrapper<TestResult> wrapper = new QueryWrapper<>();
+//        wrapper.eq(HttpConstant.API_STR_CASE_NAME,case_name);
+//        TestResult one = this.getOne(wrapper);
+//        if (null == one) throw new ExceptionEntity(20001,"结果不存在,无法修改......");
+//        // 先将新的数据插入从表
+//        testResultDto.getTestResultInfoList().stream().forEach(item->{
+//            item.setResult_id(one.getResult_id());
+//            item.setPlatform_id(configId);
+//            // 数据插入详情表
+//            testResultInfoService.save(item);
+//            // 查询添加的详情表数据
+//            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
+//            resultInfoQueryWrapper.eq(HttpConstant.API_STR_RESULT_ID,item.getResult_id())
+//                    .eq(HttpConstant.API_STR_PLATFORM_ID,item.getPlatform_id())
+//                    .eq(HttpConstant.API_STR_RUN_BEGIN_TIME,item.getRun_begin_time())
+//                    .eq(HttpConstant.API_STR_RUN_END_TIME,item.getRun_end_time())
+//                    .eq(HttpConstant.API_STR_RUN_TIME,item.getRun_time());
+//            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
+//            // 查询临时表是否存在对应数据
+//            QueryWrapper<TestResultTempInfo> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq(HttpConstant.API_STR_RESULT_ID,idTestResult.getResult_id());
+//            TestResultTempInfo queryTempResultInfo = testResultTempInfoService.getOne(queryWrapper);
+//            BeanUtils.copyProperties(idTestResult,queryTempResultInfo);
+//            // 删除这条记录
+//            QueryWrapper<TestResultTempInfo> updateWrapper = new QueryWrapper<>();
+//            updateWrapper.eq(HttpConstant.API_STR_RESULT_ID,idTestResult.getResult_id());
+//            testResultTempInfoService.remove(updateWrapper);
+//
+//            // 再次插入这条记录
+//            testResultTempInfoService.save(queryTempResultInfo);
+//        });
+//        QueryWrapper<TestResultInfo> testResultInfoQueryWrapperSuccess = new QueryWrapper<>();
+//        QueryWrapper<TestResultInfo> testResultInfoQueryError = new QueryWrapper<>();
+//
+//        // 统计成功总数和失败总数
+//        testResultInfoQueryWrapperSuccess.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
+//        testResultInfoQueryWrapperSuccess.eq(HttpConstant.API_STR_RUN_RESULT,1);
+//        int successCount = testResultInfoService.count(testResultInfoQueryWrapperSuccess);
+//        testResultInfoQueryError.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
+//        testResultInfoQueryError.eq(HttpConstant.API_STR_RUN_RESULT,0);
+//        int errorCount = testResultInfoService.count(testResultInfoQueryError);
+//
+//        // 查询最近一条状态
+//        QueryWrapper<TestResultInfo> testResultInfoQueryWrapper1 = new QueryWrapper<>();
+//        testResultInfoQueryWrapper1.eq(HttpConstant.API_STR_RESULT_ID,one.getResult_id());
+//        testResultInfoQueryWrapper1.orderByDesc(HttpConstant.API_STR_RUN_BEGIN_TIME);
+//        testResultInfoQueryWrapper1.last("limit 1");
+//        List<TestResultInfo> TestResultInfo = testResultInfoService.list(testResultInfoQueryWrapper1);
+//        com.zhangjun.quyi.test_result.entity.TestResultInfo testResultInfo = TestResultInfo.get(0);
+//
+//        // 设置成功率
+//        one.setRun_num(successCount + errorCount);
+//        one.setRun_success_num(successCount);
+//        one.setRun_error_num(errorCount);
+//        one.setLast_run_date(testResultInfo.getRun_begin_time());
+//        one.setLast_run_result(testResultInfo.isRun_result());
+//        one.setLast_run_time(testResultInfo.getRun_time());
+//
+//        // 设置最近执行平台
+//        // 设置最近一次执行的平台
+//        String platform_id = testResultInfo.getPlatform_id();
+//        ResultModel resultModel = testConfigApi.selectConfigById(platform_id);
+//        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel))
+//                .get(HttpConstant.RESPONSE_STR_DATA)
+//                .get("testConfig")
+//                .get("configName").asText();
+//        one.setLast_run_platform(configName);
+//        Double aDouble = Double.valueOf(String.format("%.2f", successCount / Double.valueOf(one.getRun_num())));
+//        one.setRun_success_rate( (aDouble <= 1 ||aDouble<=1.0  ? (aDouble*100) : aDouble));
+//        return this.update(one,wrapper);
+        return false;
     }
 
     /**
      * 添加测试结果
-     * @param testResultDto
      * @return
      */
     @Override
-    public boolean saveResult(String configId,TestResultDto testResultDto) throws JsonProcessingException {
-        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(HttpConstant.API_STR_CASE_NAME,testResultDto.getCase_name());
-        TestResult resultTestResult = this.getOne(queryWrapper);
-        if (null != resultTestResult) throw new ExceptionEntity(20001,"用例已存在，无法添加结果......");
-        TestResult testresult = new TestResult();
-        BeanUtils.copyProperties(testResultDto,testresult);
-        testresult.setRun_num(1);
-        boolean run_result = testResultDto.getTestResultInfoList().get(0).isRun_result();
-        if (run_result == true){
-            testresult.setRun_success_num(1);
-            testresult.setRun_success_rate(100.00);
-            testresult.setLast_run_result(true);
-        }
-        else {
-            testresult.setRun_error_num(1);
-            testresult.setRun_success_rate(0.0);
-            testresult.setLast_run_result(false);
-        }
-        testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
-        testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
-        // 设置最近一次执行的平台
-        ResultModel resultModel = testConfigApi.selectConfigById(configId);
-        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel))
-                .get(HttpConstant.RESPONSE_STR_DATA)
-                .get("testConfig")
-                .get("configName").asText();
-        testresult.setLast_run_platform(configName);
-
-        this.save(testresult);
-        TestResult one = this.getOne(queryWrapper);
-        List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();
-        testResultInfoList.stream().forEach(item->{
-            item.setResult_id(one.getResult_id());
-            item.setPlatform_id(configId);
-            // 添加到详情表中
-            testResultInfoService.save(item);
-            // 添加到临时表中
-            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
-            resultInfoQueryWrapper.eq("result_id",item.getResult_id())
-                    .eq("platform_Id",item.getPlatform_id())
-                    .eq("run_begin_time",item.getRun_begin_time())
-                    .eq("run_end_time",item.getRun_end_time())
-                    .eq("run_time",item.getRun_time());
-            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
-            TestResultTempInfo testResultTempInfo = new TestResultTempInfo();
-            BeanUtils.copyProperties(idTestResult,testResultTempInfo);
-            testResultTempInfoService.save(testResultTempInfo);
-        });
+    public boolean saveResult(String configId,TestResult testResult) throws JsonProcessingException {
+//        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq(HttpConstant.API_STR_CASE_NAME,testResultDto.getCase_name());
+//        TestResult resultTestResult = this.getOne(queryWrapper);
+//        if (null != resultTestResult) throw new ExceptionEntity(20001,"用例已存在，无法添加结果......");
+//        TestResult testresult = new TestResult();
+//        BeanUtils.copyProperties(testResultDto,testresult);
+//        testresult.setRun_num(1);
+//        boolean run_result = testResultDto.getTestResultInfoList().get(0).isRun_result();
+//        if (run_result == true){
+//            testresult.setRun_success_num(1);
+//            testresult.setRun_success_rate(100.00);
+//            testresult.setLast_run_result(true);
+//        }
+//        else {
+//            testresult.setRun_error_num(1);
+//            testresult.setRun_success_rate(0.0);
+//            testresult.setLast_run_result(false);
+//        }
+//        testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
+//        testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
+//        // 设置最近一次执行的平台
+//        ResultModel resultModel = testConfigApi.selectConfigById(configId);
+//        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel))
+//                .get(HttpConstant.RESPONSE_STR_DATA)
+//                .get("testConfig")
+//                .get("configName").asText();
+//        testresult.setLast_run_platform(configName);
+//
+//        this.save(testresult);
+//        TestResult one = this.getOne(queryWrapper);
+//        List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();
+//        testResultInfoList.stream().forEach(item->{
+//            item.setResult_id(one.getResult_id());
+//            item.setPlatform_id(configId);
+//            // 添加到详情表中
+//            testResultInfoService.save(item);
+//            // 添加到临时表中
+//            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
+//            resultInfoQueryWrapper.eq("result_id",item.getResult_id())
+//                    .eq("platform_Id",item.getPlatform_id())
+//                    .eq("run_begin_time",item.getRun_begin_time())
+//                    .eq("run_end_time",item.getRun_end_time())
+//                    .eq("run_time",item.getRun_time());
+//            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
+//            TestResultTempInfo testResultTempInfo = new TestResultTempInfo();
+//            BeanUtils.copyProperties(idTestResult,testResultTempInfo);
+//            testResultTempInfoService.save(testResultTempInfo);
+//        });
         return true;
     }
 

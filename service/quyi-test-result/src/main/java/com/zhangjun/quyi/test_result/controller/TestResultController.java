@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
-import com.zhangjun.quyi.test_result.entity.dto.TestResultDto;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.service.TestResultService;
-import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,9 +49,9 @@ public class TestResultController {
                                   @PathVariable Integer size,
                                   @RequestBody TestResultQueryVo testResultQueryVo){
         Page<TestResult> resultPage = testResultService.findResult(current,size,testResultQueryVo);
-        List<TestResultDto> testResultDtos = new ArrayList<>();
+        List<TestResult> testResultDtos = new ArrayList<>();
         resultPage.getRecords().stream().forEach(testResult -> {
-            TestResultDto testResultDto = new TestResultDto();
+            TestResult testResultDto = new TestResult();
             BeanUtils.copyProperties(testResult,testResultDto);
             testResultDtos.add(testResultDto);
         });
@@ -86,7 +84,7 @@ public class TestResultController {
     @ApiOperation("查询所有结果")
     @Cacheable(value = "test-result",key = "'log'",cacheManager = "cacheManager1Minute")
     public ResultModel findResult(){
-        List<TestResultDto> list = testResultService.findResult();
+        List<TestResult> list = testResultService.findResult();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,list);
     }
 
@@ -140,8 +138,8 @@ public class TestResultController {
     @ApiOperation("更新结果记录")
     public ResultModel updateResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
                                     @ApiParam(name = "testResultDto",value = "测试结构dto")
-                                    @RequestBody TestResultDto testResultDto) throws Exception {
-        return testResultService.updateResult(testResultDto,configId) == true ? ResultModel.ok(): ResultModel.error();
+                                    @RequestBody TestResult testResult) throws Exception {
+        return testResultService.updateResult(testResult,configId) == true ? ResultModel.ok(): ResultModel.error();
     }
 
     /**
@@ -153,8 +151,8 @@ public class TestResultController {
     @ApiOperation("添加结果")
     public ResultModel saveResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
                                   @ApiParam(name = "testResultDto",value = "测试结构dto")
-                                  @RequestBody TestResultDto testResultDto) throws Exception {
-        return testResultService.saveResult(configId,testResultDto) == true ? ResultModel.ok(): ResultModel.error();
+                                  @RequestBody TestResult testResult) throws Exception {
+        return testResultService.saveResult(configId,testResult) == true ? ResultModel.ok(): ResultModel.error();
     }
 
     /**

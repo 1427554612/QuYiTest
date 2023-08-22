@@ -24,29 +24,37 @@ public class TestResultInfo {
 
     @ApiModelProperty("详情id")
     @TableId(type = IdType.ID_WORKER_STR)
-    private String result_info_id;
+    private String resultInfoId;
 
     @ApiModelProperty("结果id")
-    private String result_id;
+    private String resultId;
 
     @ApiModelProperty("执行成功率")
-    private boolean run_result;
+    private boolean runResult;
 
     @ApiModelProperty("执行配置id")
-    private String platform_id;
+    private String platformId;
 
     @ApiModelProperty("执行开始时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date run_begin_time;
+    private Date runBeginTime;
 
     @ApiModelProperty("执行结束时间")
-    private Date run_end_time;
+    private Date runEndTime;
 
-    @ApiModelProperty("执行成功率")
-    private int run_time;
+    @ApiModelProperty("执行时间")
+    private long runTime;
+
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @ApiModelProperty("数据")
+    private Map<String,Object> datas;
 
     @TableField(typeHandler = JacksonTypeHandler.class)
     @ApiModelProperty("响应数据")
-    private Map<String,Object> response_data;
+    private Map<String,Object> resultData;
+
+    @ApiModelProperty("结果日志")
+    private String resultLog;
 
 }

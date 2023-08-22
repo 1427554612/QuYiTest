@@ -1,11 +1,9 @@
 package com.zhangjun.quyi.api_auto_test.api;
 
-import com.zhangjun.quyi.api_auto_test.entity.TestConfigInfo;
+import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestConfigInfo;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

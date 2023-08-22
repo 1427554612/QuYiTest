@@ -2,8 +2,11 @@ package com.zhangjun.quyi.api_auto_test.api_core.components.get.impl;
 
 import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGetting;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
+import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
+import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.api_core.utils.RexUtils;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
+import com.zhangjun.quyi.constans.StrConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +27,10 @@ public class PathParamsGetting implements ParamsGetting {
      */
     @Override
     public ApiTestCaseEntity getParams(List<ApiParamsEntity> sources, ApiTestCaseEntity target) {
-        logger.debug(target.getCaseName() + " 开始处理，" + PathParamsGetting.class.getName());
+        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA + PathParamsGetting.class.getName() + LogStringBuilder.PARAMS_HANDLE_RUN);
         String finalPath = RexUtils.getByCollection(target.getApiPath(), sources);
         target.setApiPath(finalPath);
-        logger.debug(target.getCaseName() + " 替换后的用例对象：" + target);
+        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getApiPath());
         return target;
     }
 

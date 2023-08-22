@@ -5,6 +5,7 @@ import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.AssertCase;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.enums.AssertEnums;
 import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
+import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.util.JavaJaninoUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import okhttp3.Headers;
@@ -46,14 +47,11 @@ public class AssertCaseImpl implements AssertCase {
     public boolean eq(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws IOException {
         boolean flag = false;
         String from = apiAssertEntity.getFrom();
-        logger.debug("响应：" + responseBody);
-        logger.debug("apiAssertEntity = " + apiAssertEntity);
         // 对比响应体字段
         if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_BODY.value)){
             JsonNode lastNode = JsonUtil.getLastNode(responseBody, apiAssertEntity.getKey());
-            logger.debug("从响应中拿到的值为：" + lastNode.asText());
-            logger.debug("预期值为：" + apiAssertEntity.getExpectValue());
             flag = apiAssertEntity.getExpectValue().equals(lastNode.asText()) ? true : false;
+            ApiRunHandler.logAdd("get By response body：" + lastNode.asText() +"，except value：" + apiAssertEntity.getExpectValue()+" assert result is" + flag );
         }
         // 对比响应码
         else if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_CODE.value))

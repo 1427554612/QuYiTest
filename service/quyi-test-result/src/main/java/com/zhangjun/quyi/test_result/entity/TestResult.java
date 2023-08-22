@@ -27,43 +27,44 @@ public class TestResult {
 
     @TableId(type = IdType.ID_WORKER_STR)
     @ApiModelProperty("结果id")
-    private String result_id;
+    private String resultId;
 
-    @ApiModelProperty("用例名称")
-    private String case_name;
-
-    @ApiModelProperty("用例标题")
-    private String case_title;
-
-    @ApiModelProperty("用例类型")
-    private String case_type;
+    @ApiModelProperty("结果类型")
+    private String resultType;
 
     @ApiModelProperty("执行次数")
-    private int run_num;
+    private int runNum;
 
     @ApiModelProperty("执行成功次数")
-    private int run_success_num;
+    private int runSuccessNum;
 
     @ApiModelProperty("执行失败次数")
-    private int run_error_num;
+    private int runErrorNum;
 
     @ApiModelProperty("执行成功率")
-    private double run_success_rate;
+    private double runSuccessRate;
 
     @ApiModelProperty("最后一次执行结果")
-    private boolean last_run_result;
+    private boolean lastRunResult;
 
     @ApiModelProperty("最后一次执行平台")
-    private String last_run_platform;
+    private String lastRunPlatform;
 
     @ApiModelProperty("最后一次执行时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date last_run_date;
+    private Date lastRunDate;
 
     @ApiModelProperty("最后一次执行耗时")
-    private int last_run_time;
+    private long lastRunTime;
 
     @TableField(typeHandler = JacksonTypeHandler.class)
-    @ApiModelProperty("响应数据")
-    private Map<String,Object> response_data;
+    @ApiModelProperty("数据")
+    private Map<String,Object> datas;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @ApiModelProperty("结果数据")
+    private Map<String,Object> resultData;
+
+    @ApiModelProperty("结果日志")
+    private String lastResultLog;
 }

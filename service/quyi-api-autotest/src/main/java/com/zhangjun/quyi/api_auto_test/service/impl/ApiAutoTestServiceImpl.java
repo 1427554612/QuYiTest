@@ -1,19 +1,14 @@
 package com.zhangjun.quyi.api_auto_test.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
 import com.zhangjun.quyi.api_auto_test.controller.ApiAutoTestController;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
-import com.zhangjun.quyi.api_auto_test.entity.TestConfigInfo;
-import com.zhangjun.quyi.api_auto_test.entity.TestResult;
-import com.zhangjun.quyi.api_auto_test.entity.TestResultInfo;
-import com.zhangjun.quyi.api_auto_test.entity.dto.TestResultDto;
+import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestConfigInfo;
 import com.zhangjun.quyi.api_auto_test.service.ApiAutoTestService;
 import com.zhangjun.quyi.api_auto_test.util.EasyExcelUtil;
-import com.zhangjun.quyi.api_auto_test.util.PythonScriptUtil;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.constans.StrConstant;
 import com.zhangjun.quyi.enums.CaseTypeEnum;
@@ -71,7 +66,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         // 获取基础配置
 
         // 执行用例
-        ApiRunHandler.runApi(caseList,configId);
+        ApiRunHandler.runApi(caseList,configId,testConfigApi);
 //        // 执行所有
 //        if (allCaseList.size() == caseList.size()){
 //            ApiRunHandler.runApi(caseList,configId);
@@ -166,63 +161,63 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @throws IOException
      */
     private void addOrUpdateResult(String configId,List<ApiTestCaseEntity> caseList) throws Exception {
-        // 结果写入库
-        ResultModel resultModel = testConfigApi.getConfigPath();
-        String apiRunTimePath = (String)resultModel.getData().get("apiRunTimePath");
-        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(apiRunTimePath)));
-        // 运行文件的jsonNode对象
-        String json = null;
-        List<JsonNode> jsonNodes = new ArrayList<>();
-        while ((json =bf.readLine())!= null){
-            jsonNodes.add(JsonUtil.objectMapper.readTree(json));
-        }
-        try {
-            for (int i = 0;i<caseList.size();++i){
-                TestResultDto testResultDto = new TestResultDto();
-                testResultDto.setCase_name(caseList.get(i).getCaseName());
-                testResultDto.setCase_type(CaseTypeEnum.API.value);
-                String case_name = jsonNodes.get(i).get(HttpConstant.API_STR_CASE_NAME).asText();
-                String caseName = caseList.get(i).getCaseName();
-                System.out.println("case_name = " + case_name);
-                System.out.println("caseName = " + caseName);
-                if (case_name.equals(caseName)){
-                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_RESULT).asText());
-                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_BEGIN_TIME).asText());
-                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_END_TIME).asText());
-                    int run_time = jsonNodes.get(i).get(HttpConstant.API_STR_RUN_TIME).asInt();
-                    TestResultInfo testResultInfo = new TestResultInfo();
-                    testResultInfo.setRun_result(run_result);
-                    testResultInfo.setRun_begin_time(beginTime);
-                    testResultInfo.setRun_end_time(endTime);
-                    testResultInfo.setRun_time(run_time);
-                    testResultInfo.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
-                    testResultDto.getTestResultInfoList().add(testResultInfo);
-                    testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
-                    testResultDto.setLast_run_time(run_time);
-                    testResultDto.setCase_title(jsonNodes.get(i).get(HttpConstant.API_STR_CASE_TITLE).asText());
-                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
-                    logger.info("testResultDto = " + testResultDto);
-                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get(HttpConstant.RESPONSE_STR_DATA));
-                    JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
-                    if (null == data || "null".equals(data))
-                    {
-                        logger.info("执行 saveResult method");
-                        testResultApi.saveResult(configId,testResultDto);
-                    }
-                    else {
-                        logger.info("执行 updateResult method");
-                        testResultDto.setResult_id(jsonNode.get("result_id").asText());
-                        testResultApi.updateResult(testResultDto,configId);
-                    };
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            bf.close();
-            logger.info("apiRunTimePath io 已关闭");
-        }
+//        // 结果写入库
+//        ResultModel resultModel = testConfigApi.getConfigPath();
+//        String apiRunTimePath = (String)resultModel.getData().get("apiRunTimePath");
+//        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(apiRunTimePath)));
+//        // 运行文件的jsonNode对象
+//        String json = null;
+//        List<JsonNode> jsonNodes = new ArrayList<>();
+//        while ((json =bf.readLine())!= null){
+//            jsonNodes.add(JsonUtil.objectMapper.readTree(json));
+//        }
+//        try {
+//            for (int i = 0;i<caseList.size();++i){
+//                TestResultDto testResultDto = new TestResultDto();
+//                testResultDto.setCase_name(caseList.get(i).getCaseName());
+//                testResultDto.setCase_type(CaseTypeEnum.API.value);
+//                String case_name = jsonNodes.get(i).get(HttpConstant.API_STR_CASE_NAME).asText();
+//                String caseName = caseList.get(i).getCaseName();
+//                System.out.println("case_name = " + case_name);
+//                System.out.println("caseName = " + caseName);
+//                if (case_name.equals(caseName)){
+//                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_RESULT).asText());
+//                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_BEGIN_TIME).asText());
+//                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_END_TIME).asText());
+//                    int run_time = jsonNodes.get(i).get(HttpConstant.API_STR_RUN_TIME).asInt();
+//                    TestResultInfo testResultInfo = new TestResultInfo();
+//                    testResultInfo.setRun_result(run_result);
+//                    testResultInfo.setRun_begin_time(beginTime);
+//                    testResultInfo.setRun_end_time(endTime);
+//                    testResultInfo.setRun_time(run_time);
+//                    testResultInfo.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
+//                    testResultDto.getTestResultInfoList().add(testResultInfo);
+//                    testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
+//                    testResultDto.setLast_run_time(run_time);
+//                    testResultDto.setCase_title(jsonNodes.get(i).get(HttpConstant.API_STR_CASE_TITLE).asText());
+//                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
+//                    logger.info("testResultDto = " + testResultDto);
+//                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get(HttpConstant.RESPONSE_STR_DATA));
+//                    JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
+//                    if (null == data || "null".equals(data))
+//                    {
+//                        logger.info("执行 saveResult method");
+//                        testResultApi.saveResult(configId,testResultDto);
+//                    }
+//                    else {
+//                        logger.info("执行 updateResult method");
+//                        testResultDto.setResult_id(jsonNode.get("result_id").asText());
+//                        testResultApi.updateResult(testResultDto,configId);
+//                    };
+//                }
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        finally {
+//            bf.close();
+//            logger.info("apiRunTimePath io 已关闭");
+//        }
     }
 
 

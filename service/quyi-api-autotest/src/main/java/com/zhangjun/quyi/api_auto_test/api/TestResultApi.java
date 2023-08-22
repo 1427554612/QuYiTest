@@ -1,6 +1,6 @@
 package com.zhangjun.quyi.api_auto_test.api;
 
-import com.zhangjun.quyi.api_auto_test.entity.dto.TestResultDto;
+import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -27,7 +27,7 @@ public interface TestResultApi {
      * @return
      */
     @PutMapping("/api/test_result/updateResult/{configId}")
-    public ResultModel updateResult(@RequestBody TestResultDto testResultDto,@PathVariable(name = "configId") String configId);
+    public ResultModel updateResult(@RequestBody TestResult testResult, @PathVariable(name = "configId") String configId);
 
 
     /**
@@ -35,6 +35,6 @@ public interface TestResultApi {
      * @return
      */
     @PostMapping("/api/test_result/saveResult/{configId}")
-    public ResultModel saveResult(@PathVariable(name = "configId") String configId,@RequestBody TestResultDto testResultDto);
+    public ResultModel saveResult(@PathVariable(name = "configId") String configId,@RequestBody TestResult testResult);
 
 }

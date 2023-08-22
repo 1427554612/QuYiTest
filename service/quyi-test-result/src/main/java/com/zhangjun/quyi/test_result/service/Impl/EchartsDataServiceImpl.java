@@ -43,24 +43,25 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
      */
     @Override
     public Map<String, Object> getCaseSuccessRate() throws JsonProcessingException {
-        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("case_name","run_success_rate");
-        queryWrapper.groupBy("case_name");
-        List<TestResult> testResultList = this.list(queryWrapper);
-        List<Map<String,Object>> series= new ArrayList<>();
-        List<String> legends = new ArrayList<>();
-        testResultList.stream().forEach(testResult -> {
-            Map<String,Object> keyValueMap = new HashMap<>();
-            keyValueMap.put("value",testResult.getRun_success_rate());
-            keyValueMap.put("name",testResult.getCase_name());
-            series.add(keyValueMap);
-            legends.add(testResult.getCase_name());
-        });
-        logger.info("查询testResultList = "+ JsonUtil.objectMapper.writeValueAsString(testResultList));
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("legends",legends);
-        resultMap.put("series",series);
-        return resultMap;
+//        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.select("case_name","run_success_rate");
+//        queryWrapper.groupBy("case_name");
+//        List<TestResult> testResultList = this.list(queryWrapper);
+//        List<Map<String,Object>> series= new ArrayList<>();
+//        List<String> legends = new ArrayList<>();
+//        testResultList.stream().forEach(testResult -> {
+//            Map<String,Object> keyValueMap = new HashMap<>();
+//            keyValueMap.put("value",testResult.getRunSuccessRate());
+//            keyValueMap.put("name",testResult.getCase_name());
+//            series.add(keyValueMap);
+//            legends.add(testResult.getCase_name());
+//        });
+//        logger.info("查询testResultList = "+ JsonUtil.objectMapper.writeValueAsString(testResultList));
+//        Map<String,Object> resultMap = new HashMap<>();
+//        resultMap.put("legends",legends);
+//        resultMap.put("series",series);
+//        return resultMap;
+        return null;
     }
 
     /**

@@ -9,4 +9,5 @@ public interface StrConstant {
     public static final String FILE_NAME = "fileName";
     public static final String CONFIG_PATH = "configPath";
     public static final String EXCEL_PATH = "excelPath";
+    public static final String SYMBOL_COMMA= ",";
 }

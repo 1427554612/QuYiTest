@@ -82,4 +82,5 @@ public class ApiTestCaseEntity {
     @ApiModelProperty(value = "参数化数据")
     @Excel(name = "参数化数据")
     private Object paramList;
+
 }

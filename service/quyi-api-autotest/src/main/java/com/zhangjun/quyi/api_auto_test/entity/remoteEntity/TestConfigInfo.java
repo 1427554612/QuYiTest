@@ -1,4 +1,4 @@
-package com.zhangjun.quyi.api_auto_test.entity;
+package com.zhangjun.quyi.api_auto_test.entity.remoteEntity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
