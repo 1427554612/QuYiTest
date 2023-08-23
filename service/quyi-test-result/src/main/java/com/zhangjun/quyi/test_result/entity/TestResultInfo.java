@@ -26,6 +26,9 @@ public class TestResultInfo {
     @TableId(type = IdType.ID_WORKER_STR)
     private String resultInfoId;
 
+    @ApiModelProperty("结果名称")
+    private String caseName;
+
     @ApiModelProperty("结果id")
     private String resultId;
 
@@ -33,18 +36,18 @@ public class TestResultInfo {
     private boolean runResult;
 
     @ApiModelProperty("执行配置id")
-    private String platformId;
+    private String configId;
 
     @ApiModelProperty("执行开始时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date runBeginTime;
 
     @ApiModelProperty("执行结束时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date runEndTime;
 
     @ApiModelProperty("执行时间")
     private long runTime;
-
 
     @TableField(typeHandler = JacksonTypeHandler.class)
     @ApiModelProperty("数据")

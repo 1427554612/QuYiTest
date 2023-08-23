@@ -6,6 +6,7 @@ import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
+import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultService;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
@@ -34,6 +35,9 @@ public class TestResultController {
 
     @Autowired
     private TestResultService testResultService;
+
+    @Autowired
+    private TestResultInfoService testResultInfoService;
 
 
     /**
@@ -121,6 +125,7 @@ public class TestResultController {
     @ApiOperation(value = "根据用例名称查询结果")
     public ResultModel findResultByCaseName(@ApiParam(name = "caseName",value = "用例名称")
                                                 @PathVariable String caseName){
+        System.out.println("caseName = " + caseName);
         QueryWrapper<TestResult> testResultQueryWrapper = new QueryWrapper<>();
         testResultQueryWrapper.eq("case_name",caseName);
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testResultService.getOne(testResultQueryWrapper));
@@ -150,9 +155,22 @@ public class TestResultController {
     @CacheEvict(value = "test-result",key = "'log'")
     @ApiOperation("添加结果")
     public ResultModel saveResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
-                                  @ApiParam(name = "testResultDto",value = "测试结构dto")
+                                  @ApiParam(name = "testResult",value = "测试结果对象")
                                   @RequestBody TestResult testResult) throws Exception {
         return testResultService.saveResult(configId,testResult) == true ? ResultModel.ok(): ResultModel.error();
+    }
+
+    /**
+     * 添加结果详情
+     * @return
+     */
+    @PostMapping("/saveResultInfo")
+    @CacheEvict(value = "test-result",key = "'log'")
+    @ApiOperation("添加结果详情")
+    public ResultModel saveResultInfo(@ApiParam(name = "testResultInfo",value = "结果详情id")
+                                      @RequestBody TestResultInfo testResultInfo) throws Exception {
+        TestResultInfo resultInfo = testResultInfoService.saveResultInfo(testResultInfo);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,resultInfo);
     }
 
     /**

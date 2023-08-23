@@ -172,8 +172,7 @@ public class TestConfigController {
                 .data("reportPath", reportPath)
                 .data("pythonProjectPath", pythonProjectPath)
                 .data("apiRunTimePath", pythonApiRuntimePath)
-                .data("proxyConfigPath",proxyConfigPath)
-                .data("configData",this.findTestConfigInfo().getData());
+                .data("proxyConfigPath",proxyConfigPath);
     }
 
 
@@ -209,10 +208,10 @@ public class TestConfigController {
      * 查询最新一条详情
      * @return
      */
-    @GetMapping("/findTestConfigInfo")
-    @ApiOperation(value = "保存最新配置详情")
-    public ResultModel findTestConfigInfo(){
-        TestConfigInfo resultConfigInfo = testConfigInfoService.findTestConfigInfo();
+    @GetMapping("/findLastTestConfigInfo")
+    @ApiOperation(value = "查询最新使用配置详情")
+    public ResultModel findLastTestConfigInfo(){
+        TestConfigInfo resultConfigInfo = testConfigInfoService.findLastTestConfigInfo();
         return ResultModel.ok().data("testConfigInfo",resultConfigInfo);
     }
 

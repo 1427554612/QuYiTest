@@ -1,6 +1,7 @@
 package com.zhangjun.quyi.api_auto_test.api;
 
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
+import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResultInfo;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -20,7 +21,7 @@ public interface TestResultApi {
      * @return
      */
     @GetMapping("/api/test_result/findResultByCaseName/{caseName}")
-    public ResultModel findResultByCaseName(@PathVariable String caseName);
+    public ResultModel findResultByCaseName(@PathVariable(name = "caseName") String caseName);
 
     /**
      * 修改结果
@@ -36,5 +37,13 @@ public interface TestResultApi {
      */
     @PostMapping("/api/test_result/saveResult/{configId}")
     public ResultModel saveResult(@PathVariable(name = "configId") String configId,@RequestBody TestResult testResult);
+
+    /**
+     * 添加详情
+     * @return
+     */
+    @PostMapping("/api/test_result/info/saveResultInfo")
+    public ResultModel saveResultInfo(@RequestBody TestResultInfo testResultInfo);
+
 
 }

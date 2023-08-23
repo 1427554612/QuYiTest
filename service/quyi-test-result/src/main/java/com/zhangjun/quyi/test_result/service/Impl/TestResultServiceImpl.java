@@ -187,55 +187,11 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      */
     @Override
     public boolean saveResult(String configId,TestResult testResult) throws JsonProcessingException {
-//        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq(HttpConstant.API_STR_CASE_NAME,testResultDto.getCase_name());
-//        TestResult resultTestResult = this.getOne(queryWrapper);
-//        if (null != resultTestResult) throw new ExceptionEntity(20001,"用例已存在，无法添加结果......");
-//        TestResult testresult = new TestResult();
-//        BeanUtils.copyProperties(testResultDto,testresult);
-//        testresult.setRun_num(1);
-//        boolean run_result = testResultDto.getTestResultInfoList().get(0).isRun_result();
-//        if (run_result == true){
-//            testresult.setRun_success_num(1);
-//            testresult.setRun_success_rate(100.00);
-//            testresult.setLast_run_result(true);
-//        }
-//        else {
-//            testresult.setRun_error_num(1);
-//            testresult.setRun_success_rate(0.0);
-//            testresult.setLast_run_result(false);
-//        }
-//        testresult.setLast_run_time(testResultDto.getTestResultInfoList().get(0).getRun_time());
-//        testresult.setLast_run_date(testResultDto.getTestResultInfoList().get(0).getRun_begin_time());
-//        // 设置最近一次执行的平台
-//        ResultModel resultModel = testConfigApi.selectConfigById(configId);
-//        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(resultModel))
-//                .get(HttpConstant.RESPONSE_STR_DATA)
-//                .get("testConfig")
-//                .get("configName").asText();
-//        testresult.setLast_run_platform(configName);
-//
-//        this.save(testresult);
-//        TestResult one = this.getOne(queryWrapper);
-//        List<TestResultInfo> testResultInfoList = testResultDto.getTestResultInfoList();
-//        testResultInfoList.stream().forEach(item->{
-//            item.setResult_id(one.getResult_id());
-//            item.setPlatform_id(configId);
-//            // 添加到详情表中
-//            testResultInfoService.save(item);
-//            // 添加到临时表中
-//            QueryWrapper<TestResultInfo> resultInfoQueryWrapper = new QueryWrapper<>();
-//            resultInfoQueryWrapper.eq("result_id",item.getResult_id())
-//                    .eq("platform_Id",item.getPlatform_id())
-//                    .eq("run_begin_time",item.getRun_begin_time())
-//                    .eq("run_end_time",item.getRun_end_time())
-//                    .eq("run_time",item.getRun_time());
-//            TestResultInfo idTestResult = testResultInfoService.getOne(resultInfoQueryWrapper);
-//            TestResultTempInfo testResultTempInfo = new TestResultTempInfo();
-//            BeanUtils.copyProperties(idTestResult,testResultTempInfo);
-//            testResultTempInfoService.save(testResultTempInfo);
-//        });
-        return true;
+       QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
+       queryWrapper.eq(HttpConstant.API_STR_CASE_NAME,testResult.getCaseName());
+       TestResult resultTestResult = this.getOne(queryWrapper);
+       if (null != resultTestResult) throw new ExceptionEntity(20001,"用例已存在，无法添加结果......");
+        return this.save(testResult);
     }
 
 

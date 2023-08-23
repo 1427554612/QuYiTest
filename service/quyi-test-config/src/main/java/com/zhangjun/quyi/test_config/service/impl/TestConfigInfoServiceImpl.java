@@ -45,7 +45,7 @@ public class TestConfigInfoServiceImpl  extends ServiceImpl<TestConfigInfoMapper
      * @return
      */
     @Override
-    public TestConfigInfo findTestConfigInfo() {
+    public TestConfigInfo findLastTestConfigInfo() {
         QueryWrapper<TestConfigInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc(HttpConstant.API_STR_CREATE_TIME);
         queryWrapper.last(SqlConstant.SQL_LIMIT_1);

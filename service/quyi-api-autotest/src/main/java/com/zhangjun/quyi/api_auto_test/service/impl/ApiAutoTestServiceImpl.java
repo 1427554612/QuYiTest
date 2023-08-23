@@ -11,8 +11,6 @@ import com.zhangjun.quyi.api_auto_test.service.ApiAutoTestService;
 import com.zhangjun.quyi.api_auto_test.util.EasyExcelUtil;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.constans.StrConstant;
-import com.zhangjun.quyi.enums.CaseTypeEnum;
-import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 
 import com.zhangjun.quyi.utils.ResultModel;
@@ -45,6 +43,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
 
 
 
+
     /**
      * 批量执行
      * @param caseList
@@ -66,7 +65,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         // 获取基础配置
 
         // 执行用例
-        ApiRunHandler.runApi(caseList,configId,testConfigApi);
+        ApiRunHandler.runApi(caseList,configId,testConfigApi,testResultApi);
 //        // 执行所有
 //        if (allCaseList.size() == caseList.size()){
 //            ApiRunHandler.runApi(caseList,configId);

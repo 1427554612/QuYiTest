@@ -17,5 +17,5 @@ public interface TestConfigInfoService extends IService<TestConfigInfo> {
      * 查询最新一条配置详情
      * @return
      */
-    TestConfigInfo findTestConfigInfo();
+    TestConfigInfo findLastTestConfigInfo();
 }

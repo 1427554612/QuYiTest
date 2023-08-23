@@ -1,8 +1,10 @@
 package com.zhangjun.quyi.api_auto_test.api_core.handler;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
+import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.impl.AssertCaseImpl;
 import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGetting;
 import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGettingFactory;
@@ -12,9 +14,9 @@ import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
+import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestConfigInfo;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResultInfo;
-import com.zhangjun.quyi.api_auto_test.service.impl.ApiAutoTestServiceImpl;
 import com.zhangjun.quyi.api_auto_test.util.JavaJaninoUtil;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.constans.StrConstant;
@@ -23,11 +25,9 @@ import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import okhttp3.Headers;
-import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -53,7 +53,7 @@ public class ApiRunHandler {
      * @param caseList：勾选的执行用例列表
      * @param configId：关联配置id
      */
-    public static void runApi(List<ApiTestCaseEntity> caseList,String configId,TestConfigApi testConfigApi) throws Exception {
+    public static void runApi(List<ApiTestCaseEntity> caseList, String configId, TestConfigApi testConfigApi, TestResultApi testResultApi) throws Exception {
         // 最终阶段：销毁对象&资源
         String baseUrl = init(configId,testConfigApi);
         logAdd(LogStringBuilder.START_TEST);
@@ -73,9 +73,10 @@ public class ApiRunHandler {
             Map<String,Object> datas = JsonUtil.objectMapper.readValue(apiEntityJsonStr, Map.class);
 
             TestResultInfo testResultInfo = new TestResultInfo();
+            testResultInfo.setCaseName(apiTestCaseEntity.getCaseName());
             testResultInfo.setDatas(datas);
             testResultInfo.setRunBeginTime(new Date());
-            testResultInfo.setPlatformId(configId);
+            testResultInfo.setConfigId(configId);
             Long startTime = System.currentTimeMillis();
 
             // 1.2、处理前置脚本
@@ -146,15 +147,18 @@ public class ApiRunHandler {
             testResultInfo.setRunTime((System.currentTimeMillis() - startTime));
             testResultInfo.setResultData(JsonUtil.objectMapper.readValue(body,Map.class));
             testResultInfo.setResultLog(LogStringBuilder.getLog());
-
             logAdd(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "end case...");
 
             System.out.println("final logs = " + testResultInfo.getResultLog());
-
+            // 清空日志添加器
+            System.out.println(testResultInfo);
             LogStringBuilder.setLength(0);
 
             // 推送消息
             WebSocketServer.sendInfo(JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity), HttpConstant.CONNECTION_SID);
+
+            // 结果写入到数据库
+            addOrUpdateResult(testResultInfo,testResultApi,testConfigApi);
 
         }
 
@@ -164,9 +168,46 @@ public class ApiRunHandler {
     /**
      * 添加或者修改结果
      */
-    private static void addOrUpdateResult(String configId,ApiTestCaseEntity apiTestCaseEntity){
+    private static void addOrUpdateResult(TestResultInfo testResultInfo,TestResultApi testResultApi,TestConfigApi testConfigApi) throws JsonProcessingException {
         TestResult testResult = new TestResult();
-
+        testResult.setCaseName(testResultInfo.getCaseName());
+        testResult.setResultType("api");
+        Map<String, Object> resultData = testResultApi.findResultByCaseName(testResultInfo.getCaseName()).getData();
+        testResult.setResultData(testResultInfo.getResultData());
+        testResult.setDatas(testResultInfo.getDatas());
+        testResult.setResultLog(testResultInfo.getResultLog());
+        testResult.setLastRunResult(testResultInfo.isRunResult());
+        testResult.setLastRunDate(testResultInfo.getRunBeginTime());
+        testResult.setLastRunTime(testResultInfo.getRunTime());
+        // 获取最后执行的配置
+        ResultModel testConfigModel = testConfigApi.selectConfigById(testResultInfo.getConfigId());
+        Object testConfig = testConfigModel.getData().get("testConfig");
+        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(testConfig)).get("configName").asText();
+        testResult.setConfigName(configName);
+        String resultId = "";
+        if (resultData.get("data") == null || resultData.get("data").equals("null")){
+            testResult.setRunNum(1);
+            testResult.setRunErrorNum(testResultInfo.isRunResult() == true ? 0 : 1);
+            testResult.setRunSuccessNum(testResultInfo.isRunResult() == false ? 0 : 1);
+            testResult.setRunSuccessRate(testResultInfo.isRunResult() == true ? 100.00 : 0.00);
+            // 添加testResult
+            logAdd("。。。。。。。。。。。添加结果。。。。。。。。。。。。");
+            testResult.setLastRunResult(testResultInfo.isRunResult());
+            ResultModel resultModel = testResultApi.saveResult(testResultInfo.getConfigId(), testResult);
+            // 获取添加后 result对象的 resultId
+            if(resultModel.getCode() == 20000){
+                ResultModel findResultModel = testResultApi.findResultByCaseName(testResult.getCaseName());
+                Object data = findResultModel.getData().get("data");
+                resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+            }
+        }
+        else {
+            // updateTestResult
+            logAdd("。。。。。。。。。。。修改结果。。。。。。。。。。。。");
+        }
+        // 添加结果详情
+        testResultInfo.setResultId(resultId);
+        testResultApi.saveResultInfo(testResultInfo);
     }
 
 

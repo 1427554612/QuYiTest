@@ -26,8 +26,14 @@ public class TestResult {
     @ApiModelProperty("结果id")
     private String resultId;
 
+    @ApiModelProperty("结果名称")
+    private String caseName;
+
     @ApiModelProperty("结果类型")
     private String resultType;
+
+    @ApiModelProperty("配置名称")
+    private String configName;
 
     @ApiModelProperty("执行次数")
     private int runNum;
@@ -63,5 +69,5 @@ public class TestResult {
     private Map<String,Object> resultData;
 
     @ApiModelProperty("结果日志")
-    private String lastResultLog;
+    private String resultLog;
 }
