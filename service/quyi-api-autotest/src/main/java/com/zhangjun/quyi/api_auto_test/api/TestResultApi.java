@@ -4,9 +4,12 @@ import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResultInfo;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * test-result服务接口
@@ -27,8 +30,8 @@ public interface TestResultApi {
      * 修改结果
      * @return
      */
-    @PutMapping("/api/test_result/updateResult/{configId}")
-    public ResultModel updateResult(@RequestBody TestResult testResult, @PathVariable(name = "configId") String configId);
+    @PutMapping("/api/test_result/updateResult")
+    public ResultModel updateResult(@RequestBody Map<String,Object> testResultMaps);
 
 
     /**
@@ -44,6 +47,13 @@ public interface TestResultApi {
      */
     @PostMapping("/api/test_result/info/saveResultInfo")
     public ResultModel saveResultInfo(@RequestBody TestResultInfo testResultInfo);
+
+    /**
+     * 清空临时结果数据
+     * @return
+     */
+    @DeleteMapping("/api/test_result/info/clear")
+    public ResultModel clearResultTemp();
 
 
 }

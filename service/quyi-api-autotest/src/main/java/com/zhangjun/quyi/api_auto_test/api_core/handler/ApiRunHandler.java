@@ -3,6 +3,7 @@ package com.zhangjun.quyi.api_auto_test.api_core.handler;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.impl.AssertCaseImpl;
@@ -38,7 +39,6 @@ public class ApiRunHandler {
 
     // 默认请求数量
     public static final Integer DEFAULT_REQUEST_NUMBER = 10;
-    private static Logger logger  = LoggerFactory.getLogger(ApiRunHandler.class);
 
 
     /**
@@ -46,6 +46,7 @@ public class ApiRunHandler {
      */
     static {
         RequestUtil.setOkhttpClient(ApiRunHandler.DEFAULT_REQUEST_NUMBER,ApiRunHandler.DEFAULT_REQUEST_NUMBER);
+        LogStringBuilder.logger = LoggerFactory.getLogger(ApiRunHandler.class);
     }
 
     /**
@@ -55,19 +56,19 @@ public class ApiRunHandler {
      */
     public static void runApi(List<ApiTestCaseEntity> caseList, String configId, TestConfigApi testConfigApi, TestResultApi testResultApi) throws Exception {
         // 最终阶段：销毁对象&资源
-        String baseUrl = init(configId,testConfigApi);
-        logAdd(LogStringBuilder.START_TEST);
-        logAdd("base url:" + baseUrl);
+        String baseUrl = init(configId,testConfigApi,testResultApi);
+        LogStringBuilder.addLog(LogStringBuilder.START_TEST);
+        LogStringBuilder.addLog("base url:" + baseUrl);
         // 1、循环遍历传递过来的所有用例
         List<ApiTestCaseEntity> skipCaseList = new ArrayList<>();         // 跳过执行的用例列表
         for (ApiTestCaseEntity apiTestCaseEntity : caseList) {
             // 1.1、过滤所有不执行的用例
             if (apiTestCaseEntity.getIsRun().equals("否") || apiTestCaseEntity.getIsRun().equals("N")){
                 skipCaseList.add(apiTestCaseEntity);
-                logAdd(LogStringBuilder.CASE_NAME + apiTestCaseEntity.getCaseName() + StrConstant.SYMBOL_COMMA + LogStringBuilder.SKIP_CASE);
+                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity.getCaseName() + StrConstant.SYMBOL_COMMA + LogStringBuilder.SKIP_CASE);
                 continue;
             }
-            logAdd(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "start case...");
+            LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity.getCaseName() + LogStringBuilder.CASE_START);
             // 先创建datas和resultInfo对象
             String apiEntityJsonStr = JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity);
             Map<String,Object> datas = JsonUtil.objectMapper.readValue(apiEntityJsonStr, Map.class);
@@ -82,20 +83,19 @@ public class ApiRunHandler {
             // 1.2、处理前置脚本
             if (null!=apiTestCaseEntity.getBeforeScript()){
                 Object o = JavaJaninoUtil.runScript(apiTestCaseEntity.getBeforeScript());
-                logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.BEFORE_SCRIPT_RUN + o);
+                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.BEFORE_SCRIPT_RUN + o);
             }
 
             // 1.3、获取参数化,替换原本api对象
 
             if (ParamsGetting.ifNeedGetParams(apiTestCaseEntity)){
                 List<ParamsGetting> paramsGettings = ParamsGettingFactory.buildGettingObj(apiTestCaseEntity);
-                logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.PARAMS_HANDLE_NUMBER + paramsGettings.size());
+                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.PARAMS_HANDLE_NUMBER + paramsGettings.size());
                 for (ParamsGetting paramsGetting : paramsGettings) {
                     apiTestCaseEntity = paramsGetting.getParams(DivResponseParamsSetting.ApiParamsEntitys,apiTestCaseEntity);
                 }
-                logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.REPLACE_PARAMS_DATA + apiTestCaseEntity);
+                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.REPLACE_PARAMS_DATA + apiTestCaseEntity);
             }
-
 
             // 1.4、执行接口、获得请求和响应
             Object[] requestAndResponse = RequestUtil.sendingRequest(baseUrl+apiTestCaseEntity.getApiPath(),
@@ -106,7 +106,7 @@ public class ApiRunHandler {
             int code = ((Response) requestAndResponse[1]).code();
             Headers headers = ((Response) requestAndResponse[1]).headers();
             String body = ((Response) requestAndResponse[1]).body().string();
-            logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.RESPONSE_BODY_DATA + body.replaceAll("\n","").replaceAll(" ",""));
+            LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.RESPONSE_BODY_DATA + body.replaceAll("\n","").replaceAll(" ",""));
 
             // 1.5、判断断言
             Object assertMap = apiTestCaseEntity.getAssertMap();
@@ -132,14 +132,14 @@ public class ApiRunHandler {
                     apiParamsEntity.setParamsEq(paramsNodeTree.get(i).get("paramsEq").asText());
                     // 调用设置参数
                     divResponseParamsSetting.setParams(body,headers,apiTestCaseEntity.getRequestBody(),apiTestCaseEntity.getRequestHeaders(),apiParamsEntity);
-                    logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.SET_PARAMS_DATA + apiParamsEntity);
+                    LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.SET_PARAMS_DATA + apiParamsEntity);
                 }
             }
 
             // 1.2、处理后置
             if (null!=apiTestCaseEntity.getBeforeScript()){
                 Object o = JavaJaninoUtil.runScript(apiTestCaseEntity.getBeforeScript());
-                logAdd(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.AFTER_SCRIPT_RUN + o);
+                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.AFTER_SCRIPT_RUN + o);
             }
 
             testResultInfo.setRunEndTime(new Date());
@@ -147,15 +147,13 @@ public class ApiRunHandler {
             testResultInfo.setRunTime((System.currentTimeMillis() - startTime));
             testResultInfo.setResultData(JsonUtil.objectMapper.readValue(body,Map.class));
             testResultInfo.setResultLog(LogStringBuilder.getLog());
-            logAdd(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "end case...");
+            LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "end case...");
 
-            System.out.println("final logs = " + testResultInfo.getResultLog());
             // 清空日志添加器
-            System.out.println(testResultInfo);
             LogStringBuilder.setLength(0);
 
             // 推送消息
-            WebSocketServer.sendInfo(JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity), HttpConstant.CONNECTION_SID);
+            WebSocketServer.sendInfo(JsonUtil.objectMapper.writeValueAsString(testResultInfo), HttpConstant.CONNECTION_SID);
 
             // 结果写入到数据库
             addOrUpdateResult(testResultInfo,testResultApi,testConfigApi);
@@ -169,79 +167,75 @@ public class ApiRunHandler {
      * 添加或者修改结果
      */
     private static void addOrUpdateResult(TestResultInfo testResultInfo,TestResultApi testResultApi,TestConfigApi testConfigApi) throws JsonProcessingException {
+        System.out.println("caseName = " + testResultInfo.getCaseName());
         TestResult testResult = new TestResult();
         testResult.setCaseName(testResultInfo.getCaseName());
         testResult.setResultType("api");
-        Map<String, Object> resultData = testResultApi.findResultByCaseName(testResultInfo.getCaseName()).getData();
         testResult.setResultData(testResultInfo.getResultData());
         testResult.setDatas(testResultInfo.getDatas());
         testResult.setResultLog(testResultInfo.getResultLog());
         testResult.setLastRunResult(testResultInfo.isRunResult());
         testResult.setLastRunDate(testResultInfo.getRunBeginTime());
         testResult.setLastRunTime(testResultInfo.getRunTime());
+
         // 获取最后执行的配置
         ResultModel testConfigModel = testConfigApi.selectConfigById(testResultInfo.getConfigId());
         Object testConfig = testConfigModel.getData().get("testConfig");
         String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(testConfig)).get("configName").asText();
         testResult.setConfigName(configName);
-        String resultId = "";
+
+        // 查询数据库中是否有这个数据
+        Map<String, Object> resultData = testResultApi.findResultByCaseName(testResult.getCaseName()).getData();
+        System.out.println("resultData  = " + resultData);
         if (resultData.get("data") == null || resultData.get("data").equals("null")){
+            System.out.println(testResult.getCaseName() + ",在数据库中没找到、执行添加");
             testResult.setRunNum(1);
             testResult.setRunErrorNum(testResultInfo.isRunResult() == true ? 0 : 1);
             testResult.setRunSuccessNum(testResultInfo.isRunResult() == false ? 0 : 1);
             testResult.setRunSuccessRate(testResultInfo.isRunResult() == true ? 100.00 : 0.00);
             // 添加testResult
-            logAdd("。。。。。。。。。。。添加结果。。。。。。。。。。。。");
+            LogStringBuilder.addLog("。。。。。。。。。。。添加结果。。。。。。。。。。。。");
             testResult.setLastRunResult(testResultInfo.isRunResult());
             ResultModel resultModel = testResultApi.saveResult(testResultInfo.getConfigId(), testResult);
             // 获取添加后 result对象的 resultId
             if(resultModel.getCode() == 20000){
                 ResultModel findResultModel = testResultApi.findResultByCaseName(testResult.getCaseName());
                 Object data = findResultModel.getData().get("data");
-                resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+                String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+                // 添加结果详情
+                testResultInfo.setResultId(resultId);
+                testResultApi.saveResultInfo(testResultInfo);
             }
         }
         else {
-            // updateTestResult
-            logAdd("。。。。。。。。。。。修改结果。。。。。。。。。。。。");
+            Object data = resultData.get("data");
+            String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+            testResult.setResultId(resultId);
+            Map<String,Object> testResultMap = new HashMap<>();
+            testResultMap.put("testResult",testResult);
+            testResultMap.put("testResultInfo",testResultInfo);
+            testResultApi.updateResult(testResultMap);
         }
-        // 添加结果详情
-        testResultInfo.setResultId(resultId);
-        testResultApi.saveResultInfo(testResultInfo);
+
     }
 
 
-    /**
-     * 日志添加方法
-     * @param log
-     */
-    public static void logAdd(String log){
-        LogStringBuilder.addLog(log);
-        logger.debug(log);
-    }
 
-    /**
-     * 销毁
-     */
-    private static void destroys(){
-        // 销毁参数获取对象处理类
-        ParamsGettingFactory.paramsGettings.clear();
-    }
 
     /**
      * 初始化
      * @param configId
      */
-    private static String init(String configId,TestConfigApi testConfigApi) throws JsonProcessingException {
+    private static String init(String configId,TestConfigApi testConfigApi,TestResultApi testResultApi) throws JsonProcessingException {
         ResultModel resultModel = testConfigApi.selectConfigById(configId);
         Object testConfig = resultModel.getData().get("testConfig");
         String s = JsonUtil.objectMapper.writeValueAsString(testConfig);
-        System.out.println(s);
         JsonNode jsonNode = JsonUtil.objectMapper.readTree(s).get("configData").get("clientUrl");
-        System.out.println(jsonNode.asText());
 
         // 销毁参数获取对象处理类
         ParamsGettingFactory.paramsGettings.clear();
+        // 清空临时结果数据
+        testResultApi.clearResultTemp();
         return jsonNode.asText();
     }
 

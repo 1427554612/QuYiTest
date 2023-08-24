@@ -8,6 +8,7 @@ import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultService;
+import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -135,16 +136,19 @@ public class TestResultController {
      * 修改结果
      * @return
      */
-    @PutMapping("/updateResult/{configId}")
+    @PutMapping("/updateResult")
     @Caching(evict = {@CacheEvict(value = "test-result",key = "'log'"),
             @CacheEvict(value = "test-charts",key = "'successRate'"),
             @CacheEvict(value = "test-charts",key = "'platformSuccessAndErrorNum'"),
             @CacheEvict(value = "test-charts",key = "'currentSuccessAndErrorNum'")})
     @ApiOperation("更新结果记录")
-    public ResultModel updateResult(@ApiParam(name = "configId",value = "配置id")@PathVariable String configId,
-                                    @ApiParam(name = "testResultDto",value = "测试结构dto")
-                                    @RequestBody TestResult testResult) throws Exception {
-        return testResultService.updateResult(testResult,configId) == true ? ResultModel.ok(): ResultModel.error();
+    public ResultModel updateResult(@ApiParam(name = "testResult",value = "结果对象")
+                                    @RequestBody Map<String,Object> testResultMaps) throws Exception {
+        String s = JsonUtil.objectMapper.writeValueAsString(testResultMaps);
+        String testResult = JsonUtil.objectMapper.readTree(s).get("testResult").toString();
+        String testResultInfo = JsonUtil.objectMapper.readTree(s).get("testResultInfo").toString();;
+        return testResultService.updateResult(JsonUtil.objectMapper.readValue(testResult,TestResult.class)
+                ,JsonUtil.objectMapper.readValue(testResultInfo,TestResultInfo.class)) == true ? ResultModel.ok(): ResultModel.error();
     }
 
     /**

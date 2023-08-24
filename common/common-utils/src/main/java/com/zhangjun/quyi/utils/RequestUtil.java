@@ -185,7 +185,9 @@ public class RequestUtil {
         // 构建post请求
         if (requestType.equals("POST")) {
             okhttp3.RequestBody body = okhttp3.RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestBody);
+            System.out.println("最终需要发送的请求参数为：" + requestBody);
             request = builder.method("POST", body).build();
+            System.out.println("请求体是：" + JsonUtil.objectMapper.writeValueAsString(request.body()));
             response = RequestUtil.client.newCall(request).execute();
 
 

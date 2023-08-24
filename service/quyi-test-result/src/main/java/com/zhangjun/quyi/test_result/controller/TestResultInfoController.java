@@ -4,6 +4,7 @@ import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
+import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,9 @@ public class TestResultInfoController {
     @Autowired
     private TestResultInfoService testResultInfoService;
 
+    @Autowired
+    private TestResultTempInfoService testResultTempInfoService;
+
     /**
      * 添加结果详情
      * @return
@@ -34,6 +38,17 @@ public class TestResultInfoController {
                                   @RequestBody TestResultInfo testResultInfo) throws Exception {
         TestResultInfo resultInfo = testResultInfoService.saveResultInfo(testResultInfo);
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,resultInfo);
+    }
+
+    /**
+     * 清空临时结果数据
+     * @return
+     */
+    @DeleteMapping("/clear")
+    @CacheEvict(value = "test-result",key = "'log'")
+    @ApiOperation("清空临时结果数据")
+    public ResultModel clearResultTemp(){
+        return testResultTempInfoService.remove(null) ? ResultModel.ok() : ResultModel.error();
     }
 
 

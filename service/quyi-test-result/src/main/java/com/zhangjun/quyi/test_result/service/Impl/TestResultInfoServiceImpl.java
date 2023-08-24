@@ -1,15 +1,22 @@
 package com.zhangjun.quyi.test_result.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
+import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
 import com.zhangjun.quyi.test_result.mapper.TestResultInfoServiceMapper;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
+import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoServiceMapper, TestResultInfo> implements TestResultInfoService {
 
+    @Autowired
+    private TestResultTempInfoService testResultTempInfoService;
     /**
      * 添加结果详情
      * @param testResultInfo
@@ -19,6 +26,16 @@ public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoService
     public TestResultInfo saveResultInfo(TestResultInfo testResultInfo) {
         boolean flag = this.save(testResultInfo);
         if (!flag) throw new ExceptionEntity(20001,"添加结果详情错误");
-        return testResultInfo;
+        // 查询这条插入的数据
+        QueryWrapper<TestResultInfo> testResultInfoQueryWrapper = new QueryWrapper<>();
+        testResultInfoQueryWrapper.eq("case_name",testResultInfo.getCaseName());
+        testResultInfoQueryWrapper.orderByDesc("run_end_time").last("limit 1");
+        TestResultInfo selectResultInfo = this.getOne(testResultInfoQueryWrapper);
+        System.out.println("查询出来的详情对象：" + selectResultInfo);
+        // 插入临时表
+        TestResultTempInfo testResultTempInfo = new TestResultTempInfo();
+        BeanUtils.copyProperties(selectResultInfo,testResultTempInfo);
+        testResultTempInfoService.save(testResultTempInfo);
+        return selectResultInfo;
     }
 }

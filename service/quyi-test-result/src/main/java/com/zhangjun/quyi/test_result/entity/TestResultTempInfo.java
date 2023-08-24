@@ -23,30 +23,30 @@ import java.util.Map;
 public class TestResultTempInfo {
 
     @ApiModelProperty("详情id")
-    private String result_info_id;
-
-    @ApiModelProperty("结果id")
-    private String result_id;
+    private String resultInfoId;
 
     @ApiModelProperty("结果名称")
     private String caseName;
 
+    @ApiModelProperty("结果id")
+    private String resultId;
+
     @ApiModelProperty("执行成功率")
-    private boolean run_result;
+    private boolean runResult;
 
     @ApiModelProperty("执行配置id")
     private String configId;
 
     @ApiModelProperty("执行开始时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date run_begin_time;
+    private Date runBeginTime;
 
     @ApiModelProperty("执行结束时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date run_end_time;
+    private Date runEndTime;
 
-    @ApiModelProperty("执行成功率")
-    private long run_time;
+    @ApiModelProperty("执行时间")
+    private long runTime;
 
     @TableField(typeHandler = JacksonTypeHandler.class)
     @ApiModelProperty("数据")

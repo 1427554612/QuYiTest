@@ -19,7 +19,10 @@ import java.util.List;
  */
 public class RequestBodyParamsGetting implements ParamsGetting {
 
-    private static Logger logger  = LoggerFactory.getLogger(RequestBodyParamsGetting.class);
+
+    static {
+        LogStringBuilder.logger = LoggerFactory.getLogger(RequestBodyParamsGetting.class);
+    }
 
     /**
      * 处理请求体
@@ -30,12 +33,12 @@ public class RequestBodyParamsGetting implements ParamsGetting {
      */
     @Override
     public ApiTestCaseEntity getParams(List<ApiParamsEntity> sources, ApiTestCaseEntity target) throws JsonProcessingException {
-        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA + RequestBodyParamsGetting.class.getName() + LogStringBuilder.PARAMS_HANDLE_RUN);
+        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA + RequestBodyParamsGetting.class.getName() + LogStringBuilder.PARAMS_HANDLE_RUN);
         String s = JsonUtil.objectMapper.writeValueAsString(target.getRequestBody());
         String finalBodyStr = RexUtils.getByCollection(s, sources);
         Object finalBody = JsonUtil.objectMapper.readValue(finalBodyStr, Object.class);
         target.setRequestBody(finalBody);
-        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getRequestBody());
+        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getRequestBody());
         return target;
     }
 }

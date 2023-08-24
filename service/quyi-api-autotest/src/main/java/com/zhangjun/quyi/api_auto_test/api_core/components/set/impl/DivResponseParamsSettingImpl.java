@@ -5,6 +5,7 @@ import com.zhangjun.quyi.api_auto_test.api_core.components.set.DivResponseParams
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
 import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
+import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.api_core.utils.RexUtils;
 import com.zhangjun.quyi.utils.RequestUtil;
 import okhttp3.Headers;
@@ -22,7 +23,10 @@ import java.util.List;
  */
 public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
 
-    private static Logger logger  = LoggerFactory.getLogger(DivResponseParamsSettingImpl.class);
+
+    static {
+        LogStringBuilder.logger = LoggerFactory.getLogger(DivResponseParamsSettingImpl.class);
+    }
 
 
     /**
@@ -31,7 +35,7 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
      */
     @Override
     public ApiParamsEntity setParams(String responseBody, Headers headers,Object requestBody,Object requestHeaders, ApiParamsEntity apiParamsEntity) throws IOException {
-        ApiRunHandler.logAdd("替换前的参数对象为:" + apiParamsEntity);
+        LogStringBuilder.addLog("替换前的参数对象为:" + apiParamsEntity);
         // 从响应体中拿数据
         if (apiParamsEntity.getParamFrom().equals(ParamsFromEnum.RESPONSE_BODY.value))
             setByResponseBody(responseBody,apiParamsEntity);
@@ -40,7 +44,7 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
         else if (apiParamsEntity.getParamFrom().equals(ParamsFromEnum.REQUEST_HEADER.value))
             setByRequestHeader(requestHeaders,apiParamsEntity);
         else setByRequestBody(requestBody,apiParamsEntity);
-        ApiRunHandler.logAdd("替换后的参数对象为:" + apiParamsEntity);
+        LogStringBuilder.addLog("替换后的参数对象为:" + apiParamsEntity);
         DivResponseParamsSetting.ApiParamsEntitys.add(apiParamsEntity);
         return apiParamsEntity;
     }
@@ -52,12 +56,12 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
      * @throws IOException
      */
     private ApiParamsEntity setByResponseBody(String responseBody,ApiParamsEntity apiParamsEntity){
-        ApiRunHandler.logAdd("从响应体中拿到数据.....");
+        LogStringBuilder.addLog("从响应体中拿到数据.....");
         // 从响应体中拿数据
-        ApiRunHandler.logAdd("正则表达式为：" + apiParamsEntity.getParamsEq());
+        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamsEq());
         String paramValue = RexUtils.getByRex(apiParamsEntity.getParamsEq(), responseBody);
         apiParamsEntity.setParamValue(paramValue);
-        ApiRunHandler.logAdd("拿到真实数据为：" + paramValue);
+        LogStringBuilder.addLog("拿到真实数据为：" + paramValue);
         return apiParamsEntity;
     }
 
@@ -68,13 +72,13 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
      * @return
      */
     private ApiParamsEntity setByRequestBody(Object requestBody, ApiParamsEntity apiParamsEntity) {
-        ApiRunHandler.logAdd("从请求体中拿到数据.....");
-        ApiRunHandler.logAdd("正则表达式为：" + apiParamsEntity.getParamsEq());
+        LogStringBuilder.addLog("从请求体中拿到数据.....");
+        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamsEq());
         String paramsEq = apiParamsEntity.getParamsEq();
-        ApiRunHandler.logAdd("请求参数为：" + requestBody.toString());
+        LogStringBuilder.addLog("请求参数为：" + requestBody.toString());
         String paramValue = RexUtils.getByRex(paramsEq, requestBody.toString());
         apiParamsEntity.setParamValue(paramValue);
-        ApiRunHandler.logAdd("替换后真实的值为：" + paramValue);
+        LogStringBuilder.addLog("替换后真实的值为：" + paramValue);
         return apiParamsEntity;
     }
 

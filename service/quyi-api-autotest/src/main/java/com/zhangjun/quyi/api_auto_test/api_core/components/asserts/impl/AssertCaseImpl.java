@@ -21,7 +21,9 @@ import java.io.IOException;
  */
 public class AssertCaseImpl implements AssertCase {
 
-    private static Logger logger  = LoggerFactory.getLogger(AssertCaseImpl.class);
+    static {
+        LogStringBuilder.logger = LoggerFactory.getLogger(AssertCaseImpl.class);
+    }
 
 
     /**
@@ -51,7 +53,7 @@ public class AssertCaseImpl implements AssertCase {
         if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_BODY.value)){
             JsonNode lastNode = JsonUtil.getLastNode(responseBody, apiAssertEntity.getKey());
             flag = apiAssertEntity.getExpectValue().equals(lastNode.asText()) ? true : false;
-            ApiRunHandler.logAdd("get By response body：" + lastNode.asText() +"，except value：" + apiAssertEntity.getExpectValue()+" assert result is" + flag );
+            LogStringBuilder.addLog("get By response body：" + lastNode.asText() +"，except value：" + apiAssertEntity.getExpectValue()+" assert result is" + flag );
         }
         // 对比响应码
         else if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_CODE.value))

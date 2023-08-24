@@ -17,7 +17,9 @@ import java.util.List;
  */
 public class PathParamsGetting implements ParamsGetting {
 
-    private static Logger logger  = LoggerFactory.getLogger(PathParamsGetting.class);
+    static {
+        LogStringBuilder.logger = LoggerFactory.getLogger(PathParamsGetting.class);
+    }
 
     /**
      * 处理请求地址
@@ -27,10 +29,10 @@ public class PathParamsGetting implements ParamsGetting {
      */
     @Override
     public ApiTestCaseEntity getParams(List<ApiParamsEntity> sources, ApiTestCaseEntity target) {
-        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA + PathParamsGetting.class.getName() + LogStringBuilder.PARAMS_HANDLE_RUN);
+        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA + PathParamsGetting.class.getName() + LogStringBuilder.PARAMS_HANDLE_RUN);
         String finalPath = RexUtils.getByCollection(target.getApiPath(), sources);
         target.setApiPath(finalPath);
-        ApiRunHandler.logAdd(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getApiPath());
+        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getApiPath());
         return target;
     }
 

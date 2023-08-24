@@ -7,6 +7,7 @@ import com.zhangjun.quyi.resultVo.DataTree;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.vo.TestResultQueryVo;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public interface TestResultService extends IService<TestResult> {
      * 修改结果
      * @return
      */
-    boolean updateResult(TestResult testResultDtom,String configId) throws Exception;
+    boolean updateResult(TestResult testResult,TestResultInfo testResultInfo) throws Exception;
 
     /**
      * 添加结果
