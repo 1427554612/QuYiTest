@@ -15,6 +15,8 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Api(description = "结果管理")
 @RequestMapping("/api/test_result/info")
@@ -49,6 +51,17 @@ public class TestResultInfoController {
     @ApiOperation("清空临时结果数据")
     public ResultModel clearResultTemp(){
         return testResultTempInfoService.remove(null) ? ResultModel.ok() : ResultModel.error();
+    }
+
+    /**
+     * 通过resultId查询所有执行详情记录
+     * @return
+     */
+    @GetMapping("/{resultId}")
+    @ApiOperation("通过resultId查询所有执行详情记录")
+    public ResultModel findAllInfoByResultId(@PathVariable(name = "resultId") String resultId){
+        List<TestResultInfo> testResultInfoList = testResultInfoService.findAllInfoByResultId(resultId);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultInfoList);
     }
 
 

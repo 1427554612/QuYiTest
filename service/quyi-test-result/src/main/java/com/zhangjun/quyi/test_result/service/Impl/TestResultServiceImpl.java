@@ -19,6 +19,7 @@ import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import com.zhangjun.quyi.utils.FileUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +45,7 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
+    @Cacheable(value = "test-result",key = "'log-tree'",cacheManager = "cacheManager3Minute")
     public List<DataTree> findLogTree() throws Exception {
         String logPath = (String) testConfigApi.getConfigPath().getData().get("logPath");
         ArrayList<DataTree> dataTrees = new ArrayList<>();
@@ -66,17 +68,9 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      * @return
      */
     @Override
+    @Cacheable(value = "test-result",key = "'log'",cacheManager = "cacheManager1Minute")
     public List<TestResult> findResult() {
-        List<TestResult> TestResults = this.list();
-        List<TestResult> testResultDtos = new ArrayList<>();
-        TestResults.stream().forEach( item ->{
-            TestResult testResultDto = new TestResult();
-            BeanUtils.copyProperties(item,testResultDto);
-            String result_id = testResultDto.getResultId();
-            QueryWrapper<TestResultInfo> qw = new QueryWrapper<>();
-            qw.eq(HttpConstant.API_STR_RESULT_ID,result_id);
-        });
-        return testResultDtos;
+        return this.list();
     }
 
     /**
@@ -104,10 +98,8 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
      */
     @Override
     public boolean updateResult(TestResult testResult,TestResultInfo testResultInfo) {
-        System.out.println("修改的id：" + testResult.getResultId());
         String resultId =testResult.getResultId();
         testResultInfo.setResultId(testResult.getResultId());
-
         // 先插入最新结果详情
         testResultInfoService.saveResultInfo(testResultInfo);
 

@@ -43,25 +43,24 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
      */
     @Override
     public Map<String, Object> getCaseSuccessRate() throws JsonProcessingException {
-//        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.select("case_name","run_success_rate");
-//        queryWrapper.groupBy("case_name");
-//        List<TestResult> testResultList = this.list(queryWrapper);
-//        List<Map<String,Object>> series= new ArrayList<>();
-//        List<String> legends = new ArrayList<>();
-//        testResultList.stream().forEach(testResult -> {
-//            Map<String,Object> keyValueMap = new HashMap<>();
-//            keyValueMap.put("value",testResult.getRunSuccessRate());
-//            keyValueMap.put("name",testResult.getCase_name());
-//            series.add(keyValueMap);
-//            legends.add(testResult.getCase_name());
-//        });
-//        logger.info("查询testResultList = "+ JsonUtil.objectMapper.writeValueAsString(testResultList));
-//        Map<String,Object> resultMap = new HashMap<>();
-//        resultMap.put("legends",legends);
-//        resultMap.put("series",series);
-//        return resultMap;
-        return null;
+        QueryWrapper<TestResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("case_name","run_success_rate");
+        queryWrapper.groupBy("case_name");
+        List<TestResult> testResultList = this.list(queryWrapper);
+        List<Map<String,Object>> series= new ArrayList<>();
+        List<String> legends = new ArrayList<>();
+        testResultList.stream().forEach(testResult -> {
+            Map<String,Object> keyValueMap = new HashMap<>();
+            keyValueMap.put("value",testResult.getRunSuccessRate());
+            keyValueMap.put("name",testResult.getCaseName());
+            series.add(keyValueMap);
+            legends.add(testResult.getCaseName());
+        });
+        logger.info("查询testResultList = "+ JsonUtil.objectMapper.writeValueAsString(testResultList));
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("legends",legends);
+        resultMap.put("series",series);
+        return resultMap;
     }
 
     /**
@@ -74,14 +73,14 @@ public class EchartsDataServiceImpl  extends ServiceImpl<TestResultServiceMapper
         List<Integer> successPlatform = new ArrayList<>();
         List<Integer> errorPlatform = new ArrayList<>();
         QueryWrapper<TestResultInfo> wrapper = new QueryWrapper<>();
-        wrapper.groupBy("platform_id");
-        wrapper.select("platform_Id,sum(case when run_result=1 then 1 else 0 end) as 'successNum',\n" +
+        wrapper.groupBy("config_id");
+        wrapper.select("config_id,sum(case when run_result=1 then 1 else 0 end) as 'successNum',\n" +
                 "sum(case when run_result=0 then 1 else 0 end) as 'errorNum'");
 
         List<Map<String, Object>> maps = testResultInfoServiceMapper.selectMaps(wrapper);
         String configName = "";
         for (int i = 0; i < maps.size(); i++) {
-            ResultModel resultModel = testConfigApi.selectConfigById((String) maps.get(i).get("platform_Id"));
+            ResultModel resultModel = testConfigApi.selectConfigById((String) maps.get(i).get("config_id"));
             Object data = resultModel.getData().get("testConfig");
             configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("configName").asText();
             keys.add(configName);

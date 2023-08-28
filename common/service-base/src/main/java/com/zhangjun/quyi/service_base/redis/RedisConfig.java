@@ -34,6 +34,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        // json形式序列化方式
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -43,6 +44,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         //key序列化方式这种序列化方法无法辨别redis key的通配符*，采用string序列化
         template.setKeySerializer(template.getStringSerializer());
         template.setValueSerializer(jackson2JsonRedisSerializer);
+        template.setHashKeySerializer(template.getStringSerializer());
         template.setHashValueSerializer(jackson2JsonRedisSerializer);
         return template;
     }

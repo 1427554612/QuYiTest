@@ -10,7 +10,10 @@ import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoServiceMapper, TestResultInfo> implements TestResultInfoService {
@@ -37,5 +40,17 @@ public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoService
         BeanUtils.copyProperties(selectResultInfo,testResultTempInfo);
         testResultTempInfoService.save(testResultTempInfo);
         return selectResultInfo;
+    }
+
+    /**
+     * 通过resultId查询所有执行详情记录
+     * @return
+     */
+    @Override
+    @Cacheable(value = "test-result",key = "#resultId",cacheManager = "cacheManager1Minute")
+    public List<TestResultInfo> findAllInfoByResultId(String resultId) {
+        QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("result_id",resultId);
+        return this.list(queryWrapper);
     }
 }

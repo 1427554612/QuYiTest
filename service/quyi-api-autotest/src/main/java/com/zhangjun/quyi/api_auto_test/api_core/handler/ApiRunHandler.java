@@ -13,9 +13,9 @@ import com.zhangjun.quyi.api_auto_test.api_core.components.set.DivResponseParams
 import com.zhangjun.quyi.api_auto_test.api_core.components.set.impl.DivResponseParamsSettingImpl;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
-import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestConfigInfo;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResultInfo;
 import com.zhangjun.quyi.api_auto_test.util.JavaJaninoUtil;
@@ -42,7 +42,7 @@ public class ApiRunHandler {
 
 
     /**
-     * 1、初始化请求池
+     * 初始化
      */
     static {
         RequestUtil.setOkhttpClient(ApiRunHandler.DEFAULT_REQUEST_NUMBER,ApiRunHandler.DEFAULT_REQUEST_NUMBER);
@@ -142,10 +142,16 @@ public class ApiRunHandler {
                 LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.AFTER_SCRIPT_RUN + o);
             }
 
+            LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity.getCaseName() + LogStringBuilder.CASE_END);
+
             testResultInfo.setRunEndTime(new Date());
             testResultInfo.setRunResult(flag);
             testResultInfo.setRunTime((System.currentTimeMillis() - startTime));
-            testResultInfo.setResultData(JsonUtil.objectMapper.readValue(body,Map.class));
+            Map<String,Object> resultMap = new HashMap<>();
+            resultMap.put("code",code);
+            resultMap.put(ParamsFromEnum.RESPONSE_HEADER.value,headers);
+            resultMap.put(ParamsFromEnum.RESPONSE_BODY.value, JsonUtil.objectMapper.readValue(body,Map.class));
+            testResultInfo.setResultData(resultMap);
             testResultInfo.setResultLog(LogStringBuilder.getLog());
             LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "end case...");
 
@@ -167,7 +173,6 @@ public class ApiRunHandler {
      * 添加或者修改结果
      */
     private static void addOrUpdateResult(TestResultInfo testResultInfo,TestResultApi testResultApi,TestConfigApi testConfigApi) throws JsonProcessingException {
-        System.out.println("caseName = " + testResultInfo.getCaseName());
         TestResult testResult = new TestResult();
         testResult.setCaseName(testResultInfo.getCaseName());
         testResult.setResultType("api");
@@ -180,36 +185,33 @@ public class ApiRunHandler {
 
         // 获取最后执行的配置
         ResultModel testConfigModel = testConfigApi.selectConfigById(testResultInfo.getConfigId());
-        Object testConfig = testConfigModel.getData().get("testConfig");
-        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(testConfig)).get("configName").asText();
+        Object testConfig = testConfigModel.getData().get(HttpConstant.API_STR_TEST_CONFIG);
+        String configName = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(testConfig)).get(HttpConstant.API_STR_CONFIG_NAME).asText();
         testResult.setConfigName(configName);
 
         // 查询数据库中是否有这个数据
         Map<String, Object> resultData = testResultApi.findResultByCaseName(testResult.getCaseName()).getData();
-        System.out.println("resultData  = " + resultData);
-        if (resultData.get("data") == null || resultData.get("data").equals("null")){
-            System.out.println(testResult.getCaseName() + ",在数据库中没找到、执行添加");
+        if (resultData.get(HttpConstant.RESPONSE_STR_DATA) == null || resultData.get(HttpConstant.RESPONSE_STR_DATA).equals("null")){
             testResult.setRunNum(1);
-            testResult.setRunErrorNum(testResultInfo.isRunResult() == true ? 0 : 1);
-            testResult.setRunSuccessNum(testResultInfo.isRunResult() == false ? 0 : 1);
-            testResult.setRunSuccessRate(testResultInfo.isRunResult() == true ? 100.00 : 0.00);
+            testResult.setRunErrorNum(testResultInfo.isRunResult() ? 0 : 1);
+            testResult.setRunSuccessNum( !testResultInfo.isRunResult()  ? 0 : 1);
+            testResult.setRunSuccessRate(testResultInfo.isRunResult()  ? 100.00 : 0.00);
             // 添加testResult
-            LogStringBuilder.addLog("。。。。。。。。。。。添加结果。。。。。。。。。。。。");
             testResult.setLastRunResult(testResultInfo.isRunResult());
             ResultModel resultModel = testResultApi.saveResult(testResultInfo.getConfigId(), testResult);
             // 获取添加后 result对象的 resultId
             if(resultModel.getCode() == 20000){
                 ResultModel findResultModel = testResultApi.findResultByCaseName(testResult.getCaseName());
-                Object data = findResultModel.getData().get("data");
-                String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+                Object data = findResultModel.getData().get(HttpConstant.RESPONSE_STR_DATA);
+                String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get(HttpConstant.API_STR_RESULT_ID).asText();
                 // 添加结果详情
                 testResultInfo.setResultId(resultId);
                 testResultApi.saveResultInfo(testResultInfo);
             }
         }
         else {
-            Object data = resultData.get("data");
-            String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get("resultId").asText();
+            Object data = resultData.get(HttpConstant.RESPONSE_STR_DATA);
+            String resultId = JsonUtil.objectMapper.readTree(JsonUtil.objectMapper.writeValueAsString(data)).get(HttpConstant.API_STR_RESULT_ID).asText();
             testResult.setResultId(resultId);
             Map<String,Object> testResultMap = new HashMap<>();
             testResultMap.put("testResult",testResult);
@@ -218,8 +220,6 @@ public class ApiRunHandler {
         }
 
     }
-
-
 
 
     /**

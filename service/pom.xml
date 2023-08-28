@@ -26,6 +26,7 @@
         <module>quyi-currency-test</module>
         <module>quyi-script-java</module>
         <module>quyi-test-statistics</module>
+        <module>quyi-concurrency-server-test</module>
     </modules>
 
     <properties>

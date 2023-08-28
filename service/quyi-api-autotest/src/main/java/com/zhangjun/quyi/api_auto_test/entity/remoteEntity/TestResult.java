@@ -50,9 +50,6 @@ public class TestResult {
     @ApiModelProperty("最后一次执行结果")
     private boolean lastRunResult;
 
-    @ApiModelProperty("最后一次执行平台")
-    private String lastRunPlatform;
-
     @ApiModelProperty("最后一次执行时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastRunDate;

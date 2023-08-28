@@ -1,7 +1,6 @@
 package com.zhangjun.quyi.currency_test.testcase;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.currency_test.utils.*;
 import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
@@ -21,6 +20,7 @@ public class CurrencyTestCase {
     private static ArrayList<Map<String,String>> keyValueList = new ArrayList();
     public static volatile CountDownLatch countDownLatch = null;      // 计数器
     public static ExecutorService executorService = null;
+    public static Integer THREAD_NUMBER_TIMES = 10;
     private static Logger logger = Logger.getLogger(CurrencyTestCase.class);
     private static BufferedWriter bf = null;
 
@@ -34,16 +34,26 @@ public class CurrencyTestCase {
         }
     }
 
-
+    /**
+     * 初始化操作
+     * @param requestNumber
+     */
     public static void init(int requestNumber){
+        logger.info("并发测试开始执行....");
         OkHttpClient okHttpClient = RequestUtil.setOkhttpClient(requestNumber, MAX_CONNECTIONS);
         CurrencyTestCase.countDownLatch = new CountDownLatch(requestNumber);
-        executorService = Executors.newFixedThreadPool(requestNumber);
-        logger.info(okHttpClient);
-        logger.info(executorService);
-        logger.info(countDownLatch);
+        int threadNumber = getThreadNumber(requestNumber);
+        logger.info("线程池线程数量：" + threadNumber);
+        executorService = Executors.newFixedThreadPool(threadNumber);
+        logger.info("okHttp ：" + okHttpClient);
+        logger.info("threadPool ：" + executorService);
+        logger.info("countDownLatch : " + countDownLatch);
     }
 
+    /**
+     * 销毁操作
+     * @throws IOException
+     */
     public static void close() throws IOException {
         bf.close();
         CurrencyTestCase.executorService.shutdown();
@@ -51,12 +61,28 @@ public class CurrencyTestCase {
         CurrencyTestCase.executorService = null;
     }
 
+    /**
+     * 计算线程池中线程创建个数
+     * @param requestNumber：请求数
+     * @return
+     */
+    private static int getThreadNumber(int requestNumber){
+        int finalThreadNumber = 0;
+        if(requestNumber<THREAD_NUMBER_TIMES) finalThreadNumber = requestNumber;
+        else if (requestNumber>=THREAD_NUMBER_TIMES){
+            int tempNumber = requestNumber % THREAD_NUMBER_TIMES;
+            if (tempNumber!=0) finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES - tempNumber;
+            else finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES;
+        }
+        return finalThreadNumber;
+    }
+
 
     public static List<ParamsEntity> registerTest() throws Exception {
         String requestBody = "{\n" +
                 "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
                 "                \"password\": \"zj123456\",\"grecaptcha_token\":\"03AL8dmw-ZnbbBgkXcVzUF_-jxNqnuCv9ze8R3bJ5fTxNdQqY5dzTkYrFIJfX0d2AjPysGU00v5dJxo3mYjW5XghxCCI_e1-VQPWdUiK4G6ie-weOVIQ6zd6h8JUhX65Ccww2uC3T-BRpG7uPk6Id2wxTo2SbcjHeIt8sbmJx8g1SYgCK_4NLSlSaRcS3gRw_gVm67sN0oRTdvzCCPUDsWyc2JOU1MEwzO1y4dLiTrrKf1IDn-AboejqbnPF7OT8Fx0jIdF-VLz0QoD5haX5QqD53HuviESQgZhyphCBG10LYfiCt13urUXg_Oqz6RNSlcFIVOvXczqrukxy0BUi6hIl18DIgidsdUKCcQrX052kDyNFa3dkwMY8UJL0H7tE-sHrh3HX1sn5eYtI13xIENouqHIsCy1sbJF8L-BWrHr6dbOCGgiGPZiK00LqbddVDLD9z8Pphv3pUGcJ2UVBeIgy6G5iQc7iXwsl7UdWKHDI1t6yYj_2_ath9j9o9eoZKUnqvPaDQu__QRyUb9hq4v6M0W-xoxCRunVAKL_mO6wEsZuCwZh8l554pjybHMLXfXLkdIEF75iN_D\"}";
-        logger.info("api register request :" + requestBody);
+        logger.info("注册接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/user/register", "POST", requestBody, null);
         HashMap<String, String> keyValueMap = new HashMap<>();
         keyValueMap.put("account","account");
@@ -64,7 +90,7 @@ public class CurrencyTestCase {
         keyValueMap.put("grecaptcha_token","grecaptcha_token");
 //        keyValueMap.put("grecaptcha_token","grecaptcha_token");
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data._id")) throw new Exception("断言错误：data._id");
-        logger.info("api register response :" + responseBody);
+        logger.info("注册接口-响应：" + responseBody);
         return ParamsSetUtil.setParamsByRequest(requestBody,keyValueMap);
     }
 
@@ -72,9 +98,9 @@ public class CurrencyTestCase {
     public static List<ParamsEntity> loginTest(List<ParamsEntity> paramsEntities) throws Exception {
         String requestBody = "{\"account\":\"${account}\",\"password\":\"${password}\",\"grecaptcha_token\":\"${grecaptcha_token}\"}";
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("api login request :" + requestBody);
+        logger.info("登录接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/user/login", "POST", requestBody, null);
-        logger.info("api login response :" + responseBody);
+        logger.info("登录接口-响应：" + responseBody);
         Map<String, String> keyValueMap = new HashMap<>();
         keyValueMap.put("token","data.token");
         keyValueMap.put("user_id","data.user._id");
@@ -96,9 +122,9 @@ public class CurrencyTestCase {
                 "    \"user_id\": \"${user_id}\"\n" +
                 "}";
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("api recharge requestBody :" + requestBody);
+        logger.info("充值接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/user/recharge", "POST", requestBody, null);
-        logger.info("api recharge response :" + responseBody);
+        logger.info("充值接口-响应：" + responseBody);
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data.order_id")) throw new Exception("断言错误：data.token");
         Map<String, String> keyValueMap = new HashMap<>();
         keyValueMap.put("cashier","data.pay_method.cashier");
@@ -108,9 +134,9 @@ public class CurrencyTestCase {
     public static List<ParamsEntity> notifyTest(List<ParamsEntity> paramsEntities) throws Exception {
         String url = "${cashier}";
         url = (String)new PathParamsBuilder().parseParams(paramsEntities, url);
-        logger.info("api notify url :" + url);
+        logger.info("补单接口-请求体：" + url);
         String responseBody = RequestUtil.sendRequest(url, "GET", (String) null, null);
-        logger.info("api notify response :" + responseBody);
+        logger.info("补单接口-响应：" + responseBody);
         return ParamsSetUtil.setNullParams();
     }
 
@@ -123,14 +149,14 @@ public class CurrencyTestCase {
                 "  \"player_id\": \"${user_id}\"\n" +
                 "}";
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("api bet requestBody :" + requestBody);
+        logger.info("投注接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/game/dice/bet", "POST", requestBody, null);
         if (AssertUtil.assertResponseTextEquals(responseBody,"code",200)){
             String player_id = JsonUtil.objectMapper.readTree(requestBody).get("player_id").textValue();
             logger.info("user_id ：" + player_id);
             bf.write("\"" + player_id +"\""+",");
             bf.flush();
-            logger.info("api bet response :" + responseBody);
+            logger.info("投注接口-响应：" + responseBody);
         }else {
             Exception error = new Exception("betTest 断言错误");
             logger.error(error + responseBody);
@@ -169,7 +195,7 @@ public class CurrencyTestCase {
         init(requestNumber);
         for (Integer i = 0; i < requestNumber; i++) {
             executorService.execute(()->{
-                logger.info("thread：" + Thread.currentThread().getName() + " start run ...");
+                logger.info("线程：" + Thread.currentThread().getName() + " 开始执行...");
                 try {
                     Thread.sleep(500);
                     List<ParamsEntity> registerParamsEntitys = registerTest();
@@ -186,7 +212,7 @@ public class CurrencyTestCase {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                logger.info("thread：" + Thread.currentThread().getName() + " start end ...");
+                logger.info("线程：" + Thread.currentThread().getName() + " 执行结束...");
                 CurrencyTestCase.countDownLatch.countDown();
             });
         }

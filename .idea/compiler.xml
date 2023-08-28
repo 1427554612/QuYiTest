@@ -21,6 +21,7 @@
         <module name="quyi-script-java" />
         <module name="quyi-ui-autotest" />
         <module name="pressure-server" />
+        <module name="quyi-concurrency-server-test" />
         <module name="quyi-pressure-server" />
         <module name="quyi-test-task" />
         <module name="pressure-client" />
@@ -41,6 +42,7 @@
       <module name="pressure-server" options="-parameters" />
       <module name="quyi-acl" options="-parameters" />
       <module name="quyi-api-autotest" options="-parameters" />
+      <module name="quyi-concurrency-server-test" options="-parameters" />
       <module name="quyi-currency-test" options="-parameters" />
       <module name="quyi-pressure-client" options="-parameters" />
       <module name="quyi-pressure-server" options="-parameters" />

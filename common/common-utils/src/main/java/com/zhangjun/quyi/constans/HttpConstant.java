@@ -22,8 +22,11 @@ public interface HttpConstant {
     /**
      * 接口常量
      */
-    public static final String API_STR_RESULT_ID = "result_id";
-    public static final String API_STR_PLATFORM_ID = "platform_Id";
+    public static final String API_STR_RESULT_ID = "resultId";
+    public static final String API_STR_CONFIG_ID = "configId";
+    public static final String API_STR_CONFIG_NAME = "configName";
+    public static final String API_STR_CONFIG_TYPE = "configType";
+    public static final String API_STR_TEST_CONFIG = "testConfig";
     public static final String API_STR_RUN_BEGIN_TIME = "run_begin_time";
     public static final String API_STR_RUN_END_TIME = "run_end_time";
     public static final String API_STR_RUN_TIME = "run_time";
@@ -35,9 +38,6 @@ public interface HttpConstant {
     public static final String API_STR_CONFIG_PATH = "config_path";
     public static final String API_STR_EXCEL_PATH = "excelPath";
     public static final String API_STR_CREATE_TIME = "create_time";
-    public static final String API_STR_CONFIG_ID = "config_id";
-    public static final String API_STR_CONFIG_NAME = "config_name";
-    public static final String API_STR_CONFIG_TYPE = "config_type";
 
 
 

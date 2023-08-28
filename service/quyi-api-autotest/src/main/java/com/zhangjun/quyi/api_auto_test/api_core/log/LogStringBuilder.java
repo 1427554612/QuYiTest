@@ -1,12 +1,16 @@
 package com.zhangjun.quyi.api_auto_test.api_core.log;
 
+import com.zhangjun.quyi.utils.DateTimeUtil;
 import org.slf4j.Logger;
+
+import java.util.Date;
 
 
 /**
  * 日志设置类
  */
 public class LogStringBuilder {
+
 
     /**
      * 日志追加器
@@ -24,6 +28,7 @@ public class LogStringBuilder {
     public static final String REPLACE_PARAMS_DATA = "替换后的数据：";
     public static final String RESPONSE_BODY_DATA = "响应体的数据：";
     public static final String SET_PARAMS_DATA = "设置的参数：";
+    public static final String CASE_END = "执行结束....";
 
     /**
      * 添加日志
@@ -32,7 +37,13 @@ public class LogStringBuilder {
      */
     public static void addLog(String log){
         logger.debug(log);
-        LogStringBuilder.logBuilder.append(log).append("\n");
+        LogStringBuilder.logBuilder
+                .append("<span style = 'color:blue'>")
+                .append(DateTimeUtil.dateForString(new Date()))
+                .append("</span>")
+                .append("  ")
+                .append(log)
+                .append("<br><br>");
     }
 
     /**

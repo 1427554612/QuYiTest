@@ -66,12 +66,12 @@ public class TestResultController {
     }
 
     /**
-     *
+     * 查询这个结果下的所有结果详情记录
      * @return
      * @throws Exception
      */
     @GetMapping ("/findResultInfoList/{resultId}/{sort}")
-    @ApiOperation("结果id查询出所有结果详情")
+    @ApiOperation("查询这个结果下的所有结果详情记录")
     public ResultModel findResultInfoList(@ApiParam(name = "resultId",value = "结果id")
                                   @PathVariable String resultId,
                                           @ApiParam(name = "sort",value = "排序方式")
@@ -87,7 +87,6 @@ public class TestResultController {
      */
     @GetMapping("/findResult")
     @ApiOperation("查询所有结果")
-    @Cacheable(value = "test-result",key = "'log'",cacheManager = "cacheManager1Minute")
     public ResultModel findResult(){
         List<TestResult> list = testResultService.findResult();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,list);
@@ -120,13 +119,24 @@ public class TestResultController {
     }
 
 
+    /**
+     * 清空运行日志
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/deleteLog")
+    @ApiOperation("清空运行日志")
+    public ResultModel deleteLog() throws Exception {
+        return ResultModel.ok();
+    }
+
+
     /***********************  remote api ******************************/
 
     @GetMapping("/findResultByCaseName/{caseName}")
     @ApiOperation(value = "根据用例名称查询结果")
     public ResultModel findResultByCaseName(@ApiParam(name = "caseName",value = "用例名称")
                                                 @PathVariable String caseName){
-        System.out.println("caseName = " + caseName);
         QueryWrapper<TestResult> testResultQueryWrapper = new QueryWrapper<>();
         testResultQueryWrapper.eq("case_name",caseName);
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testResultService.getOne(testResultQueryWrapper));

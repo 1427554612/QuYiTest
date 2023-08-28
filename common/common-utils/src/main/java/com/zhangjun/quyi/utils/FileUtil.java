@@ -68,7 +68,7 @@ public class FileUtil {
      */
     public static String readLogByQueryMap(Map<String, Object> queryMap) throws Exception {
         File file = new File((String)queryMap.get("path"));
-        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file), EncodeConstant.ENCODE_GBK));
+        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file), EncodeConstant.ENCODE_UTF_8));
         StringBuilder sb = new StringBuilder();
         String str = null;
         while ((str = bf.readLine()) != null){
