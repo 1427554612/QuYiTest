@@ -31,7 +31,6 @@ public class TestConfigInfoServiceImpl  extends ServiceImpl<TestConfigInfoMapper
     public TestConfigInfo saveTestConfigInfo(TestConfigInfo testConfigInfo) {
         String configId = testConfigInfo.getConfigId();
         TestConfig testConfig = testConfigService.getById(configId);
-        System.out.println(testConfig);
         testConfigInfo.setConfigData(testConfig.getConfigData());
         this.save(testConfigInfo);
         QueryWrapper<TestConfigInfo> queryWrapper = new QueryWrapper<>();

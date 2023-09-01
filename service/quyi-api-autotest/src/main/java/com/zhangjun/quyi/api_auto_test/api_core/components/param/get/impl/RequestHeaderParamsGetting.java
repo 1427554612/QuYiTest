@@ -1,15 +1,13 @@
-package com.zhangjun.quyi.api_auto_test.api_core.components.get.impl;
+package com.zhangjun.quyi.api_auto_test.api_core.components.param.get.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.ParamsGetting;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
-import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.api_core.utils.RexUtils;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
 import com.zhangjun.quyi.constans.StrConstant;
 import com.zhangjun.quyi.utils.JsonUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;

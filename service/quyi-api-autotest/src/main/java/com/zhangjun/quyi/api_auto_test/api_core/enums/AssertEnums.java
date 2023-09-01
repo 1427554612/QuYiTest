@@ -24,10 +24,13 @@ public interface AssertEnums {
      * 断言类型枚举
      */
     enum AssertTypeEnum{
-        EQUALS("=="),        // 等于
-        NOT_EQUALS("!="),    // 不等于
-        CONTAINS("<>"),      // 包含
-        NOT_CONTAINS("!<>"); // 不包含
+        EQUALS("=="),           // 等于
+        NOT_EQUALS("!="),       // 不等于
+        CONTAINS("<>"),         // 包含
+        NOT_CONTAINS("!<>"),    // 不包含
+        LIST_SIZE("size"),      // 判断数组长度
+        IS_NULL("null"),        // 判断是空
+        IS_NOT_NULL("!null");   // 判断不是空
 
       public String value;
 

@@ -1,9 +1,9 @@
-package com.zhangjun.quyi.api_auto_test.api_core.components.get;
+package com.zhangjun.quyi.api_auto_test.api_core.components.param.get;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.impl.PathParamsGetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.impl.RequestBodyParamsGetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.impl.RequestHeaderParamsGetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.impl.PathParamsGetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.impl.RequestBodyParamsGetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.impl.RequestHeaderParamsGetting;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
 
 import java.util.ArrayList;

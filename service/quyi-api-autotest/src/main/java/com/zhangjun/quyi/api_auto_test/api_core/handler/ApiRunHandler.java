@@ -1,16 +1,14 @@
 package com.zhangjun.quyi.api_auto_test.api_core.handler;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.zhangjun.quyi.api_auto_test.api.TestConfigApi;
 import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.impl.AssertCaseImpl;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.ParamsGettingFactory;
-import com.zhangjun.quyi.api_auto_test.api_core.components.set.DivResponseParamsSetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.set.impl.DivResponseParamsSettingImpl;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.ParamsGetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.ParamsGettingFactory;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.DivResponseParamsSetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.impl.DivResponseParamsSettingImpl;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
@@ -27,7 +25,6 @@ import com.zhangjun.quyi.utils.RequestUtil;
 import com.zhangjun.quyi.utils.ResultModel;
 import okhttp3.Headers;
 import okhttp3.Response;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
@@ -47,6 +44,23 @@ public class ApiRunHandler {
     static {
         RequestUtil.setOkhttpClient(ApiRunHandler.DEFAULT_REQUEST_NUMBER,ApiRunHandler.DEFAULT_REQUEST_NUMBER);
         LogStringBuilder.logger = LoggerFactory.getLogger(ApiRunHandler.class);
+    }
+
+    /**
+     * 初始化
+     * @param configId
+     */
+    private static String init(String configId,TestConfigApi testConfigApi,TestResultApi testResultApi) throws JsonProcessingException {
+        ResultModel resultModel = testConfigApi.selectConfigById(configId);
+        Object testConfig = resultModel.getData().get("testConfig");
+        String s = JsonUtil.objectMapper.writeValueAsString(testConfig);
+        JsonNode jsonNode = JsonUtil.objectMapper.readTree(s).get("configData").get("clientUrl");
+
+        // 销毁参数获取对象处理类
+        ParamsGettingFactory.paramsGettings.clear();
+        // 清空临时结果数据
+        testResultApi.clearResultTemp();
+        return jsonNode.asText();
     }
 
     /**
@@ -78,7 +92,6 @@ public class ApiRunHandler {
             testResultInfo.setDatas(datas);
             testResultInfo.setRunBeginTime(new Date());
             testResultInfo.setConfigId(configId);
-            Long startTime = System.currentTimeMillis();
 
             // 1.2、处理前置脚本
             if (null!=apiTestCaseEntity.getBeforeScript()){
@@ -92,17 +105,19 @@ public class ApiRunHandler {
                 List<ParamsGetting> paramsGettings = ParamsGettingFactory.buildGettingObj(apiTestCaseEntity);
                 LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.PARAMS_HANDLE_NUMBER + paramsGettings.size());
                 for (ParamsGetting paramsGetting : paramsGettings) {
-                    apiTestCaseEntity = paramsGetting.getParams(DivResponseParamsSetting.ApiParamsEntitys,apiTestCaseEntity);
+                    apiTestCaseEntity = paramsGetting.getParams(DivResponseParamsSetting.apiParamsEntitys,apiTestCaseEntity);
                 }
                 LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.REPLACE_PARAMS_DATA + apiTestCaseEntity);
             }
 
             // 1.4、执行接口、获得请求和响应
+            Long startTime = System.currentTimeMillis();
             Object[] requestAndResponse = RequestUtil.sendingRequest(baseUrl+apiTestCaseEntity.getApiPath(),
                     apiTestCaseEntity.getRequestMethod(),
                     null ==apiTestCaseEntity.getRequestBody() ? null : apiTestCaseEntity.getRequestBody().toString() ,
                     JsonUtil.objectMapper.readValue(
                             apiTestCaseEntity.getRequestHeaders().toString(), Map.class));
+            Long endTime = System.currentTimeMillis();
             int code = ((Response) requestAndResponse[1]).code();
             Headers headers = ((Response) requestAndResponse[1]).headers();
             String body = ((Response) requestAndResponse[1]).body().string();
@@ -146,7 +161,7 @@ public class ApiRunHandler {
 
             testResultInfo.setRunEndTime(new Date());
             testResultInfo.setRunResult(flag);
-            testResultInfo.setRunTime((System.currentTimeMillis() - startTime));
+            testResultInfo.setRunTime(endTime-startTime);
             Map<String,Object> resultMap = new HashMap<>();
             resultMap.put("code",code);
             resultMap.put(ParamsFromEnum.RESPONSE_HEADER.value,headers);
@@ -222,22 +237,6 @@ public class ApiRunHandler {
     }
 
 
-    /**
-     * 初始化
-     * @param configId
-     */
-    private static String init(String configId,TestConfigApi testConfigApi,TestResultApi testResultApi) throws JsonProcessingException {
-        ResultModel resultModel = testConfigApi.selectConfigById(configId);
-        Object testConfig = resultModel.getData().get("testConfig");
-        String s = JsonUtil.objectMapper.writeValueAsString(testConfig);
-        JsonNode jsonNode = JsonUtil.objectMapper.readTree(s).get("configData").get("clientUrl");
-
-        // 销毁参数获取对象处理类
-        ParamsGettingFactory.paramsGettings.clear();
-        // 清空临时结果数据
-        testResultApi.clearResultTemp();
-        return jsonNode.asText();
-    }
 
 
     public static void main(String[] args) throws JsonProcessingException {

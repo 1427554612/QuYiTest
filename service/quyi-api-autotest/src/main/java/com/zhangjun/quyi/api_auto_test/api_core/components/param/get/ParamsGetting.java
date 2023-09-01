@@ -1,4 +1,4 @@
-package com.zhangjun.quyi.api_auto_test.api_core.components.get;
+package com.zhangjun.quyi.api_auto_test.api_core.components.param.get;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;

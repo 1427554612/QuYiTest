@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.api_auto_test.api_core.components.asserts.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.AssertCase;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
@@ -36,6 +37,8 @@ public class AssertCaseImpl implements AssertCase {
         if(type.equals(AssertEnums.AssertTypeEnum.EQUALS.value)) flag = this.eq(apiAssertEntity,code,responseHeaders, responseBody);
         else if (type.equals(AssertEnums.AssertTypeEnum.NOT_EQUALS.value)) flag = this.notEq(apiAssertEntity,code,responseHeaders, responseBody);
         else if (type.equals(AssertEnums.AssertTypeEnum.CONTAINS.value)) flag = this.contains(apiAssertEntity,code,responseHeaders, responseBody);
+        else if (type.equals(AssertEnums.AssertTypeEnum.IS_NULL.value)) flag = this.isNull(apiAssertEntity,code,responseHeaders, responseBody);
+        else if (type.equals(AssertEnums.AssertTypeEnum.IS_NOT_NULL.value)) flag = this.notIsNull(apiAssertEntity,code,responseHeaders, responseBody);
         else flag = this.notContains(apiAssertEntity,code,responseHeaders, responseBody);
         return flag;
     }
@@ -53,7 +56,7 @@ public class AssertCaseImpl implements AssertCase {
         if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_BODY.value)){
             JsonNode lastNode = JsonUtil.getLastNode(responseBody, apiAssertEntity.getKey());
             flag = apiAssertEntity.getExpectValue().equals(lastNode.asText()) ? true : false;
-            LogStringBuilder.addLog("get By response body：" + lastNode.asText() +"，except value：" + apiAssertEntity.getExpectValue()+" assert result is" + flag );
+            LogStringBuilder.addLog("判断的响应内容是：" + lastNode.asText() +"，预期值是：" + apiAssertEntity.getExpectValue()+" 断言结果是：" + flag );
         }
         // 对比响应码
         else if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_CODE.value))
@@ -77,8 +80,17 @@ public class AssertCaseImpl implements AssertCase {
      * @return
      */
     @Override
-    public boolean contains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) {
-        return false;
+    public boolean contains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException {
+        boolean flag = false;
+        String from = apiAssertEntity.getFrom();
+        if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_BODY.value)){
+            JsonNode lastNode = JsonUtil.getLastNode(responseBody, apiAssertEntity.getKey());
+            flag = lastNode.asText().contains(apiAssertEntity.getExpectValue().toString()) ? true : false;
+            LogStringBuilder.addLog("判断的响应内容是：" + lastNode.asText() +"，预期值是：" + apiAssertEntity.getExpectValue()+" 断言结果是：" + flag );
+        }else if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_HEADER.value)){
+
+        }
+        return flag;
     }
 
     /**
@@ -87,8 +99,8 @@ public class AssertCaseImpl implements AssertCase {
      * @return
      */
     @Override
-    public boolean notContains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) {
-        return false;
+    public boolean notContains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException {
+        return !contains(apiAssertEntity,code,responseHeaders,responseBody);
     }
 
     /**
@@ -100,8 +112,15 @@ public class AssertCaseImpl implements AssertCase {
      * @return
      */
     @Override
-    public boolean isNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders, String responseBody) {
-        return false;
+    public boolean isNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders, String responseBody) throws JsonProcessingException {
+        boolean flag = false;
+        String from = apiAssertEntity.getFrom();
+        if (from.equals(AssertEnums.AssertFormEnum.RESPONSE_BODY.value)){
+            JsonNode lastNode = JsonUtil.getLastNode(responseBody, apiAssertEntity.getKey());
+            flag = null == lastNode || lastNode.asText().equals("") || lastNode.asText().equals("null") ? true : false;
+            LogStringBuilder.addLog("判断的响应内容是：null"  +"，预期值是：" + apiAssertEntity.getExpectValue()+" 断言结果是：" + flag );
+        }
+        return flag;
     }
 
     /**
@@ -113,12 +132,12 @@ public class AssertCaseImpl implements AssertCase {
      * @return
      */
     @Override
-    public boolean notIsNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders, String responseBody) {
-        return false;
+    public boolean notIsNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders, String responseBody) throws JsonProcessingException {
+        return !isNull(apiAssertEntity,code,responseHeaders,responseBody);
     }
 
     /**
-     * 判断长度
+     * 判断数组长度
      * @param apiAssertEntity
      * @param code
      * @param responseHeaders
@@ -127,6 +146,7 @@ public class AssertCaseImpl implements AssertCase {
      */
     @Override
     public boolean lengthEq(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders, String responseBody) {
+        //TODO 判断响应体数组长度
         return false;
     }
 

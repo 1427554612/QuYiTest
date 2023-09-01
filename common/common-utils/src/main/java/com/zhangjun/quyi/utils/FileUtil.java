@@ -72,7 +72,6 @@ public class FileUtil {
         StringBuilder sb = new StringBuilder();
         String str = null;
         while ((str = bf.readLine()) != null){
-            log.info("log日志文件的数据：" + str);
             if (str.contains("开始执行"))
                 sb.append(HtmlConstant.DIV_PREFIX)
                 .append("<span  style='color:blue'>")

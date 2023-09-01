@@ -112,6 +112,16 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     /**
+     * 永久存在
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    public RedisCacheManager cacheManagerPermanent(RedisConnectionFactory connectionFactory) {
+        return baseManager(connectionFactory,-1);
+    }
+
+    /**
      * 基础缓存管理器
      * @param connectionFactory
      * @param ttlTime

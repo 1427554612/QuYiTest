@@ -1,6 +1,7 @@
 package com.zhangjun.quyi.api_auto_test.api_core.components.asserts;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
 import okhttp3.Headers;
 import okhttp3.Response;
@@ -31,14 +32,14 @@ public interface AssertCase {
      * @param apiAssertEntity
      * @return
      */
-    boolean contains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody);
+    boolean contains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException;
 
     /**
      * 判断不包含
      * @param apiAssertEntity
      * @return
      */
-    boolean notContains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody);
+    boolean notContains(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException;
 
     /**
      * 判断是空
@@ -48,7 +49,7 @@ public interface AssertCase {
      * @param responseBody
      * @return
      */
-    boolean isNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody);
+    boolean isNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException;
 
     /**
      * 判断不是空
@@ -58,7 +59,7 @@ public interface AssertCase {
      * @param responseBody
      * @return
      */
-    boolean notIsNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody);
+    boolean notIsNull(ApiAssertEntity apiAssertEntity, Integer code, Headers responseHeaders,String responseBody) throws JsonProcessingException;
 
     /**
      * 判断长度

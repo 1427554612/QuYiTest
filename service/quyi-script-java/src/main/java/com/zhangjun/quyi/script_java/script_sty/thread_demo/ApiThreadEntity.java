@@ -23,17 +23,21 @@ public class ApiThreadEntity implements Callable {
 
 
     @Override
-    public Object call() throws Exception {
-        if (this.body.contains("@")){
-            this.body = RegexDemo.replace("@(.*?)@", body);
+    public Object call(){
+        long st = 0l;
+        String response = "";
+        try {
+            if (this.body.contains("@")){
+                this.body = RegexDemo.replace("@(.*?)@", body);
+            }
+            st = System.currentTimeMillis();
+            response = runApi(url, body);
+//            int i = 10/0;
+            countDownLatch.countDown();
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        long st = System.currentTimeMillis();
-        String s = null;
-        s = runApi(url, body);
-        System.out.println(s);
-        int i = 10/0;
-        countDownLatch.countDown();
-        return Thread.currentThread().getName() + ", is run"  + ", time = " + (System.currentTimeMillis() - st + ",response = " + s);
+        return Thread.currentThread().getName() + ", is run"  + ", time = " + (System.currentTimeMillis() - st + ",response = " + response);
     }
 
 
@@ -44,26 +48,31 @@ public class ApiThreadEntity implements Callable {
 
 
     public static void main(String[] args) throws Exception {
-        long l = System.currentTimeMillis();
-        int Number = 1000;
+        int Number = 500;
         ApiThreadEntity.countDownLatch = new CountDownLatch(Number);
         RequestUtil.setOkhttpClient(Number,10000);
-        ExecutorService executorService = Executors.newFixedThreadPool(Number/20);
-        String url = "https://api.philucky.com/api/v1/coupon/number/use";
+        ScheduledExecutorService  executorService = Executors.newScheduledThreadPool(Number/10);
+        long l = System.currentTimeMillis();
+        String url = "http://localhost:8000/api/test_config/saveTestConfig";
         String body = "{\n" +
-                "    \"number\": \"20230810test\",\n" +
-                "    \"token\": \"8aa4fd1a448140ee96c418de642495ee\",\n" +
-                "    \"user_id\": \"64a6821aa97a93c9568806de\"\n" +
+                "  \"configData\": {},\n" +
+                "  \"configMark\": \"11ddasda\",\n" +
+                "  \"configName\": \"@thread@_@uuid@\",\n" +
+                "  \"configType\": \"string\",\n" +
+                "  \"updateUp\": \"张军\"\n" +
                 "}";
         for (int i = 0; i < Number; i++) {
-            futureList.add(executorService.submit(new ApiThreadEntity(url,body)));
+            futureList.add(executorService.schedule(new ApiThreadEntity(url,body),0,TimeUnit.SECONDS));
         }
         countDownLatch.await();
         long e = System.currentTimeMillis();
-//        for (Future future : futureList) {
-//            System.out.println(future.get());
-//        }
         System.out.println("总耗时:" + (e -l));
+        for (Future future : futureList) {
+            System.out.println(future.get());
+        }
         executorService.shutdownNow();
+
+        ThreadGroup threadGroup = new ThreadGroup("root");
+
     }
 }

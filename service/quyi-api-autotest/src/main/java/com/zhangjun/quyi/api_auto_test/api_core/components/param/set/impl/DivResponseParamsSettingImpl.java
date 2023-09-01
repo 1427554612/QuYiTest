@@ -1,22 +1,16 @@
-package com.zhangjun.quyi.api_auto_test.api_core.components.set.impl;
+package com.zhangjun.quyi.api_auto_test.api_core.components.param.set.impl;
 
-import com.zhangjun.quyi.api_auto_test.api_core.components.get.impl.PathParamsGetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.set.DivResponseParamsSetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.DivResponseParamsSetting;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
-import com.zhangjun.quyi.api_auto_test.api_core.handler.ApiRunHandler;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.api_core.utils.RexUtils;
 import com.zhangjun.quyi.utils.RequestUtil;
 import okhttp3.Headers;
-import okhttp3.Request;
 import okhttp3.Response;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 参数设置实现类
@@ -45,7 +39,7 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
             setByRequestHeader(requestHeaders,apiParamsEntity);
         else setByRequestBody(requestBody,apiParamsEntity);
         LogStringBuilder.addLog("替换后的参数对象为:" + apiParamsEntity);
-        DivResponseParamsSetting.ApiParamsEntitys.add(apiParamsEntity);
+        DivResponseParamsSetting.apiParamsEntitys.add(apiParamsEntity);
         return apiParamsEntity;
     }
 
@@ -63,6 +57,9 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
         apiParamsEntity.setParamValue(paramValue);
         LogStringBuilder.addLog("拿到真实数据为：" + paramValue);
         return apiParamsEntity;
+    }
+
+    private static void staticDemo(){
     }
 
     /**
@@ -104,17 +101,17 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
 
 
 
-    public static void main(String[] args) throws IOException {
-        RequestUtil.setOkhttpClient(10,10);
-        String requestBody = "{\n" +
-                "  \"configData\": {},\n" +
-                "  \"configMark\": \"zzzzsww\",\n" +
-                "  \"configName\": \"伟大\",\n" +
-                "  \"configType\": \"string\",\n" +
-                "  \"updateUp\": \"string\"\n" +
-                "}";
-        Response response = (Response)RequestUtil.sendingRequest("http://localhost:8002/api/test_config/saveTestConfig", "POST", requestBody, null)[1];
-        ApiParamsEntity apiParamsEntity = new ApiParamsEntity("saveTestConfig", "configId", "responseBody", "configId\":\"(.*?)\",\"", null);
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//        RequestUtil.setOkhttpClient(10,10);
+//        String requestBody = "{\n" +
+//                "  \"configData\": {},\n" +
+//                "  \"configMark\": \"zzzzsww\",\n" +
+//                "  \"configName\": \"伟大\",\n" +
+//                "  \"configType\": \"string\",\n" +
+//                "  \"updateUp\": \"string\"\n" +
+//                "}";
+//        Response response = (Response)RequestUtil.sendingRequest("http://localhost:8002/api/test_config/saveTestConfig", "POST", requestBody, null)[1];
+//        ApiParamsEntity apiParamsEntity = new ApiParamsEntity("saveTestConfig", "configId", "responseBody", "configId\":\"(.*?)\",\"", null);
 
     }
 }

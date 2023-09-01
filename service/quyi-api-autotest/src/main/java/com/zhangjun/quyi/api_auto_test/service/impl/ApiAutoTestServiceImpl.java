@@ -42,8 +42,6 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     private TestResultApi testResultApi;
 
 
-
-
     /**
      * 批量执行
      * @param caseList
@@ -51,14 +49,9 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     @Override
     public void runCase(List<ApiTestCaseEntity> caseList,String configId) throws Exception {
         // 更新配置文件
-        ResultModel configResultModel = testConfigApi.getConfigPath();
-        updateFile(configId,configResultModel);
-        String pythonProjectPath = (String)configResultModel.getData().get("pythonProjectPath");
-        String reportPath = (String)configResultModel.getData().get(StrConstant.REPORT_PATH);
         TestConfigInfo testConfigInfo = new TestConfigInfo();
         testConfigInfo.setConfigId(configId);
         ResultModel resultModel = testConfigApi.saveTestConfigInfo(testConfigInfo);
-
 
         ResultModel apiCaseResultModel = apiAutoTestController.selectAllCase();
         List<ApiTestCaseEntity> allCaseList = (List<ApiTestCaseEntity>)apiCaseResultModel.getData().get(HttpConstant.RESPONSE_STR_LIST);
@@ -66,18 +59,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
 
         // 执行用例
         ApiRunHandler.runApi(caseList,configId,testConfigApi,testResultApi);
-//        // 执行所有
-//        if (allCaseList.size() == caseList.size()){
-//            ApiRunHandler.runApi(caseList,configId);
-//            PythonScriptUtil
-//                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
-//        }else
-//            PythonScriptUtil
-//                    .execute("pytest -vs --html="+reportPath+"/report.html --capture=sys -p no:warnings",pythonProjectPath);
-//        Thread.sleep(5000);
-//        this.addOrUpdateResult(configId,caseList);   // 添加或者更新结果
     }
-
 
 
     /**
@@ -100,7 +82,6 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     }
 
 
-
     /**
      * 编辑测试用例
      * @param testCaseEntitys
@@ -117,6 +98,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         String excelPath  = jsonNode.get(HttpConstant.API_STR_EXCEL_PATH).textValue();
         EasyExcelUtil.exportExcel(ApiTestCaseEntity.class,testCaseEntitys,excelPath);
     }
+
 
     /**
      * 上传文件到本地
@@ -138,7 +120,6 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
     }
 
 
-
     /**
      * 更新配置文件
      * @param configId
@@ -154,72 +135,5 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
         JsonUtil.objectMapper.writeValue(file,jsonNode);
 
     }
-
-    /**
-     * 添加或者修改结果
-     * @throws IOException
-     */
-    private void addOrUpdateResult(String configId,List<ApiTestCaseEntity> caseList) throws Exception {
-//        // 结果写入库
-//        ResultModel resultModel = testConfigApi.getConfigPath();
-//        String apiRunTimePath = (String)resultModel.getData().get("apiRunTimePath");
-//        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(apiRunTimePath)));
-//        // 运行文件的jsonNode对象
-//        String json = null;
-//        List<JsonNode> jsonNodes = new ArrayList<>();
-//        while ((json =bf.readLine())!= null){
-//            jsonNodes.add(JsonUtil.objectMapper.readTree(json));
-//        }
-//        try {
-//            for (int i = 0;i<caseList.size();++i){
-//                TestResultDto testResultDto = new TestResultDto();
-//                testResultDto.setCase_name(caseList.get(i).getCaseName());
-//                testResultDto.setCase_type(CaseTypeEnum.API.value);
-//                String case_name = jsonNodes.get(i).get(HttpConstant.API_STR_CASE_NAME).asText();
-//                String caseName = caseList.get(i).getCaseName();
-//                System.out.println("case_name = " + case_name);
-//                System.out.println("caseName = " + caseName);
-//                if (case_name.equals(caseName)){
-//                    boolean run_result = Boolean.valueOf(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_RESULT).asText());
-//                    Date beginTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_BEGIN_TIME).asText());
-//                    Date endTime = DateTimeUtil.stringForDate(jsonNodes.get(i).get(HttpConstant.API_STR_RUN_END_TIME).asText());
-//                    int run_time = jsonNodes.get(i).get(HttpConstant.API_STR_RUN_TIME).asInt();
-//                    TestResultInfo testResultInfo = new TestResultInfo();
-//                    testResultInfo.setRun_result(run_result);
-//                    testResultInfo.setRun_begin_time(beginTime);
-//                    testResultInfo.setRun_end_time(endTime);
-//                    testResultInfo.setRun_time(run_time);
-//                    testResultInfo.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
-//                    testResultDto.getTestResultInfoList().add(testResultInfo);
-//                    testResultDto.setLast_run_date(testResultInfo.getRun_begin_time());
-//                    testResultDto.setLast_run_time(run_time);
-//                    testResultDto.setCase_title(jsonNodes.get(i).get(HttpConstant.API_STR_CASE_TITLE).asText());
-//                    testResultDto.setResponse_data(JsonUtil.objectMapper.readValue(jsonNodes.get(i).get(HttpConstant.API_STR_RESPONSE_DATA).toString(),Map.class));
-//                    logger.info("testResultDto = " + testResultDto);
-//                    String data = JsonUtil.objectMapper.writeValueAsString(testResultApi.findResultByCaseName(caseList.get(i).getCaseName()).getData().get(HttpConstant.RESPONSE_STR_DATA));
-//                    JsonNode jsonNode = JsonUtil.objectMapper.readTree(data);
-//                    if (null == data || "null".equals(data))
-//                    {
-//                        logger.info("执行 saveResult method");
-//                        testResultApi.saveResult(configId,testResultDto);
-//                    }
-//                    else {
-//                        logger.info("执行 updateResult method");
-//                        testResultDto.setResult_id(jsonNode.get("result_id").asText());
-//                        testResultApi.updateResult(testResultDto,configId);
-//                    };
-//                }
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        finally {
-//            bf.close();
-//            logger.info("apiRunTimePath io 已关闭");
-//        }
-    }
-
-
-
 
 }
