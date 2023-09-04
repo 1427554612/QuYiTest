@@ -1,25 +1,23 @@
 package com.zhangjun.quyi.api_auto_test.api_core.components.param.set.impl;
 
-import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.DivResponseParamsSetting;
-import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
-import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.ParamsSetting;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsEnums;
+import com.zhangjun.quyi.api_auto_test.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.api_core.utils.RexUtils;
-import com.zhangjun.quyi.utils.RequestUtil;
 import okhttp3.Headers;
-import okhttp3.Response;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
- * 参数设置实现类
+ * 接口参数设置
  */
-public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
+public class ApiParamsSetting implements ParamsSetting {
 
 
     static {
-        LogStringBuilder.logger = LoggerFactory.getLogger(DivResponseParamsSettingImpl.class);
+        LogStringBuilder.logger = LoggerFactory.getLogger(ApiParamsSetting.class);
     }
 
 
@@ -31,15 +29,15 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
     public ApiParamsEntity setParams(String responseBody, Headers headers,Object requestBody,Object requestHeaders, ApiParamsEntity apiParamsEntity) throws IOException {
         LogStringBuilder.addLog("替换前的参数对象为:" + apiParamsEntity);
         // 从响应体中拿数据
-        if (apiParamsEntity.getParamFrom().equals(ParamsFromEnum.RESPONSE_BODY.value))
+        if (apiParamsEntity.getParamFrom().equals(ParamsEnums.ParamsFromEnum.RESPONSE_BODY.value))
             setByResponseBody(responseBody,apiParamsEntity);
-        else if (apiParamsEntity.getParamFrom().equals(ParamsFromEnum.RESPONSE_HEADER.value))
+        else if (apiParamsEntity.getParamFrom().equals(ParamsEnums.ParamsFromEnum.RESPONSE_HEADER.value))
             setByResponseHeader(headers,apiParamsEntity);
-        else if (apiParamsEntity.getParamFrom().equals(ParamsFromEnum.REQUEST_HEADER.value))
+        else if (apiParamsEntity.getParamFrom().equals(ParamsEnums.ParamsFromEnum.REQUEST_HEADER.value))
             setByRequestHeader(requestHeaders,apiParamsEntity);
         else setByRequestBody(requestBody,apiParamsEntity);
         LogStringBuilder.addLog("替换后的参数对象为:" + apiParamsEntity);
-        DivResponseParamsSetting.apiParamsEntitys.add(apiParamsEntity);
+        ParamsSetting.apiParamsEntitys.add(apiParamsEntity);
         return apiParamsEntity;
     }
 
@@ -52,15 +50,13 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
     private ApiParamsEntity setByResponseBody(String responseBody,ApiParamsEntity apiParamsEntity){
         LogStringBuilder.addLog("从响应体中拿到数据.....");
         // 从响应体中拿数据
-        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamsEq());
-        String paramValue = RexUtils.getByRex(apiParamsEntity.getParamsEq(), responseBody);
+        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamEq());
+        String paramValue = RexUtils.getByRex(apiParamsEntity.getParamEq(), responseBody);
         apiParamsEntity.setParamValue(paramValue);
         LogStringBuilder.addLog("拿到真实数据为：" + paramValue);
         return apiParamsEntity;
     }
 
-    private static void staticDemo(){
-    }
 
     /**
      * 从请求体中设置
@@ -70,8 +66,8 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
      */
     private ApiParamsEntity setByRequestBody(Object requestBody, ApiParamsEntity apiParamsEntity) {
         LogStringBuilder.addLog("从请求体中拿到数据.....");
-        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamsEq());
-        String paramsEq = apiParamsEntity.getParamsEq();
+        LogStringBuilder.addLog("正则表达式为：" + apiParamsEntity.getParamEq());
+        String paramsEq = apiParamsEntity.getParamEq();
         LogStringBuilder.addLog("请求参数为：" + requestBody.toString());
         String paramValue = RexUtils.getByRex(paramsEq, requestBody.toString());
         apiParamsEntity.setParamValue(paramValue);
@@ -99,19 +95,4 @@ public class DivResponseParamsSettingImpl implements DivResponseParamsSetting {
         return null;
     }
 
-
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        RequestUtil.setOkhttpClient(10,10);
-//        String requestBody = "{\n" +
-//                "  \"configData\": {},\n" +
-//                "  \"configMark\": \"zzzzsww\",\n" +
-//                "  \"configName\": \"伟大\",\n" +
-//                "  \"configType\": \"string\",\n" +
-//                "  \"updateUp\": \"string\"\n" +
-//                "}";
-//        Response response = (Response)RequestUtil.sendingRequest("http://localhost:8002/api/test_config/saveTestConfig", "POST", requestBody, null)[1];
-//        ApiParamsEntity apiParamsEntity = new ApiParamsEntity("saveTestConfig", "configId", "responseBody", "configId\":\"(.*?)\",\"", null);
-
-    }
 }

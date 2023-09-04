@@ -6,15 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.api_auto_test.entity.ModuleEntity;
 import com.zhangjun.quyi.api_auto_test.mapper.ExportModuleMapper;
 import com.zhangjun.quyi.api_auto_test.service.ExportModuleService;
+import com.zhangjun.quyi.constans.SqlConstant;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.utils.JsonUtil;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.json.Json;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,9 +84,8 @@ public class ExportModuleServiceImpl  extends ServiceImpl<ExportModuleMapper, Mo
         moduleEntity.setMethods(methods);
         this.save(moduleEntity);
         QueryWrapper<ModuleEntity> resultModuleQuery = new QueryWrapper<>();
-        resultModuleQuery.orderByDesc("create_time").last("limit 1");
-        ModuleEntity one = this.getOne(resultModuleQuery);
-        return one;
+        resultModuleQuery.orderByDesc("create_time").last(SqlConstant.SQL_LIMIT_1);
+        return this.getOne(resultModuleQuery);
     }
 
 }

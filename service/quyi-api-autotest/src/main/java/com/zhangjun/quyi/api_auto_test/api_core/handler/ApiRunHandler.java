@@ -7,11 +7,11 @@ import com.zhangjun.quyi.api_auto_test.api.TestResultApi;
 import com.zhangjun.quyi.api_auto_test.api_core.components.asserts.impl.AssertCaseImpl;
 import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.ParamsGetting;
 import com.zhangjun.quyi.api_auto_test.api_core.components.param.get.ParamsGettingFactory;
-import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.DivResponseParamsSetting;
-import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.impl.DivResponseParamsSettingImpl;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.ParamsSetting;
+import com.zhangjun.quyi.api_auto_test.api_core.components.param.set.impl.ApiParamsSetting;
 import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiAssertEntity;
-import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
-import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsFromEnum;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsEnums;
+import com.zhangjun.quyi.api_auto_test.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.api_core.log.LogStringBuilder;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
 import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResult;
@@ -105,7 +105,7 @@ public class ApiRunHandler {
                 List<ParamsGetting> paramsGettings = ParamsGettingFactory.buildGettingObj(apiTestCaseEntity);
                 LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.PARAMS_HANDLE_NUMBER + paramsGettings.size());
                 for (ParamsGetting paramsGetting : paramsGettings) {
-                    apiTestCaseEntity = paramsGetting.getParams(DivResponseParamsSetting.apiParamsEntitys,apiTestCaseEntity);
+                    apiTestCaseEntity = paramsGetting.getParams(ParamsSetting.apiParamsEntitys,apiTestCaseEntity);
                 }
                 LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.REPLACE_PARAMS_DATA + apiTestCaseEntity);
             }
@@ -136,7 +136,7 @@ public class ApiRunHandler {
 
             // 1.6、设置参数
             if (apiTestCaseEntity.getIsParams().equals("是") || apiTestCaseEntity.getIsParams().equals("Y")){
-                DivResponseParamsSettingImpl divResponseParamsSetting = new DivResponseParamsSettingImpl();
+                ApiParamsSetting apiResponseParamsSetting = new ApiParamsSetting();
                 Object paramList = apiTestCaseEntity.getParamList();
                 JsonNode paramsNodeTree = JsonUtil.objectMapper.readTree(paramList.toString());
                 for (int i = 0; i < paramsNodeTree.size(); i++) {
@@ -144,9 +144,9 @@ public class ApiRunHandler {
                     apiParamsEntity.setCaseName(apiTestCaseEntity.getCaseName());
                     apiParamsEntity.setParamName(paramsNodeTree.get(i).get("paramName").asText());
                     apiParamsEntity.setParamFrom(paramsNodeTree.get(i).get("paramFrom").asText());
-                    apiParamsEntity.setParamsEq(paramsNodeTree.get(i).get("paramsEq").asText());
+                    apiParamsEntity.setParamEq(paramsNodeTree.get(i).get("paramsEq").asText());
                     // 调用设置参数
-                    divResponseParamsSetting.setParams(body,headers,apiTestCaseEntity.getRequestBody(),apiTestCaseEntity.getRequestHeaders(),apiParamsEntity);
+                    apiResponseParamsSetting.setParams(body,headers,apiTestCaseEntity.getRequestBody(),apiTestCaseEntity.getRequestHeaders(),apiParamsEntity);
                     LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA + LogStringBuilder.SET_PARAMS_DATA + apiParamsEntity);
                 }
             }
@@ -164,8 +164,8 @@ public class ApiRunHandler {
             testResultInfo.setRunTime(endTime-startTime);
             Map<String,Object> resultMap = new HashMap<>();
             resultMap.put("code",code);
-            resultMap.put(ParamsFromEnum.RESPONSE_HEADER.value,headers);
-            resultMap.put(ParamsFromEnum.RESPONSE_BODY.value, JsonUtil.objectMapper.readValue(body,Map.class));
+            resultMap.put(ParamsEnums.ParamsFromEnum.RESPONSE_HEADER.value,headers);
+            resultMap.put(ParamsEnums.ParamsFromEnum.RESPONSE_BODY.value, JsonUtil.objectMapper.readValue(body,Map.class));
             testResultInfo.setResultData(resultMap);
             testResultInfo.setResultLog(LogStringBuilder.getLog());
             LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + apiTestCaseEntity + "end case...");
@@ -239,8 +239,8 @@ public class ApiRunHandler {
 
 
 
-    public static void main(String[] args) throws JsonProcessingException {
-        String params  = "[{\\n \\\"caseName\\\": \\\"built\\\",\\n \\\"paramName\\\": \\\"configName\\\",\\n \\\"paramFrom\\\": \\\"responseBody\\\",\\n \\\"paramsEq\\\": \\\"configName\\\\\\\":\\\\\\\"(.* ? )\\\\\\\",\\\"\\n}, {\\n \\\"caseName\\\": \\\"built\\\",\\n \\\"paramName\\\": \\\"configType\\\",\\n \\\"paramFrom\\\": \\\"responseBody\\\",\\n \\\"paramsEq\\\": \\\"configType\\\\\\\":\\\\\\\"(.* ? )\\\\\\\",\\\"\\n}]";
-        System.out.println(JsonUtil.objectMapper.readTree(params));
-    }
+//    public static void main(String[] args) throws JsonProcessingException {
+//        String params  = "[{\\n \\\"caseName\\\": \\\"built\\\",\\n \\\"paramName\\\": \\\"configName\\\",\\n \\\"paramFrom\\\": \\\"responseBody\\\",\\n \\\"paramsEq\\\": \\\"configName\\\\\\\":\\\\\\\"(.* ? )\\\\\\\",\\\"\\n}, {\\n \\\"caseName\\\": \\\"built\\\",\\n \\\"paramName\\\": \\\"configType\\\",\\n \\\"paramFrom\\\": \\\"responseBody\\\",\\n \\\"paramsEq\\\": \\\"configType\\\\\\\":\\\\\\\"(.* ? )\\\\\\\",\\\"\\n}]";
+//        System.out.println(JsonUtil.objectMapper.readTree(params));
+//    }
 }

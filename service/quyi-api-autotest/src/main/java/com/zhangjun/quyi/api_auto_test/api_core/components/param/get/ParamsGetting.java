@@ -1,8 +1,8 @@
 package com.zhangjun.quyi.api_auto_test.api_core.components.param.get;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zhangjun.quyi.api_auto_test.api_core.entity.ApiParamsEntity;
-import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsSymbolEnum;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsEnums;
+import com.zhangjun.quyi.api_auto_test.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.entity.ApiTestCaseEntity;
 import com.zhangjun.quyi.utils.JsonUtil;
 
@@ -30,8 +30,8 @@ public interface ParamsGetting {
      * @return
      */
     static boolean ifPathNeedParams(ApiTestCaseEntity apiTestCaseEntity){
-        return apiTestCaseEntity.getApiPath().contains(ParamsSymbolEnum.DIV_PARAMS_SYMBOL.symbol)
-                || apiTestCaseEntity.getApiPath().contains(ParamsSymbolEnum.DUILT_PARAMS_SYMBOL.symbol) ? true : false;
+        return apiTestCaseEntity.getApiPath().contains(ParamsEnums.ParamsSymbolEnum.API_PARAMS_SYMBOL.symbol)
+                || apiTestCaseEntity.getApiPath().contains(ParamsEnums.ParamsSymbolEnum.SYSTEM_PARAMS_SYMBOL.symbol) ? true : false;
     }
 
     /**
@@ -41,8 +41,8 @@ public interface ParamsGetting {
      * @throws JsonProcessingException
      */
     static boolean ifRequestBodyNeedParams(ApiTestCaseEntity apiTestCaseEntity) throws JsonProcessingException {
-        return JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestBody()).contains(ParamsSymbolEnum.DIV_PARAMS_SYMBOL.symbol) ||
-                JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestBody()).contains(ParamsSymbolEnum.DUILT_PARAMS_SYMBOL.symbol) ? true : false;
+        return JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestBody()).contains(ParamsEnums.ParamsSymbolEnum.API_PARAMS_SYMBOL.symbol) ||
+                JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestBody()).contains(ParamsEnums.ParamsSymbolEnum.SYSTEM_PARAMS_SYMBOL.symbol) ? true : false;
     }
 
     /**
@@ -52,8 +52,8 @@ public interface ParamsGetting {
      * @throws JsonProcessingException
      */
     static boolean ifRequestHeadersNeedParams(ApiTestCaseEntity apiTestCaseEntity) throws JsonProcessingException {
-        return JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestHeaders()).contains(ParamsSymbolEnum.DIV_PARAMS_SYMBOL.symbol) ||
-                JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestHeaders()).contains(ParamsSymbolEnum.DUILT_PARAMS_SYMBOL.symbol) ? true : false;
+        return JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestHeaders()).contains(ParamsEnums.ParamsSymbolEnum.API_PARAMS_SYMBOL.symbol) ||
+                JsonUtil.objectMapper.writeValueAsString(apiTestCaseEntity.getRequestHeaders()).contains(ParamsEnums.ParamsSymbolEnum.SYSTEM_PARAMS_SYMBOL.symbol) ? true : false;
     }
 
     /**
