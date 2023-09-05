@@ -1,6 +1,8 @@
 package com.zhangjun.quyi.test_result.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
@@ -8,6 +10,7 @@ import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
 import com.zhangjun.quyi.test_result.mapper.TestResultInfoServiceMapper;
 import com.zhangjun.quyi.test_result.service.TestResultInfoService;
 import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
+import jnr.ffi.annotations.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -47,10 +50,13 @@ public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoService
      * @return
      */
     @Override
-    @Cacheable(value = "test-result",key = "#resultId",cacheManager = "cacheManager1Minute")
-    public List<TestResultInfo> findAllInfoByResultId(String resultId) {
+//    @Cacheable(value = "test-result",key = "#root.args[0]+'_'+#root.args[1]+'_'+#root.args[2]",cacheManager = "cacheManager1Minute")
+    public IPage<TestResultInfo> findAllInfoByResultId(String resultId, Integer current, Integer size) {
+        Page<TestResultInfo> page = new Page<>(current,size);
         QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("result_id",resultId);
-        return this.list(queryWrapper);
+        Page<TestResultInfo> page1 = this.page(page, queryWrapper);
+        System.out.println("总数: " + page1.getTotal());
+        return this.page(page, queryWrapper);
     }
 }

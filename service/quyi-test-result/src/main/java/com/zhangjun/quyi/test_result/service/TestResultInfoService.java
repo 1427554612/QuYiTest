@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.test_result.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 
@@ -18,5 +19,5 @@ public interface TestResultInfoService extends IService<TestResultInfo> {
      * 通过resultId查询所有执行详情记录
      * @return
      */
-    List<TestResultInfo> findAllInfoByResultId(String resultId);
+    IPage<TestResultInfo> findAllInfoByResultId(String resultId, Integer current, Integer size);
 }

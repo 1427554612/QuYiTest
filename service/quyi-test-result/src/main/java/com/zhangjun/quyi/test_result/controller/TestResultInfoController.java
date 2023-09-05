@@ -1,5 +1,6 @@
 package com.zhangjun.quyi.test_result.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.test_result.entity.TestResult;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Api(description = "结果管理")
+@Api(description = "结果详情管理")
 @RequestMapping("/api/test_result/info")
 @Validated
 public class TestResultInfoController {
@@ -57,11 +58,13 @@ public class TestResultInfoController {
      * 通过resultId查询所有执行详情记录
      * @return
      */
-    @GetMapping("/{resultId}")
+    @GetMapping("/getAll/{resultId}/{current}/{size}")
     @ApiOperation("通过resultId查询所有执行详情记录")
-    public ResultModel findAllInfoByResultId(@PathVariable(name = "resultId") String resultId){
-        List<TestResultInfo> testResultInfoList = testResultInfoService.findAllInfoByResultId(resultId);
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultInfoList);
+    public ResultModel findAllInfoByResultId(@PathVariable(name = "resultId") String resultId,
+                                             @PathVariable(name = "current") Integer current,
+                                             @PathVariable(name = "size") Integer size){
+        IPage<TestResultInfo> pages = testResultInfoService.findAllInfoByResultId(resultId, current, size);
+        return ResultModel.ok().data("total",pages.getTotal()).data(HttpConstant.RESPONSE_STR_LIST,pages.getRecords());
     }
 
 
