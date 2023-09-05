@@ -124,16 +124,16 @@ public class RexUtils {
 
 
     public static void main(String[] args) throws JsonProcessingException {
-        ApiParamsEntity apiParamsEntity = new ApiParamsEntity("1562362546","div","_id","responseBody","configId\\\":(.*?)\\\"","1692499320026271745");
-        ApiParamsEntity apiParamsEntity2 = new ApiParamsEntity("1562362547","login","name","responseBody","configId\\\":(.*?)\\\"","login_success");
-        ParamsSetting.apiParamsEntitys.add(apiParamsEntity);
-        ParamsSetting.apiParamsEntitys.add(apiParamsEntity2);
-        String source = "/api/test/#_id#/%name%/·time·_1@qq.com";
-        System.out.println(JsonUtil.objectMapper.writeValueAsString(ParamsSetting.apiParamsEntitys));
-        for (ParamsEnums.ParamsSymbolEnum paramsSymbolEnum : ParamsEnums.ParamsSymbolEnum.values()) {
-            source = RexUtils.getByCollection(source, ParamsSetting.apiParamsEntitys,paramsSymbolEnum.symbol);
-        }
-        System.out.println(source);
+//        ApiParamsEntity apiParamsEntity = new ApiParamsEntity("1562362546","div","_id","responseBody","configId\\\":(.*?)\\\"","1692499320026271745");
+//        ApiParamsEntity apiParamsEntity2 = new ApiParamsEntity("1562362547","login","name","responseBody","configId\\\":(.*?)\\\"","login_success");
+//        ParamsSetting.apiParamsEntitys.add(apiParamsEntity);
+//        ParamsSetting.apiParamsEntitys.add(apiParamsEntity2);
+//        String source = "/api/test/#_id#/%name%/·time·_1@qq.com";
+//        System.out.println(JsonUtil.objectMapper.writeValueAsString(ParamsSetting.apiParamsEntitys));
+//        for (ParamsEnums.ParamsSymbolEnum paramsSymbolEnum : ParamsEnums.ParamsSymbolEnum.values()) {
+//            source = RexUtils.getByCollection(source, ParamsSetting.apiParamsEntitys,paramsSymbolEnum.symbol);
+//        }
+//        System.out.println(source);
 
     }
 

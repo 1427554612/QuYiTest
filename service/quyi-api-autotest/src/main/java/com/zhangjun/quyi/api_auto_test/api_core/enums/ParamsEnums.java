@@ -42,7 +42,7 @@ public interface ParamsEnums {
      */
     enum SystemParamsTypeEnum {
 
-        TIME("#"),       // 接口运行参数
+        TIME("time"),       // 接口运行参数
         THREAD_MAME("thread"),       // 自定义参数
         UUID("uuid");    // 系统参数
 

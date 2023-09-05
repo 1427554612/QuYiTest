@@ -49,8 +49,6 @@ public class ApiAutoTestController {
     private RedisTemplate redisTemplate;
 
 
-
-
     /**
      * 获取所有用例列表
      * @return
