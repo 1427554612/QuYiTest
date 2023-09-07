@@ -62,11 +62,10 @@ public interface TestResultService extends IService<TestResult> {
      */
     void deleteAllResult();
 
+
     /**
-     * 结果id查询出所有结果详情
-     * @param resultId：结果id
-     * @param sort：排序方式 1、正序、2、倒叙
+     * 查询该id的数据
      * @return
      */
-    List<TestResultInfo> findResultInfoList(String resultId, Integer sort);
+    TestResult findById(String resultId);
 }

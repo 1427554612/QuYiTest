@@ -20,4 +20,12 @@ public interface TestResultInfoService extends IService<TestResultInfo> {
      * @return
      */
     IPage<TestResultInfo> findAllInfoByResultId(String resultId, Integer current, Integer size);
+
+    /**
+     * 结果id查询出所有结果详情
+     * @param resultId：结果id
+     * @param sort：排序方式 1、正序、2、倒叙
+     * @return
+     */
+    List<TestResultInfo> findResultInfoList(String resultId, Integer sort);
 }

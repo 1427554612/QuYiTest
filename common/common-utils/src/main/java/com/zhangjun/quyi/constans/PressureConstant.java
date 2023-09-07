@@ -56,9 +56,14 @@ public interface PressureConstant {
     public static final String MEXLUCKY_RPE_CLIENT_URL = "https://mexlucky-api.pre-release.xyz";
 
     /**
+     * B3预发布
+     */
+    public static final String B3_PRE_CLIENT_URL = "https://b3-atom2.pre-release.xyz/";
+
+    /**
      * 基础url
      */
-    public static final String BASE_CLIENT_URL = PHILUCKY_PRE_CLIENT_URL;
+    public static final String BASE_CLIENT_URL = B3_PRE_CLIENT_URL;
     public static final String BASE_ADMIN_URL = PHILUCKY_PRE_ADMIN_URL;
 
 

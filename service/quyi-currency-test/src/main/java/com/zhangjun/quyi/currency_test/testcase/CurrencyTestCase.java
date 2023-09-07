@@ -1,12 +1,18 @@
 package com.zhangjun.quyi.currency_test.testcase;
 
 
+import com.zhangjun.quyi.constans.PressureConstant;
+import com.zhangjun.quyi.currency_test.entity.ExchangeCode;
 import com.zhangjun.quyi.currency_test.utils.*;
+import com.zhangjun.quyi.entity.RequestParamEntity;
 import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
@@ -16,7 +22,7 @@ import java.util.concurrent.Executors;
 
 public class CurrencyTestCase {
     private static Integer MAX_CONNECTIONS = 10000;
-    private static String BASE_URL = "https://mexlucky-api.pre-release.xyz";
+    public static String BASE_URL = "https://b3-api.pre-release.xyz";
     private static ArrayList<Map<String,String>> keyValueList = new ArrayList();
     public static volatile CountDownLatch countDownLatch = null;      // 计数器
     public static ExecutorService executorService = null;
@@ -82,7 +88,6 @@ public class CurrencyTestCase {
         String requestBody = "{\n" +
                 "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
                 "                \"password\": \"zj123456\",\"grecaptcha_token\":\"03AL8dmw-ZnbbBgkXcVzUF_-jxNqnuCv9ze8R3bJ5fTxNdQqY5dzTkYrFIJfX0d2AjPysGU00v5dJxo3mYjW5XghxCCI_e1-VQPWdUiK4G6ie-weOVIQ6zd6h8JUhX65Ccww2uC3T-BRpG7uPk6Id2wxTo2SbcjHeIt8sbmJx8g1SYgCK_4NLSlSaRcS3gRw_gVm67sN0oRTdvzCCPUDsWyc2JOU1MEwzO1y4dLiTrrKf1IDn-AboejqbnPF7OT8Fx0jIdF-VLz0QoD5haX5QqD53HuviESQgZhyphCBG10LYfiCt13urUXg_Oqz6RNSlcFIVOvXczqrukxy0BUi6hIl18DIgidsdUKCcQrX052kDyNFa3dkwMY8UJL0H7tE-sHrh3HX1sn5eYtI13xIENouqHIsCy1sbJF8L-BWrHr6dbOCGgiGPZiK00LqbddVDLD9z8Pphv3pUGcJ2UVBeIgy6G5iQc7iXwsl7UdWKHDI1t6yYj_2_ath9j9o9eoZKUnqvPaDQu__QRyUb9hq4v6M0W-xoxCRunVAKL_mO6wEsZuCwZh8l554pjybHMLXfXLkdIEF75iN_D\"}";
-        logger.info("注册接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/user/register", "POST", requestBody, null);
         HashMap<String, String> keyValueMap = new HashMap<>();
         keyValueMap.put("account","account");
@@ -98,7 +103,6 @@ public class CurrencyTestCase {
     public static List<ParamsEntity> loginTest(List<ParamsEntity> paramsEntities) throws Exception {
         String requestBody = "{\"account\":\"${account}\",\"password\":\"${password}\",\"grecaptcha_token\":\"${grecaptcha_token}\"}";
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("登录接口-请求体：" + requestBody);
         String responseBody = RequestUtil.sendRequest(BASE_URL + "/user/login", "POST", requestBody, null);
         logger.info("登录接口-响应：" + responseBody);
         Map<String, String> keyValueMap = new HashMap<>();
@@ -106,6 +110,22 @@ public class CurrencyTestCase {
         keyValueMap.put("user_id","data.user._id");
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data.token")) throw new Exception("断言错误：data.token");
         return ParamsSetUtil.setParamsByResponse(responseBody,keyValueMap);
+    }
+
+    /**
+     * 使用兑换码
+     * @return
+     */
+    public static List<ParamsEntity> userCodeApi(List<ParamsEntity> paramsEntities,String code) throws IOException {
+        String requestBody = "{\n" +
+                "    \"number\": \""+code+"\",\n" +
+                "    \"token\": \"${token}\",\n" +
+                "    \"user_id\": \"${user_id}\"\n" +
+                "}";
+        requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
+        String responseBody = RequestUtil.sendRequest(BASE_URL + "/api/v1/coupon/number/use", "POST", requestBody, null);
+        logger.info("使用兑换码-响应：" + responseBody);
+        return null;
     }
 
 
@@ -166,6 +186,7 @@ public class CurrencyTestCase {
         return ParamsSetUtil.setNullParams();
     }
 
+
     public static List<ParamsEntity> withdraw(List<ParamsEntity> paramsEntities) throws IOException {
         String requestBody = "{\n" +
                 "  \"data\": {\n" +
@@ -191,22 +212,26 @@ public class CurrencyTestCase {
     }
 
 
-    public static boolean run(int requestNumber) throws InterruptedException, IOException {
+    public static boolean run(Map<String,Object> map) throws InterruptedException, IOException {
+        Integer requestNumber = (Integer) map.get("number");
+        String code = (String) map.get("code");
+        CurrencyTestCase.BASE_URL = (String) map.get("url");
         init(requestNumber);
+        logger.info("-------------------------------  开始执行  ----------------------------------");
+        long st = System.currentTimeMillis();
         for (Integer i = 0; i < requestNumber; i++) {
             executorService.execute(()->{
                 logger.info("线程：" + Thread.currentThread().getName() + " 开始执行...");
                 try {
-                    Thread.sleep(500);
                     List<ParamsEntity> registerParamsEntitys = registerTest();
-                    Thread.sleep(500);
                     List<ParamsEntity> loginParamsEntitys = loginTest(registerParamsEntitys);
-                    Thread.sleep(500);
-                    List<ParamsEntity> rechargeParamsEntitys = rechargeTest(loginParamsEntitys);
-                    Thread.sleep(1500);
-                    notifyTest(rechargeParamsEntitys);
-                    Thread.sleep(1500);
-                    betTest(loginParamsEntitys);
+                    List<ParamsEntity> list = userCodeApi(loginParamsEntitys, code);
+//                    Thread.sleep(500);
+//                    List<ParamsEntity> rechargeParamsEntitys = rechargeTest(loginParamsEntitys);
+//                    Thread.sleep(1500);
+//                    notifyTest(rechargeParamsEntitys);
+//                    Thread.sleep(1500);
+//                    betTest(loginParamsEntitys);
 //                    Thread.sleep(1500);
 //                    withdraw(loginParamsEntitys);
                 } catch (Exception e) {
@@ -217,13 +242,20 @@ public class CurrencyTestCase {
             });
         }
         CurrencyTestCase.countDownLatch.await();
+        logger.info("-------------------------------  执行结束  ----------------------------------");
+        logger.info("总共耗时：" + (System.currentTimeMillis() - st) + " 毫秒");
         CurrencyTestCase.close();
         return true;
     }
 
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        run(1);
+//        run(100,"2F115D46E1D23F6CAA8E953AB");
+        Map<String,Object> map = new HashMap<>();
+        map.put("number",1000);
+        map.put("url","https://b1.pre-release.xyz");
+        map.put("code","2CE86C4A4A9A58E4BA6E06B20");
+        run(map);
 
     }
 

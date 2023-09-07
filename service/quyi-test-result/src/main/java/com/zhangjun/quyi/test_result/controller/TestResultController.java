@@ -65,21 +65,6 @@ public class TestResultController {
                 .data(HttpConstant.RESPONSE_STR_TOTAL,resultPage.getTotal());
     }
 
-    /**
-     * 查询这个结果下的所有结果详情记录
-     * @return
-     * @throws Exception
-     */
-    @GetMapping ("/findResultInfoList/{resultId}/{sort}")
-    @ApiOperation("查询这个结果下的所有结果详情记录")
-    public ResultModel findResultInfoList(@ApiParam(name = "resultId",value = "结果id")
-                                  @PathVariable String resultId,
-                                          @ApiParam(name = "sort",value = "排序方式")
-                                          @Range(max = 2, min = 1,message="排序方式只能为1/2") @PathVariable Integer sort
-                                  ){
-        List<TestResultInfo> testResultInfoList = testResultService.findResultInfoList(resultId,sort);
-        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultInfoList);
-    }
 
     /**
      * 查询所有结果
@@ -90,6 +75,17 @@ public class TestResultController {
     public ResultModel findResult(){
         List<TestResult> list = testResultService.findResult();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,list);
+    }
+
+    /**
+     * 查询该id的数据
+     * @return
+     */
+    @GetMapping("/findById/{resultId}")
+    @ApiOperation("查询该id的数据")
+    public ResultModel findById(@ApiParam(name = "resultId",value = "结果id")@PathVariable String resultId){
+        TestResult testResult = testResultService.findById(resultId);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,testResult);
     }
 
 

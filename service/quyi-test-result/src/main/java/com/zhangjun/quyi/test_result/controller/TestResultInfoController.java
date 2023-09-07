@@ -10,6 +10,7 @@ import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -65,6 +66,23 @@ public class TestResultInfoController {
                                              @PathVariable(name = "size") Integer size){
         IPage<TestResultInfo> pages = testResultInfoService.findAllInfoByResultId(resultId, current, size);
         return ResultModel.ok().data("total",pages.getTotal()).data(HttpConstant.RESPONSE_STR_LIST,pages.getRecords());
+    }
+
+
+    /**
+     * 查询这个结果下的所有结果详情记录
+     * @return
+     * @throws Exception
+     */
+    @GetMapping ("/findList/{resultId}/{sort}")
+    @ApiOperation("查询这个结果下的所有结果详情记录")
+    public ResultModel findResultInfoList(@ApiParam(name = "resultId",value = "结果id")
+                                          @PathVariable String resultId,
+                                          @ApiParam(name = "sort",value = "排序方式")
+                                          @Range(max = 2, min = 1,message="排序方式只能为1/2") @PathVariable Integer sort
+    ){
+        List<TestResultInfo> testResultInfoList = testResultInfoService.findResultInfoList(resultId,sort);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,testResultInfoList);
     }
 
 

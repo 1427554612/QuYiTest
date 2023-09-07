@@ -151,19 +151,15 @@ public class TestResultServiceImpl extends ServiceImpl<TestResultServiceMapper, 
     }
 
 
+
     /**
-     * 结果id查询出所有结果详情
-     * @param resultId：结果id
-     * @param sort：排序方式 1、正序、2、倒叙
+     * 查询该id的数据
      * @return
      */
     @Override
-    public List<TestResultInfo> findResultInfoList(String resultId, Integer sort) {
-        QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(HttpConstant.API_STR_RESULT_ID,resultId);
-        if (sort==1)queryWrapper.orderByAsc(HttpConstant.API_STR_RUN_BEGIN_TIME);
-        else queryWrapper.orderByDesc(HttpConstant.API_STR_RUN_BEGIN_TIME);
-        return testResultInfoService.list(queryWrapper);
+    @Cacheable(value = "test::result",key = "#root.args[0]",cacheManager = "cacheManagerPermanent")
+    public TestResult findById(String resultId) {
+        return this.getById(resultId);
     }
 
 

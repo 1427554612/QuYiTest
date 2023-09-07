@@ -12,13 +12,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PressureApi {
 
     public static Integer amount = 10000;  // 充值金额
-    public static final String CODE  = "EAB4042A2C12987D433A4FB41";   // 兑换码
+    public static final String CODE  = "2F115D46E1D23F6CAA8E953AB";   // 兑换码
 
     /**
      * 注册-不带邀请码
@@ -155,13 +156,13 @@ public class PressureApi {
     }
 
 
-//    public static void main(String[] args) throws IOException {
-//        RequestUtil.setOkhttpClient(10000,10000);
-//        RequestParamEntity requestParamEntity = new RequestParamEntity();
-//        requestParamEntity.setRequestUrl("https://aajogo-api.pre-release.xyz");
-//        requestParamEntity.setRequestNumber(1);// 线程用户数
-//        requestParamEntity.setIps(Arrays.asList("192.168.5.12:8057"));
-//    }
+    public static void main(String[] args) throws IOException {
+        RequestUtil.setOkhttpClient(10,10000);
+        RequestParamEntity requestParamEntity = new RequestParamEntity();
+        requestParamEntity.setRequestUrl("https://aajogo-api.pre-release.xyz");
+        requestParamEntity.setRequestNumber(1);// 线程用户数
+        requestParamEntity.setIps(Arrays.asList("192.168.5.12:8057"));
+    }
 
 
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.test_result.entity.TestResultInfo;
 import com.zhangjun.quyi.test_result.entity.TestResultTempInfo;
@@ -58,5 +59,20 @@ public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoService
         Page<TestResultInfo> page1 = this.page(page, queryWrapper);
         System.out.println("总数: " + page1.getTotal());
         return this.page(page, queryWrapper);
+    }
+
+    /**
+     * 结果id查询出所有结果详情
+     * @param resultId：结果id
+     * @param sort：排序方式 1、正序、2、倒叙
+     * @return
+     */
+    @Override
+    public List<TestResultInfo> findResultInfoList(String resultId, Integer sort) {
+        QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("result_id",resultId);
+        if (sort==1)queryWrapper.orderByAsc(HttpConstant.API_STR_RUN_BEGIN_TIME);
+        else queryWrapper.orderByDesc(HttpConstant.API_STR_RUN_BEGIN_TIME);
+        return this.list(queryWrapper);
     }
 }
