@@ -41,7 +41,7 @@ public class RequestBodyParamsGetting implements ParamsGetting {
         }
         Object finalBody = JsonUtil.objectMapper.readValue(finalBodyStr, Object.class);
         target.setRequestBody(finalBody);
-        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " replace data：" + target.getRequestBody());
+        LogStringBuilder.addLog(LogStringBuilder.CASE_NAME + target.getCaseName() + StrConstant.SYMBOL_COMMA +  " 替换后的数据为：" + target.getRequestBody());
         return target;
     }
 }

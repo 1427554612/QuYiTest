@@ -29,8 +29,8 @@ public interface ParamsEnums {
         DIV_PARAMS_SYMBOL("%"),       // 自定义参数
         SYSTEM_PARAMS_SYMBOL("·");    // 系统参数
 
-
         public String symbol;
+
         ParamsSymbolEnum(String symbol){
             this.symbol = symbol;
         }
@@ -42,10 +42,9 @@ public interface ParamsEnums {
      */
     enum SystemParamsTypeEnum {
 
-        TIME("time"),       // 接口运行参数
+        TIME("time"),                // 接口运行参数
         THREAD_MAME("thread"),       // 自定义参数
-        UUID("uuid");    // 系统参数
-
+        UUID("uuid");                // 系统参数
 
         public String type;
         SystemParamsTypeEnum(String type){

@@ -14,6 +14,7 @@ import com.zhangjun.quyi.test_result.service.TestResultTempInfoService;
 import jnr.ffi.annotations.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -52,12 +53,12 @@ public class TestResultInfoServiceImpl extends ServiceImpl<TestResultInfoService
      */
     @Override
 //    @Cacheable(value = "test-result",key = "#root.args[0]+'_'+#root.args[1]+'_'+#root.args[2]",cacheManager = "cacheManager1Minute")
+    @CacheEvict(value = "test::result",key = "#root.args[0]")
     public IPage<TestResultInfo> findAllInfoByResultId(String resultId, Integer current, Integer size) {
         Page<TestResultInfo> page = new Page<>(current,size);
         QueryWrapper<TestResultInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("result_id",resultId);
-        Page<TestResultInfo> page1 = this.page(page, queryWrapper);
-        System.out.println("总数: " + page1.getTotal());
+        queryWrapper.orderByDesc("run_begin_time");
         return this.page(page, queryWrapper);
     }
 

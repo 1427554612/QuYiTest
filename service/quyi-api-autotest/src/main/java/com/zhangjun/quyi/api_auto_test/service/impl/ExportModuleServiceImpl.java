@@ -27,7 +27,7 @@ public class ExportModuleServiceImpl  extends ServiceImpl<ExportModuleMapper, Mo
      * @return
      */
     @Override
-    @Cacheable(value = "test::module",key = "'list'",cacheManager = "cacheManager3Minute")
+    @Cacheable(value = "test::module",key = "'list'",cacheManager = "cacheManagerPermanent")
     public List<ModuleEntity> export() {
         //TODO:导出所有模块
         return this.list(null);

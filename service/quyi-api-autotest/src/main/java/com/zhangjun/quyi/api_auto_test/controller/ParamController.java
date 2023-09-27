@@ -67,4 +67,20 @@ public class ParamController {
     }
 
 
+    /**
+     * 获取参数类型
+     * @return
+     */
+    @PutMapping("/type")
+    @ApiOperation("根据id查询自定义参数")
+    public ResultModel getParamType(@ApiParam(name = "paramId",value = "参数id")
+                               @PathVariable(name = "paramId") String paramId,
+                               @ApiParam(name = "apiParamsEntity",value = "参数实例")
+                               @RequestBody ApiParamsEntity apiParamsEntity) throws JsonProcessingException, ParseException {
+        apiParamsEntity.setParamId(paramId);
+        ApiParamsEntity resultApiParam = paramService.putById(apiParamsEntity);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,resultApiParam);
+    }
+
+
 }

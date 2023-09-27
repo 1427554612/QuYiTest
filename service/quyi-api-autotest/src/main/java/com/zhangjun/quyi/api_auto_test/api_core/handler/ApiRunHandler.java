@@ -107,7 +107,6 @@ public class ApiRunHandler {
                 for (ParamsGetting paramsGetting : paramsGettings) {
                     apiTestCaseEntity = paramsGetting.getParams(ParamsSetting.apiParamsEntitys,apiTestCaseEntity);
                 }
-                LogStringBuilder.addLog(LogStringBuilder.CASE_NAME +apiTestCaseEntity.getCaseName() +StrConstant.SYMBOL_COMMA +LogStringBuilder.REPLACE_PARAMS_DATA + apiTestCaseEntity);
             }
 
             // 1.4、执行接口、获得请求和响应

@@ -113,7 +113,6 @@ public class ApiAutoTestController {
     public ResponseEntity<InputStreamResource> download(@ApiParam(name = "fileName",value = "标识，随意填写、不填写则下载报告")@PathVariable(required = false) String fileName) throws IOException {
         Map<String, Object> configMap = testConfigApi.getConfigPath().getData();
         FileSystemResource file = null;
-        System.out.println("fileName = " + fileName);
         if ("report".equals(fileName)){
             String reportPath = (String) configMap.get(StrConstant.REPORT_PATH);
             File htmlFile = HtmlParseUtil.updateHtmlFile(reportPath);

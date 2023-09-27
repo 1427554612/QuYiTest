@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.zhangjun.quyi"})
 public class TestConfigApplication {
 
     public static void main(String[] args) {
