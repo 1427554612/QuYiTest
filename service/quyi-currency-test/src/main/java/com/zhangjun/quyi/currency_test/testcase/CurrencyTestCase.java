@@ -8,10 +8,12 @@ import com.zhangjun.quyi.entity.RequestParamEntity;
 import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.log4j.Logger;
+import org.omg.CORBA.TRANSACTION_MODE;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -19,16 +21,17 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CurrencyTestCase {
-    private static Integer MAX_CONNECTIONS = 10000;
-    public static String BASE_URL = "https://b3-api.pre-release.xyz";
-    private static ArrayList<Map<String,String>> keyValueList = new ArrayList();
+    private static Integer MAX_CONNECTIONS = 100000;
+    public static String BASE_URL = "";
     public static volatile CountDownLatch countDownLatch = null;      // 计数器
     public static ExecutorService executorService = null;
-    public static Integer THREAD_NUMBER_TIMES = 10;
+    public static Integer THREAD_NUMBER_TIMES = 1000;
     private static Logger logger = Logger.getLogger(CurrencyTestCase.class);
     private static BufferedWriter bf = null;
+    private static volatile List<Map<String,Object>> resultList = Collections.synchronizedList(new ArrayList<>());  // 同步任务集合
 
     static {
         try {
@@ -80,6 +83,7 @@ public class CurrencyTestCase {
             if (tempNumber!=0) finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES - tempNumber;
             else finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES;
         }
+        logger.info("线程数量为：" + finalThreadNumber);
         return finalThreadNumber;
     }
 
@@ -95,6 +99,7 @@ public class CurrencyTestCase {
         keyValueMap.put("grecaptcha_token","grecaptcha_token");
 //        keyValueMap.put("grecaptcha_token","grecaptcha_token");
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data._id")) throw new Exception("断言错误：data._id");
+        logger.info("注册接口-参数："+ JsonUtil.objectMapper.writeValueAsString(requestBody));
         logger.info("注册接口-响应：" + responseBody);
         return ParamsSetUtil.setParamsByRequest(requestBody,keyValueMap);
     }
@@ -182,8 +187,65 @@ public class CurrencyTestCase {
             logger.error(error + responseBody);
             throw error;
         }
+
 //        if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data.order_id")) throw new Exception("断言错误：data.token");
         return ParamsSetUtil.setNullParams();
+    }
+
+    public static void messageApi(List<ParamsEntity> paramsEntities) throws IOException {
+        try {
+            Map<String,Object> resultMap = new HashMap<>();
+            String requestBody = "{\"token\":\"${token}\",\"user_id\":\"${user_id}\"}";
+            requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
+            String user_id = JsonUtil.objectMapper.readTree(requestBody).get("user_id").textValue();
+            long st = System.currentTimeMillis();
+            String responseBody = RequestUtil.sendRequest("https://philucky-api.pre-release.xyz/api/v2/message/list?uid="+user_id+"&page=1&pageSize=10","POST",requestBody,null);
+            responseBody = RequestUtil.sendRequest("https://philucky-api.pre-release.xyz/api/v2/message/list?uid="+user_id+"&page=1&pageSize=10","POST",requestBody,null);
+            long ed = System.currentTimeMillis();
+            resultMap.put("start",DateTimeUtil.dateForString(new Date(st)));
+            resultMap.put("end",DateTimeUtil.dateForString(new Date(ed)));
+            resultMap.put("sTime",st);
+            resultMap.put("eTime",ed);
+            resultMap.put("run_time",(ed-st));
+            resultMap.put("response",JsonUtil.objectMapper.readTree(responseBody));
+            logger.info("消息发送测试：" + responseBody + "耗时：" + (ed - st)+ "毫秒");
+            resultList.add(resultMap);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void pgApi() throws IOException {
+        Map<String,Object> resultMap = new HashMap<>();
+        try {
+            FormBody.Builder builder = new FormBody.Builder();
+            builder.addEncoded("trace_id","PECFEH09");
+            builder.addEncoded("operator_token","650244b0a30b104de6d4e54b14abae06");
+            builder.addEncoded("secret_key","04834496ecc5d5eae381c9e6de498c65");
+            builder.addEncoded("operator_player_session","T2016:643cf323bffdcccd47450c04:PHP:236865c6169d33a1f3f3aa3ce2765e1f");
+            builder.addEncoded("player_name","643cf323bffdcccd47450c04:1009");
+            builder.addEncoded("game_id","87");
+            builder.addEncoded("currency_code","BRL");
+            FormBody formBody = builder.build();
+            Request request = new Request.Builder().url("https://b1-api.pre-release.xyz/thirdgate/callback/pgsoft/Cash/Get?trace_id=PECFEH09").post(formBody).build();
+            long st = System.currentTimeMillis();
+            Response response = RequestUtil.client.newCall(request).execute();
+            long ed = System.currentTimeMillis();
+            String responseText = response.body().string();
+            resultMap.put("start",DateTimeUtil.dateForString(new Date(st)));
+            resultMap.put("end",DateTimeUtil.dateForString(new Date(ed)));
+            resultMap.put("sTime",st);
+            resultMap.put("eTime",ed);
+            resultMap.put("run_time",(ed-st));
+            resultMap.put("response",JsonUtil.objectMapper.readTree(responseText));
+            logger.info("pg连接测试：" + responseText + "耗时：" + (ed - st)+ "毫秒");
+            resultList.add(resultMap);
+        }catch (Exception e){
+            logger.error(e);
+        }
+        return ;
     }
 
 
@@ -225,7 +287,8 @@ public class CurrencyTestCase {
                 try {
                     List<ParamsEntity> registerParamsEntitys = registerTest();
                     List<ParamsEntity> loginParamsEntitys = loginTest(registerParamsEntitys);
-                    List<ParamsEntity> list = userCodeApi(loginParamsEntitys, code);
+                    Thread.sleep(2000);
+//                    List<ParamsEntity> list = userCodeApi(loginParamsEntitys, code);
 //                    Thread.sleep(500);
 //                    List<ParamsEntity> rechargeParamsEntitys = rechargeTest(loginParamsEntitys);
 //                    Thread.sleep(1500);
@@ -234,16 +297,33 @@ public class CurrencyTestCase {
 //                    betTest(loginParamsEntitys);
 //                    Thread.sleep(1500);
 //                    withdraw(loginParamsEntitys);
+
+                    //pgApi();
+                    messageApi(loginParamsEntitys);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                logger.info("线程：" + Thread.currentThread().getName() + " 执行结束...");
+//                logger.info("线程：" + Thread.currentThread().getName() + " 执行结束...");
                 CurrencyTestCase.countDownLatch.countDown();
             });
         }
         CurrencyTestCase.countDownLatch.await();
-        logger.info("-------------------------------  执行结束  ----------------------------------");
-        logger.info("总共耗时：" + (System.currentTimeMillis() - st) + " 毫秒");
+//        logger.info("-------------------------------  执行结束  ----------------------------------");
+//        logger.info("总共耗时：" + (System.currentTimeMillis() - st) + " 毫秒");
+        Map<String,Object> finalMap = new HashMap<>();
+        Integer allTime = 0;
+        for (int i = 0; i < resultList.size(); i++) {
+            Integer run_time = new Integer(String.valueOf(resultList.get(i).get("run_time")));
+            allTime += run_time;
+        }
+        finalMap.put("requestNumber",requestNumber);
+        finalMap.put("runTimeCount",allTime);
+        finalMap.put("tps",Double.parseDouble(String.format(PressureConstant.DOUBLE_STR,requestNumber / (allTime / 1000f))));
+        finalMap.put("resultList",resultList);
+//        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("d:/pg-test"+System.currentTimeMillis()+".json"));
+//        bufferedWriter.write(JsonUtil.objectMapper.writeValueAsString(finalMap));
+//        bufferedWriter.flush();
+//        bufferedWriter.close();
         CurrencyTestCase.close();
         return true;
     }
@@ -252,8 +332,8 @@ public class CurrencyTestCase {
     public static void main(String[] args) throws InterruptedException, IOException {
 //        run(100,"2F115D46E1D23F6CAA8E953AB");
         Map<String,Object> map = new HashMap<>();
-        map.put("number",1000);
-        map.put("url","https://b1.pre-release.xyz");
+        map.put("number",20000);
+        map.put("url","https://b3-api.pre-release.xyz");
         map.put("code","2CE86C4A4A9A58E4BA6E06B20");
         run(map);
 

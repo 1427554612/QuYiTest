@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/api/test_config")
 @Api(description = "测试配置管理")
 @RefreshScope
-
 public class TestConfigController {
 
     @Autowired

@@ -58,7 +58,7 @@ public interface PressureConstant {
     /**
      * B3预发布
      */
-    public static final String B3_PRE_CLIENT_URL = "https://b3-atom2.pre-release.xyz/";
+    public static final String B3_PRE_CLIENT_URL = "https://b3-api.pre-release.xyz";
 
     /**
      * 基础url

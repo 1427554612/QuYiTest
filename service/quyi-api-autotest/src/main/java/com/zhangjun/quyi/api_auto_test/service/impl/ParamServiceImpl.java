@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.zhangjun.quyi.api_auto_test.api_core.enums.ParamsEnums;
 import com.zhangjun.quyi.api_auto_test.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.mapper.ParamMapper;
 import com.zhangjun.quyi.api_auto_test.service.ParamService;
@@ -18,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ParamServiceImpl  extends ServiceImpl<ParamMapper, ApiParamsEntity> implements ParamService {
@@ -78,5 +79,22 @@ public class ParamServiceImpl  extends ServiceImpl<ParamMapper, ApiParamsEntity>
         Boolean deleteFlag = redisTemplate.delete("test::param::" + apiParamsEntity.getParamId());
         if (!deleteFlag) throw new ExceptionEntity(20001,"参数缓存删除失败....");
         return this.getById(apiParamsEntity.getParamId());
+    }
+
+    /**
+     * 获取参数类型
+     * @return
+     */
+    @Override
+    @CachePut(value = "test::param",key = "'type'",cacheManager = "cacheManagerPermanent")
+    public List<Map<String, Object>> getParamType() {
+        ParamsEnums.ParamsSymbolEnum[] values = ParamsEnums.ParamsSymbolEnum.values();
+        List<Map<String, Object>> collect = Arrays.stream(values).map(value -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", value);
+            map.put("value", value.symbol);
+            return map;
+        }).collect(Collectors.toList());
+        return collect;
     }
 }

@@ -67,7 +67,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @return
      */
     @Override
-    @Cacheable(value = "TestCase",key = "'list'",cacheManager = "cacheManagerPermanent")
+    @Cacheable(value = "test::case",key = "'list'",cacheManager = "cacheManagerPermanent")
     public List<ApiTestCaseEntity> selectAllCase() throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
         String configPath = (String)resultModel.getData().get("configPath");
@@ -87,7 +87,7 @@ public class ApiAutoTestServiceImpl implements ApiAutoTestService {
      * @param testCaseEntitys
      */
     @Override
-    @CacheEvict(value = "TestCase",key = "'list'")
+    @CacheEvict(value = "test::case",key = "'list'")
     public void editApiTestCase(List<ApiTestCaseEntity> testCaseEntitys) throws IOException {
         ResultModel resultModel = testConfigApi.getConfigPath();
         String configPath = (String)resultModel.getData().get("configPath");

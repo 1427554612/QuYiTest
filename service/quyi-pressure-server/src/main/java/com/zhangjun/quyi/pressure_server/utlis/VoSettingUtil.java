@@ -32,7 +32,7 @@ public class VoSettingUtil {
                                              String assertKey,
                                              Object assertValue,
                                              User user,
-                                             String ... paramsKeys) throws JsonProcessingException {
+                                             String ... paramsKeys) throws Exception {
         ThreadRunVo threadRunVo = new ThreadRunVo();
         threadRunVo.setThreadStartTimeStamp(st);
         threadRunVo.setThreadEndTimeStamp(en);

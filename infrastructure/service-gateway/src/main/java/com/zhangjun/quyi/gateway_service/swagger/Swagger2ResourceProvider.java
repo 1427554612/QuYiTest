@@ -1,6 +1,8 @@
 package com.zhangjun.quyi.gateway_service.swagger;
 
+import com.zhangjun.quyi.utils.JsonUtil;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.support.NameUtils;
@@ -20,6 +22,7 @@ public class Swagger2ResourceProvider implements SwaggerResourcesProvider {
     private final RouteLocator routeLocator;
     private final GatewayProperties gatewayProperties;
 
+    @SneakyThrows
     @Override
     public List<SwaggerResource> get() {
         List<SwaggerResource> resources = new ArrayList<>();
@@ -34,7 +37,6 @@ public class Swagger2ResourceProvider implements SwaggerResourcesProvider {
                             predicateDefinition.getArgs().get(NameUtils.GENERATED_NAME_PREFIX + "0")
                                     .replace("**", "v2/api-docs"))));
         });
-
         return resources;
     }
 

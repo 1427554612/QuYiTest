@@ -22,7 +22,7 @@ public class PressureAdminApi {
      * @param entity
      * @return
      */
-    public static ThreadRunVo listRechargeApi(RequestParamEntity entity, Map<String,String> paramMap) throws IOException {
+    public static ThreadRunVo listRechargeApi(RequestParamEntity entity, Map<String,String> paramMap) throws Exception {
         Map<String,String> headers = new HashMap<>();
         headers.put("cookie",COOKIE);
         Map<String,Object> bodyMap = new HashMap<>();
@@ -49,7 +49,7 @@ public class PressureAdminApi {
      * @param entity
      * @return
      */
-    public static ThreadRunVo notifyRecharge(RequestParamEntity entity, Map<String,String> paramsMap) throws IOException {
+    public static ThreadRunVo notifyRecharge(RequestParamEntity entity, Map<String,String> paramsMap) throws Exception {
         Map<String,String> headers = new HashMap<>();
         headers.put("cookie",COOKIE);
         Map<String,Object> requestBodyMap = new HashMap<>();

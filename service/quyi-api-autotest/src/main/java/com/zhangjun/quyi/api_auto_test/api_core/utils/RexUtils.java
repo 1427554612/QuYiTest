@@ -38,7 +38,6 @@ public class RexUtils {
      * @return
      */
     public static String getByCollection(String source, List<ApiParamsEntity> paramsEntityList,String paramTag){
-        System.out.println("paramTag = " + paramTag);
         String target = source;
         while (true){
             // 系统参数
@@ -47,7 +46,6 @@ public class RexUtils {
                     return target;
                 }
                 target = getBySystem(paramTag+ "(.*?)"+paramTag,target,true);
-                System.out.println("target = " + target);
             }
             // 非系统参数
             else {
@@ -94,15 +92,12 @@ public class RexUtils {
      * @return
      */
     public static String getBySystem(String rex,String source,boolean isReplace){
-        System.out.println("rex = " + rex);
-        System.out.println("source = " + source);
         Pattern compile = Pattern.compile(rex);
         Matcher matcher = compile.matcher(source);
         String text = null;
         String newText = null;
         while (matcher.find()) {
             text = matcher.group(1); // 第一个组的匹配部分
-            System.out.println("text = " + text);
             if (isReplace){
                 if (text.equals(ParamsEnums.SystemParamsTypeEnum.THREAD_MAME.type)) {
                     newText = matcher.replaceFirst(Thread.currentThread().getName().replaceAll("-",""));

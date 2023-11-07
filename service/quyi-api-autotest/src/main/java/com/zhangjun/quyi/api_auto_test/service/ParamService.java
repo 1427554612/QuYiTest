@@ -6,6 +6,8 @@ import com.zhangjun.quyi.api_auto_test.entity.ApiParamsEntity;
 import com.zhangjun.quyi.api_auto_test.entity.ModuleEntity;
 
 import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 
 public interface ParamService extends IService<ApiParamsEntity> {
 
@@ -28,4 +30,10 @@ public interface ParamService extends IService<ApiParamsEntity> {
      * @return
      */
     ApiParamsEntity putById(ApiParamsEntity apiParamsEntity) throws JsonProcessingException, ParseException;
+
+    /**
+     * 获取参数类型
+     * @return
+     */
+    List<Map<String, Object>> getParamType();
 }

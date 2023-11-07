@@ -49,6 +49,7 @@ public class ThreadPoolUtil {
             if (tempNumber!=0) finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES - tempNumber;
             else finalThreadNumber = requestNumber / THREAD_NUMBER_TIMES;
         }
+        System.out.println("线程池线程数量：" + finalThreadNumber);
         return finalThreadNumber;
     }
 

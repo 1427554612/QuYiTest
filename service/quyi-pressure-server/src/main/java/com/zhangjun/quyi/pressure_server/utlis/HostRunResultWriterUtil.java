@@ -9,9 +9,9 @@ import java.io.FileWriter;
 public class HostRunResultWriterUtil {
 
 
-    public static void writeResult(String resultFileName, HostRunVo hostRunVo) throws Exception {
+    public static void writeResult(String resultFileName, Object o) throws Exception {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(resultFileName));
-        bufferedWriter.write(JsonUtil.objectMapper.writeValueAsString(hostRunVo));
+        bufferedWriter.write(JsonUtil.objectMapper.writeValueAsString(o));
         bufferedWriter.flush();
         bufferedWriter.close();
     }

@@ -27,4 +27,13 @@ public interface PressureServerService {
      * @return
      */
     HostRunVo testUserCode(RequestParamEntity requestParamEntity) throws Exception;
+
+
+    /**
+     * 测试站内信
+     * @param requestParamEntity
+     * @return
+     * @throws Exception
+     */
+    HostRunVo testSendMessage(RequestParamEntity requestParamEntity) throws Exception;
 }
