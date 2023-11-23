@@ -25,8 +25,10 @@ public class BodyParamsBuilder implements ParamsBuilder{
             jsonNode = JsonUtil.objectMapper.readTree((String) target);
         }
         else jsonNode = JsonUtil.objectMapper.readTree((String) target);
+
         Iterator<String> stringIterator = jsonNode.fieldNames();
         String resultJson = (String) target;
+
         while (stringIterator.hasNext()){
             String key = stringIterator.next();
             String value = jsonNode.get(key).asText().replaceAll("\"","");
@@ -53,7 +55,14 @@ public class BodyParamsBuilder implements ParamsBuilder{
      */
     private static String updateElStr(String oldStr, Object newStr,String key){
         if (!oldStr.contains("${")) return oldStr;
-        oldStr = oldStr.replace(key,(String)newStr);
+        else {
+            try {
+                Integer in = Integer.parseInt((String) newStr);
+                oldStr = oldStr.replace("\""+key+"\"",String.valueOf(in));
+            }catch (Exception e){
+                oldStr = oldStr.replace(key,(String)newStr);
+            }
+        }
         return oldStr;
     }
 }

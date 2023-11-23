@@ -2,9 +2,7 @@ package com.zhangjun.quyi.currency_test.testcase;
 
 
 import com.zhangjun.quyi.constans.PressureConstant;
-import com.zhangjun.quyi.currency_test.entity.ExchangeCode;
 import com.zhangjun.quyi.currency_test.utils.*;
-import com.zhangjun.quyi.entity.RequestParamEntity;
 import com.zhangjun.quyi.utils.DateTimeUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
@@ -13,15 +11,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.TRANSACTION_MODE;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class CurrencyTestCase {
     private static Integer MAX_CONNECTIONS = 100000;

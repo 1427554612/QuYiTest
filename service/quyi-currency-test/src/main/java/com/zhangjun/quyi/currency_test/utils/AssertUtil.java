@@ -38,7 +38,7 @@ public class AssertUtil {
      */
     public static boolean assertResponseTextIsNull(String responseBody,String key) throws JsonProcessingException {
         JsonNode jsonNode = JsonUtil.getLastNode(responseBody,key);
-        return jsonNode.asText() == null || jsonNode.asText().equals("null") ? PressureConstant.ASSERT_TRUE : PressureConstant.ASSERT_FALSE;
+        return jsonNode.asText() == null || jsonNode.asText().equals("null") || jsonNode.asText().equals("")? PressureConstant.ASSERT_TRUE : PressureConstant.ASSERT_FALSE;
     }
 
 

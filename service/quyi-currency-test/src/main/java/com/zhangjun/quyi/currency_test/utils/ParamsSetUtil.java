@@ -20,16 +20,22 @@ public class ParamsSetUtil {
         for (Map.Entry<String, String> stringObjectEntry : keyValueMap.entrySet()) {
             String key = stringObjectEntry.getKey();
             String value = (String)stringObjectEntry.getValue();
+            if (null == value || "".equals(value)) break;
             JsonNode jsonNode = JsonUtil.objectMapper.readTree(responseBody);
-            String[] split = value.split("\\.");
-            for (String s : split) {
-                jsonNode = jsonNode.get(s);
+            if (value.contains(".")){
+                String[] split = value.split("\\.");
+                for (String s : split) {
+                    jsonNode = jsonNode.get(s);
+                }
             }
-            System.out.println("jsonNode.asText() = " + jsonNode.asText());
+            else {
+                System.out.println("一段截取");
+            }
             list.add(new ParamsEntity(key,"responseBody",value,jsonNode.asText()));
         }
         return list;
     }
+
 
     /**
      * 从请求中设置
@@ -55,6 +61,7 @@ public class ParamsSetUtil {
             String useName = stringStringEntry.getKey();
             String keyName = stringStringEntry.getValue();
             Object keyValue = requestBody.get(keyName);
+            if (null == keyValue || "".equals(keyValue)) break;
             entity  = new ParamsEntity(useName,"requestBody",keyName,keyValue);
             list.add(entity);
         }
