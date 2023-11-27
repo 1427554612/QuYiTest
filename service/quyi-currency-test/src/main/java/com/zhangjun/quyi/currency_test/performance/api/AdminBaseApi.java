@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +67,7 @@ public class AdminBaseApi{
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
-        headers.put("Platform","M1");
+        headers.put("Platform","B1");
         headers.put("token","${token}");
         String headerStr = JsonUtil.objectMapper.writeValueAsString(headers);
         requestBody = (String) new BodyParamsBuilder().parseParams(paramsEntities[0],requestBody);
@@ -99,7 +100,7 @@ public class AdminBaseApi{
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
         headers.put("Platform","M1");
-//        headers.put("token","${token}");
+        headers.put("token","${token}");
         String headerStr = JsonUtil.objectMapper.writeValueAsString(headers);
         headerStr = (String) new BodyParamsBuilder().parseParams(paramsEntityList,headerStr);
         headers = JsonUtil.objectMapper.readValue(headerStr,Map.class);
@@ -115,5 +116,26 @@ public class AdminBaseApi{
                 ParamsSetUtil.setNullParams());
     }
 
+    /**
+     * 人工入款
+     * @return
+     */
+    public ApiResultEntity artificialRecharge() throws IOException {
+        String url = "https://betgame-globalportal.pre-release.xyz/rd1/v1/asset_order/direct_recharge";
+        String requestBody = "{\n" +
+                "    \"user_id\": \"6564322d11e05e16a0638354\",\n" +
+                "    \"recharge_type\": 0,\n" +
+                "    \"amount\": 100,\n" +
+                "    \"currency\": \"PHP\",\n" +
+                "    \"money_type\": \"realmoney\"\n" +
+                "}";
+        Map<String,Object> headers = new HashMap<>();
+        headers.put("Content-Type","application/json; charset=utf-8");
+        headers.put("Platform","B1");
+        headers.put("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3N1cGVyIiwiZXhwcmVzc19hdCI6ODY0MDAsImNyZWF0ZV9hdCI6MTcwMTA2NzI1OX0.40-Mufahj45uPqBzNSHckNr8mfGBww1wSkWOwT4uyFo");
+        String responseBody = RequestUtil.sendRequest(url, "POST", requestBody, headers);
+        logger.info("人工入款接口：" + responseBody);
+        return null;
+    }
 
 }

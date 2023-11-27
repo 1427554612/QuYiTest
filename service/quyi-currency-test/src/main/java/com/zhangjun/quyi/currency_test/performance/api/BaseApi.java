@@ -1,6 +1,9 @@
 package com.zhangjun.quyi.currency_test.performance.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
+import com.zhangjun.quyi.currency_test.performance.utils.ContainerUtil;
 import com.zhangjun.quyi.currency_test.utils.AssertUtil;
 import com.zhangjun.quyi.currency_test.utils.BodyParamsBuilder;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
@@ -12,10 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 基础api类
@@ -35,12 +36,12 @@ public class BaseApi {
      * @return
      * @throws Exception
      */
-    public ApiResultEntity registerApi() throws Exception {
+    public ApiResultEntity registerApi(String personId) throws Exception {
         String url = this.url  + "/user/register";
         String requestBody = "{\n" +
                 "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
                 "                \"password\": \"zj123456\"," +
-                "                \"person\":\"643e2c58571fc3f2eccbdbcd\","+
+                "                \"person\":\""+personId+"\","+
                 "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(url, "POST", requestBody, null);
@@ -48,10 +49,16 @@ public class BaseApi {
         keyValueMap.put("account","account");
         keyValueMap.put("password","password");
         keyValueMap.put("grecaptcha_token","grecaptcha_token");
+        keyValueMap.put("user_id","data._id");
+        if (!"".equals(personId)) keyValueMap.put("person","person");
+        logger.info("上级id：" + personId);
+        logger.info("注册接口-账号："+ JsonUtil.objectMapper.readValue(requestBody, Map.class));
         logger.info("注册接口-响应：" + responseBody);
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data._id")) throw new Exception("断言错误：data._id");
         List<ParamsEntity> paramsEntityList = ParamsSetUtil.setParamsByRequest(requestBody, keyValueMap);
-        logger.info("注册接口-参数："+ JsonUtil.objectMapper.readValue(requestBody, Map.class));
+        List<ParamsEntity> paramsEntityList1 = ParamsSetUtil.setParamsByResponse(responseBody, keyValueMap);
+        paramsEntityList.addAll(paramsEntityList1);
+        paramsEntityList = ContainerUtil.distinct(paramsEntityList);
         return new ApiResultEntity("注册接口",
                 url,
                 st,
@@ -107,6 +114,7 @@ public class BaseApi {
      * @throws Exception
      */
     public  ApiResultEntity rechargeApi(List<ParamsEntity> paramsEntities) throws Exception {
+        System.out.println("当前url = " + this.url);
         String requestBody = "{\n" +
                 "    \"user_id\": \"${user_id}\",\n" +
                 "    \"token\": \"${token}\",\n" +
@@ -118,8 +126,25 @@ public class BaseApi {
                 "        \"pay_method\": \"mex\"\n" +
                 "    }\n" +
                 "}";
+        if (this.url.contains("b1-api")){
+            requestBody = "{\n" +
+                    "    \"user_id\": \"${user_id}\",\n" +
+                    "    \"token\": \"${token}\",\n" +
+                    "    \"currency\": \"BRL\",\n" +
+                    "    \"amount\": \"10000\",\n" +
+                    "    \"task_id\": \"-1\",\n" +
+                    "    \"data\": {\n" +
+                    "        \"name\": \"zhangjun\",\n" +
+                    "        \"pix\": \"36464134175\",\n" +
+                    "        \"email\": \"aaa@163.com\",\n" +
+                    "        \"phone\": \"55632632521\",\n" +
+                    "        \"typ\": \"PIXQR\",\n" +
+                    "        \"pay_method\": \"pix\"\n" +
+                    "    }\n" +
+                    "}";
+        }
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("充值接口-请求体：" + requestBody);
+        logger.info("充值接口-请求：" + requestBody);
         String url = this.url + "/user/recharge";
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(  url, "POST", requestBody, null);

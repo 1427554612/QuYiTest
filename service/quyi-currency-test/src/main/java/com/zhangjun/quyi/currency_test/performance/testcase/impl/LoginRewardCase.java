@@ -35,7 +35,7 @@ public class LoginRewardCase extends BaseCase {
         TaskApi taskApi = new TaskApi(this.baseUrl);
 
         // 注册
-        ApiResultEntity registerApiResult = taskApi.registerApi();
+        ApiResultEntity registerApiResult = taskApi.registerApi("");
         rabbitTemplate.convertAndSend(registerApiResult);
 
         // 登录

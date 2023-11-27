@@ -12,4 +12,17 @@ public interface ParamsBuilder {
      * @return
      */
     Object parseParams(List<ParamsEntity> paramsEntities, Object target) throws JsonProcessingException;
+
+    /**
+     * 获取单个字符
+     * @param paramsEntities
+     * @param key
+     * @return
+     */
+    static Object getStr(List<ParamsEntity> paramsEntities,String key){
+        for (ParamsEntity paramsEntity : paramsEntities) {
+            if (paramsEntity.getUseName().equals(key) )return paramsEntity.getKeyValue();
+        }
+        return null;
+    }
 }
