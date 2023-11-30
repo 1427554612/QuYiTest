@@ -1,7 +1,5 @@
 package com.zhangjun.quyi.currency_test.performance.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
 import com.zhangjun.quyi.currency_test.performance.utils.ContainerUtil;
 import com.zhangjun.quyi.currency_test.utils.AssertUtil;
@@ -114,12 +112,11 @@ public class BaseApi {
      * @throws Exception
      */
     public  ApiResultEntity rechargeApi(List<ParamsEntity> paramsEntities) throws Exception {
-        System.out.println("当前url = " + this.url);
         String requestBody = "{\n" +
                 "    \"user_id\": \"${user_id}\",\n" +
                 "    \"token\": \"${token}\",\n" +
                 "    \"currency\": \"MXN\",\n" +
-                "    \"amount\": \"1000\",\n" +
+                "    \"amount\": \"8000\",\n" +
                 "    \"task_id\": \"-1\",\n" +
                 "    \"data\": {\n" +
                 "        \"typ\": \"SPEI(Personnal)\",\n" +
@@ -142,9 +139,29 @@ public class BaseApi {
                     "        \"pay_method\": \"pix\"\n" +
                     "    }\n" +
                     "}";
+        }else if (this.url.contains("n1-api")){
+            requestBody = "{\n" +
+                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
+                    "    \"user_id\": \"${user_id}\",\n" +
+                    "    \"token\": \"${token}\",\n" +
+                    "    \"currency\": \"NGN\",\n" +
+                    "    \"amount\": \"10000\",\n" +
+                    "    \"task_id\": \"-1\",\n" +
+                    "    \"data\": {\n" +
+                    "        \"typ\": \"BANK\",\n" +
+                    "        \"pay_method\": \"electronic_wallet\"\n" +
+                    "    },\n" +
+                    "    \"adjust\": {\n" +
+                    "        \"adid\": \"be7247ac7f75546291c8de287bce64f7\",\n" +
+                    "        \"web_uuid\": \"c8e41672-011a-44a8-178c-0830a9a01192\",\n" +
+                    "        \"gps_adid\": \"\",\n" +
+                    "        \"external_id\": \"\",\n" +
+                    "        \"fbc\": \"\",\n" +
+                    "        \"fbp\": \"\"\n" +
+                    "    }\n" +
+                    "}";
         }
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        logger.info("充值接口-请求：" + requestBody);
         String url = this.url + "/user/recharge";
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(  url, "POST", requestBody, null);

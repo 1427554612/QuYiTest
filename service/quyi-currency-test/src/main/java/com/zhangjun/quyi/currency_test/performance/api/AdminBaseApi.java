@@ -25,21 +25,24 @@ import java.util.Map;
 public class AdminBaseApi{
 
     public String url;
+    public String platform;
 
     private static Logger logger = Logger.getLogger(BaseApi.class);
+
 
     /**
      * 后台登录
      * @return
      */
     public  ApiResultEntity adminLoginApi() throws Exception {
-        String url = "https://betgame-globalportal.pre-release.xyz/admin_auth/v1/public/login";
+        String url = this.url + "/admin_auth/v1/public/login";
         String requestBody = "{\n" +
                 "    \"username\": \"admin_super\",\n" +
                 "    \"password\": \"123456\"\n" +
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
+        headers.put("User-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(url, "POST", requestBody, headers);
         Map<String,String> setParamMap = new HashMap<String, String>();
@@ -60,14 +63,15 @@ public class AdminBaseApi{
      * @return
      */
     public ApiResultEntity repairOrderApi(List<ParamsEntity> ... paramsEntities) throws Exception {
-        String url = "https://betgame-globalportal.pre-release.xyz/rd1/v1/asset_order/repair_order";
+        String url = this.url + "/rd1/v1/asset_order/repair_order";
         String requestBody = "{\n" +
                 "    \"id\": \"${id}\",\n" +
                 "    \"amount\": \"${amount}\"\n" +
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
-        headers.put("Platform","B1");
+        headers.put("User-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
+        headers.put("Platform",this.platform);
         headers.put("token","${token}");
         String headerStr = JsonUtil.objectMapper.writeValueAsString(headers);
         requestBody = (String) new BodyParamsBuilder().parseParams(paramsEntities[0],requestBody);
@@ -93,13 +97,13 @@ public class AdminBaseApi{
      * @throws JsonProcessingException
      */
     public ApiResultEntity sendMessageApi(List<ParamsEntity> paramsEntityList) throws Exception {
-        String url =  "https://betgame-globalportal.pre-release.xyz/rd1cfg/api/v1/admin_backend/asset_order/temporary/send";
+        String url =  this.url + "/rd1cfg/api/v1/admin_backend/asset_order/temporary/send";
         String requestBody = "{\n" +
-                "    \"guid\": \"C7099A6ABCAAF254EE5B0D8A2DD12334\"\n" +
+                "    \"guid\": \"D8AB2FBC332A9B473B7050F87775DCE4\"\n" +
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
-        headers.put("Platform","M1");
+        headers.put("Platform",this.platform);
         headers.put("token","${token}");
         String headerStr = JsonUtil.objectMapper.writeValueAsString(headers);
         headerStr = (String) new BodyParamsBuilder().parseParams(paramsEntityList,headerStr);
@@ -121,7 +125,7 @@ public class AdminBaseApi{
      * @return
      */
     public ApiResultEntity artificialRecharge() throws IOException {
-        String url = "https://betgame-globalportal.pre-release.xyz/rd1/v1/asset_order/direct_recharge";
+        String url = this.url + "/rd1/v1/asset_order/direct_recharge";
         String requestBody = "{\n" +
                 "    \"user_id\": \"6564322d11e05e16a0638354\",\n" +
                 "    \"recharge_type\": 0,\n" +
@@ -131,7 +135,7 @@ public class AdminBaseApi{
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
-        headers.put("Platform","B1");
+        headers.put("Platform",this.platform);
         headers.put("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3N1cGVyIiwiZXhwcmVzc19hdCI6ODY0MDAsImNyZWF0ZV9hdCI6MTcwMTA2NzI1OX0.40-Mufahj45uPqBzNSHckNr8mfGBww1wSkWOwT4uyFo");
         String responseBody = RequestUtil.sendRequest(url, "POST", requestBody, headers);
         logger.info("人工入款接口：" + responseBody);

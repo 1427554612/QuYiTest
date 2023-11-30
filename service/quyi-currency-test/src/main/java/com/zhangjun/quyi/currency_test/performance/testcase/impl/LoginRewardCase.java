@@ -19,8 +19,8 @@ public class LoginRewardCase extends BaseCase {
      *
      * @param requestNumber
      */
-    public LoginRewardCase(Integer requestNumber,String baseUrl,RabbitTemplate rabbitTemplate) {
-        super(requestNumber,baseUrl,LoginRewardCase.class);
+    public LoginRewardCase(Integer requestNumber,String clientUrl,String adminUrl,RabbitTemplate rabbitTemplate) {
+        super(requestNumber,clientUrl,adminUrl,LoginRewardCase.class);
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -32,7 +32,7 @@ public class LoginRewardCase extends BaseCase {
 
         ResultWriterUtil.initFile("d:/result-"+ System.currentTimeMillis() + ".json",true);
 
-        TaskApi taskApi = new TaskApi(this.baseUrl);
+        TaskApi taskApi = new TaskApi(this.clientUrl);
 
         // 注册
         ApiResultEntity registerApiResult = taskApi.registerApi("");

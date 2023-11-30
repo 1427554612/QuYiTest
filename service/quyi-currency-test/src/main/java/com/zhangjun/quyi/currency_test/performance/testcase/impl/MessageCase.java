@@ -6,6 +6,7 @@ import com.zhangjun.quyi.currency_test.performance.api.impl.TaskApi;
 import com.zhangjun.quyi.currency_test.performance.testcase.BaseCase;
 import com.zhangjun.quyi.currency_test.performance.utils.ResultWriterUtil;
 import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
 
@@ -17,10 +18,10 @@ public class MessageCase extends BaseCase {
      * 基类初始化操作
      *
      * @param requestNumber
-     * @param baseUrl
      */
-    public MessageCase(Integer requestNumber, String baseUrl) {
-        super(requestNumber, baseUrl, MessageCase.class);
+    public MessageCase(Integer requestNumber, String clientUrl, String adminUrl) {
+        super(requestNumber,clientUrl,adminUrl,MessageCase.class);
+        System.out.println("当前地址：" + this.adminUrl);
     }
 
     /**
@@ -30,7 +31,7 @@ public class MessageCase extends BaseCase {
 
         ResultWriterUtil.initFile("d:/result-"+ System.currentTimeMillis() + ".json",false);
 
-        AdminBaseApi adminBaseApi = new AdminBaseApi();
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"P2");
 
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();

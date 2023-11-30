@@ -35,7 +35,7 @@ public class MessageService {
      * @throws Exception
      */
     public void run() throws Exception {
-        ProxyCase proxyCase = new ProxyCase(2,"https://philucky-api.office.coinmoney.xyz",rabbitTemplate);
+        ProxyCase proxyCase = new ProxyCase(2,"https://philucky-api.office.coinmoney.xyz",null);
         try {
             proxyCase.inviteUser();
         }catch (Exception e){

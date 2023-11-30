@@ -12,9 +12,9 @@ public class GPWalletCase extends BaseCase {
 
     private RabbitTemplate rabbitTemplate;
 
-    public GPWalletCase(Integer requestNumber,String baseUrl,RabbitTemplate rabbitTemplate) {
-        super(requestNumber,baseUrl,GPWalletCase.class);
-        this.rabbitTemplate=rabbitTemplate;
+    public GPWalletCase(Integer requestNumber,String clientUrl,String adminUrl,RabbitTemplate rabbitTemplate) {
+        super(requestNumber,clientUrl,adminUrl,GPWalletCase.class);
+        this.rabbitTemplate = rabbitTemplate;
     }
 
 

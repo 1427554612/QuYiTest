@@ -25,7 +25,8 @@ public class BaseCase{
 
 
     public Logger logger;
-    public String baseUrl;
+    public String clientUrl;
+    public String adminUrl;
     public Integer requestNumber;
 
     /**
@@ -33,8 +34,9 @@ public class BaseCase{
      * @param requestNumber
      * @param tClass
      */
-    public BaseCase(Integer requestNumber, String baseUrl, Class<? extends BaseCase> tClass){
-        this.baseUrl = baseUrl;
+    public BaseCase(Integer requestNumber, String baseUrl, String adminUrl,Class<? extends BaseCase> tClass){
+        this.clientUrl = baseUrl;
+        this.adminUrl = adminUrl;
         this.requestNumber = requestNumber;
         this.logger = Logger.getLogger(tClass);
         RequestUtil.setOkhttpClient(this.requestNumber,this.requestNumber);

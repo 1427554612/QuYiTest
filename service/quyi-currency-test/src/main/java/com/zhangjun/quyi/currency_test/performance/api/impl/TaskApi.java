@@ -8,11 +8,13 @@ import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
 import com.zhangjun.quyi.currency_test.utils.ParamsSetUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
+import lombok.Data;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class TaskApi extends BaseApi {
 
