@@ -112,11 +112,45 @@ public class BaseApi {
      * @throws Exception
      */
     public  ApiResultEntity rechargeApi(List<ParamsEntity> paramsEntities) throws Exception {
+        String requestBody = getPlatformBody();
+        requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
+        String url = this.url + "/user/recharge";
+        long st = System.currentTimeMillis();
+        String responseBody = RequestUtil.sendRequest(  url, "POST", requestBody, null);
+        long en = System.currentTimeMillis();
+        logger.info("充值接口-响应：" + responseBody);
+        Map<String, String> keyValueMap = new HashMap<>();
+        keyValueMap.put("amount","amount");
+        keyValueMap.put("id","data.order_id");
+        List<ParamsEntity> paramsEntityList = ParamsSetUtil.setParamsByRequest(JsonUtil.objectMapper.readValue(requestBody, Map.class), keyValueMap);
+        try {
+            List<ParamsEntity> paramsEntityList1 = ParamsSetUtil.setParamsByResponse(responseBody, keyValueMap);
+            paramsEntityList.addAll(paramsEntityList1);
+        }catch (Exception e){
+        }
+        for (int i = 0; i < paramsEntityList.size(); i++) {
+            Object keyValue = paramsEntityList.get(i).getKeyValue();
+            if (null == keyValue || "".equals(keyValue)) paramsEntityList.remove(i);
+        }
+        return new ApiResultEntity("充值接口",
+                url,
+                st,
+                en,
+                JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
+                paramsEntityList);
+    }
+
+    /**
+     * 获取请求体
+     * @return
+     */
+    private String getPlatformBody(){
         String requestBody = "{\n" +
                 "    \"user_id\": \"${user_id}\",\n" +
                 "    \"token\": \"${token}\",\n" +
                 "    \"currency\": \"MXN\",\n" +
-                "    \"amount\": \"8000\",\n" +
+                "    \"amount\": \"1000\",\n" +
                 "    \"task_id\": \"-1\",\n" +
                 "    \"data\": {\n" +
                 "        \"typ\": \"SPEI(Personnal)\",\n" +
@@ -160,29 +194,51 @@ public class BaseApi {
                     "        \"fbp\": \"\"\n" +
                     "    }\n" +
                     "}";
+        }else if (this.url.contains("b3-api")){
+            requestBody="{\n" +
+                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
+                    "    \"user_id\": \"${user_id}\",\n" +
+                    "    \"token\": \"${token}\",\n" +
+                    "    \"currency\": \"BRL\",\n" +
+                    "    \"amount\": \"1000\",\n" +
+                    "    \"task_id\": \"-1\",\n" +
+                    "    \"data\": {\n" +
+                    "        \"name\": \"zhangjun\",\n" +
+                    "        \"pix\": \"34686201950\",\n" +
+                    "        \"email\": \"aaa@163.com\",\n" +
+                    "        \"phone\": \"55231263232\",\n" +
+                    "        \"typ\": \"PIXQR\",\n" +
+                    "        \"pay_method\": \"pix\"\n" +
+                    "    }\n" +
+                    "}";
+        }else if (this.url.contains("philucky-api")){
+            requestBody = "{\n" +
+                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
+                    "    \"user_id\": \"${user_id}\",\n" +
+                    "    \"token\": \"${token}\",\n" +
+                    "    \"currency\": \"PHP\",\n" +
+                    "    \"amount\": \"1000\",\n" +
+                    "    \"task_id\": \"-1\",\n" +
+                    "    \"data\": {\n" +
+                    "        \"typ\": \"PAYMAYA\",\n" +
+                    "        \"pay_method\": \"electronic_wallet\"\n" +
+                    "    }\n" +
+                    "}";
+        }else if (this.url.contains("api.kelucky")){
+            requestBody = "{\n" +
+                    "    \"user_id\": \"${user_id}\",\n" +
+                    "    \"token\": \"${token}\",\n" +
+                    "    \"currency\": \"KES\",\n" +
+                    "    \"amount\": \"10000\",\n" +
+                    "    \"task_id\": \"-1\",\n" +
+                    "    \"data\": {\n" +
+                    "        \"phone\": \"768338531\",\n" +
+                    "        \"typ\": \"M-PESA\",\n" +
+                    "        \"pay_method\": \"electronic_wallet\"\n" +
+                    "    }\n" +
+                    "}";
         }
-        requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
-        String url = this.url + "/user/recharge";
-        long st = System.currentTimeMillis();
-        String responseBody = RequestUtil.sendRequest(  url, "POST", requestBody, null);
-        long en = System.currentTimeMillis();
-        logger.info("充值接口-响应：" + responseBody);
-        Map<String, String> keyValueMap = new HashMap<>();
-        keyValueMap.put("amount","amount");
-        keyValueMap.put("id","data.order_id");
-        List<ParamsEntity> paramsEntityList = ParamsSetUtil.setParamsByRequest(JsonUtil.objectMapper.readValue(requestBody, Map.class), keyValueMap);
-        List<ParamsEntity> paramsEntityList1 = ParamsSetUtil.setParamsByResponse(responseBody, keyValueMap);
-        paramsEntityList.addAll(paramsEntityList1);
-        for (int i = 0; i < paramsEntityList.size(); i++) {
-            Object keyValue = paramsEntityList.get(i).getKeyValue();
-            if (null == keyValue || "".equals(keyValue)) paramsEntityList.remove(i);
-        }
-        return new ApiResultEntity("充值接口",
-                url,
-                st,
-                en,
-                JsonUtil.objectMapper.readValue(requestBody,Map.class),
-                AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
-                paramsEntityList);
+        return requestBody;
+
     }
 }

@@ -9,6 +9,7 @@
     <file url="file://$PROJECT_DIR$/service/quyi-api-autotest/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-concurrency-server-test/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-currency-test/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service/quyi-ftp/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-pressure-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-pressure-client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-pressure-server/src/main/java" charset="UTF-8" />

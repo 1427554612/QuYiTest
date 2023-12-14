@@ -37,7 +37,7 @@ public class ProxyCase extends BaseCase {
      */
     public ProxyCase inviteUser() throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"m1");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"B1");
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         ApiResultEntity registerApiResult = taskApi.registerApi("");
@@ -47,9 +47,9 @@ public class ProxyCase extends BaseCase {
                 ApiResultEntity result = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult.getParamList(),"user_id"));
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
+                Thread.sleep(3000);
                 // 充值
                 ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList());
-                Thread.sleep(3000);
                 // 补单
                 adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(),adminLoginResult.getParamList());
 
@@ -72,7 +72,7 @@ public class ProxyCase extends BaseCase {
      */
     public ProxyCase threeRecomendar() throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"b1");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"K1");
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         // 后台三级投注
@@ -83,6 +83,7 @@ public class ProxyCase extends BaseCase {
             try {
                 // 注册
                 ApiResultEntity registerApiResult = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult3.getParamList(),"user_id"));
+
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(registerApiResult.getParamList());
                 // 充值
@@ -103,7 +104,7 @@ public class ProxyCase extends BaseCase {
 
 
     /**
-     * 第三级人头充值
+     * 全三级人头充值
      * @return
      */
     public ProxyCase allRecomendar() throws Exception {

@@ -25,6 +25,7 @@
         <module name="quyi-pressure-server" />
         <module name="quyi-test-task" />
         <module name="pressure-client" />
+        <module name="quyi-ftp" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -44,6 +45,7 @@
       <module name="quyi-api-autotest" options="-parameters" />
       <module name="quyi-concurrency-server-test" options="-parameters" />
       <module name="quyi-currency-test" options="-parameters" />
+      <module name="quyi-ftp" options="-parameters" />
       <module name="quyi-pressure-client" options="-parameters" />
       <module name="quyi-pressure-server" options="-parameters" />
       <module name="quyi-script-java" options="-parameters" />
@@ -53,7 +55,7 @@
       <module name="quyi-test-task" options="-parameters" />
       <module name="quyi-ui-autotest" options="-parameters" />
       <module name="quyi-user" options="-parameters" />
-      <module name="service" options="" />
+      <module name="service" options="-parameters" />
       <module name="service-base" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
     </option>

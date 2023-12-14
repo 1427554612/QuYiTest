@@ -4,7 +4,6 @@ import com.zhangjun.quyi.currency_test.performance.testcase.impl.GPWalletCase;
 import com.zhangjun.quyi.currency_test.performance.testcase.impl.LoginRewardCase;
 import com.zhangjun.quyi.currency_test.performance.utils.ResultWriterUtil;
 import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
-import com.zhangjun.quyi.currency_test.testcase.CurrencyTestCase;
 import com.zhangjun.quyi.utils.RequestUtil;
 import org.apache.log4j.Logger;
 

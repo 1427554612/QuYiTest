@@ -31,7 +31,7 @@ public class MessageCase extends BaseCase {
 
         ResultWriterUtil.initFile("d:/result-"+ System.currentTimeMillis() + ".json",false);
 
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"P2");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"B1");
 
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();

@@ -7,6 +7,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/infrastructure/pom.xml" />
         <option value="$PROJECT_DIR$/infrastructure/service-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/service/quyi-ftp/pom.xml" />
       </list>
     </option>
   </component>

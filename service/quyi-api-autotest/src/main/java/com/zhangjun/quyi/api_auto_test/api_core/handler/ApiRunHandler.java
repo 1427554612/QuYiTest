@@ -19,6 +19,7 @@ import com.zhangjun.quyi.api_auto_test.entity.remoteEntity.TestResultInfo;
 import com.zhangjun.quyi.api_auto_test.util.JavaJaninoUtil;
 import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.constans.StrConstant;
+import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.service_base.websocket.WebSocketServer;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
@@ -88,6 +89,9 @@ public class ApiRunHandler {
                 runApiService(apiTestCaseEntity,configId,testConfigApi,testResultApi,baseUrl);
             }catch (Exception e ){
                 e.printStackTrace();
+                if (apiTestCaseEntity.getIsMainProcessApi().equals("是")){
+                    throw new ExceptionEntity(20001,"主流程用例执行异常 ... ");
+                }
             }
         }
 

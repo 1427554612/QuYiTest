@@ -75,6 +75,7 @@ public class AdminBaseApi{
         headers.put("token","${token}");
         String headerStr = JsonUtil.objectMapper.writeValueAsString(headers);
         requestBody = (String) new BodyParamsBuilder().parseParams(paramsEntities[0],requestBody);
+        logger.info("补单接口-请求： " + requestBody);
         headerStr = (String) new BodyParamsBuilder().parseParams(paramsEntities[1],headerStr);
         headers = JsonUtil.objectMapper.readValue(headerStr,Map.class);
 
@@ -99,7 +100,7 @@ public class AdminBaseApi{
     public ApiResultEntity sendMessageApi(List<ParamsEntity> paramsEntityList) throws Exception {
         String url =  this.url + "/rd1cfg/api/v1/admin_backend/asset_order/temporary/send";
         String requestBody = "{\n" +
-                "    \"guid\": \"D8AB2FBC332A9B473B7050F87775DCE4\"\n" +
+                "    \"guid\": \"4AB7921211FE0EB6CC6BE852FD58329D\"\n" +
                 "}";
         Map<String,Object> headers = new HashMap<>();
         headers.put("Content-Type","application/json; charset=utf-8");
