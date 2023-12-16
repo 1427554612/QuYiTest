@@ -19,6 +19,7 @@ public class ApiResultEntity implements Serializable {
     String url;
     long startTime;
     long endTime;
+    Map<String,Object> requestBody;
     Map<String,Object> responseBody;
     boolean result;
     List<ParamsEntity> paramList = new ArrayList<>();

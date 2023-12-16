@@ -17,14 +17,14 @@ public class RunApi {
         String b3_pre = "https://b3-api.pre-release.xyz";
         String admin_pre = "https://betgame-globalportal.pre-release.xyz";
         String admin_dev = "https://betgame-globalportal.dev.pre-release.xyz";
-        UserCase userCase = new UserCase(1,b3_dev,admin_dev);
-        userCase.registerAndRecharge().close();
+//        UserCase userCase = new UserCase(1,b3_dev,admin_dev);
+//        userCase.registerAndRecharge().close();
 
 //        MessageCase messageCase = new MessageCase(100, b1_dev, admin_dev);
 //        messageCase.sendMessage().close();
 
-//        ProxyCase proxyCase = new ProxyCase(1,k1_pro,admin_pre);
-//        proxyCase.allRecomendar().close();
+//        ProxyCase proxyCase = new ProxyCase(1,b3_pre,admin_pre);
+//        proxyCase.allThreeUserRechargeAndBet(1000,-1).close();
 
 //        GameCase gameCase = new GameCase(5, n1, admin);
 //        gameCase.betGame().close();

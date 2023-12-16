@@ -34,7 +34,7 @@ public class AdminBaseApi{
      * 后台登录
      * @return
      */
-    public  ApiResultEntity adminLoginApi() throws Exception {
+    public ApiResultEntity adminLoginApi() throws Exception {
         String url = this.url + "/admin_auth/v1/public/login";
         String requestBody = "{\n" +
                 "    \"username\": \"admin_super\",\n" +
@@ -53,6 +53,7 @@ public class AdminBaseApi{
                 st,
                 System.currentTimeMillis(),
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 ParamsSetUtil.setParamsByResponse(responseBody, setParamMap));
     }
@@ -87,6 +88,7 @@ public class AdminBaseApi{
                 st,
                 System.currentTimeMillis(),
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 ParamsSetUtil.setNullParams());
     }
@@ -117,6 +119,7 @@ public class AdminBaseApi{
                 st,
                 System.currentTimeMillis(),
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 ParamsSetUtil.setNullParams());
     }

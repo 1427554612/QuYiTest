@@ -28,18 +28,19 @@ public class GameCase extends BaseCase {
      * @throws Exception
      */
     public GameCase betGame() throws Exception{
+
         GameApi gameApi = new GameApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"N1");
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity result = gameApi.registerApi("");
+                ApiResultEntity result = gameApi.registerApi("",false);
                 // 登录
                 ApiResultEntity loginApiResult= gameApi.loginApi(result.getParamList());
                 // 充值
-                ApiResultEntity rechargeApiResult = gameApi.rechargeApi(loginApiResult.getParamList());
+                ApiResultEntity rechargeApiResult = gameApi.rechargeApi(loginApiResult.getParamList(),1000,-1);
                 Thread.sleep(2000);
                 // 补单
                 adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(),adminLoginResult.getParamList());
@@ -50,14 +51,14 @@ public class GameCase extends BaseCase {
                     Thread.sleep(2000);
                 }
 
-                ThreadPoolUtil.countDownLatch.countDown();
+                this.threadPoolUtil.countDownLatch.countDown();
 
             }catch (Exception e){
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }

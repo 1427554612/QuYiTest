@@ -1,11 +1,13 @@
 package com.zhangjun.quyi.currency_test.performance.testcase;
 
+import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
 import com.zhangjun.quyi.currency_test.performance.testcase.impl.GPWalletCase;
 import com.zhangjun.quyi.currency_test.performance.testcase.impl.LoginRewardCase;
 import com.zhangjun.quyi.currency_test.performance.utils.ResultWriterUtil;
 import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,6 +29,9 @@ public class BaseCase{
     public String clientUrl;
     public String adminUrl;
     public Integer requestNumber;
+    private ExecutorService  executorService = null;
+    public ThreadPoolUtil threadPoolUtil = null;
+    public List<ApiResultEntity> results = Collections.synchronizedList(new ArrayList<>());   // 返回给接口的结果
 
     /**
      * 基类初始化操作
@@ -39,7 +44,9 @@ public class BaseCase{
         this.requestNumber = requestNumber;
         this.logger = Logger.getLogger(tClass);
         RequestUtil.setOkhttpClient(this.requestNumber,this.requestNumber);
-        ThreadPoolUtil.initThreadPool(this.requestNumber);
+        this.threadPoolUtil = new ThreadPoolUtil();
+        threadPoolUtil.initThreadPool(this.requestNumber);
+        this.executorService = threadPoolUtil.executors;
     }
 
 
@@ -49,8 +56,9 @@ public class BaseCase{
      * @throws IOException
      */
     public void close() throws Exception {
-        ThreadPoolUtil.executors.shutdown();
-        ThreadPoolUtil.countDownLatch = null;
+        this.executorService.shutdownNow();
+        this.logger.info("线程池关闭状态：" + this.executorService.isShutdown());
+        this.threadPoolUtil.countDownLatch = null;
         ResultWriterUtil.close();
     }
 

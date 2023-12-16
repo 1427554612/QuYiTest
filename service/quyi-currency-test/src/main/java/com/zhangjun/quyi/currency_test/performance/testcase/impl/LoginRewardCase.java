@@ -35,7 +35,7 @@ public class LoginRewardCase extends BaseCase {
         TaskApi taskApi = new TaskApi(this.clientUrl);
 
         // 注册
-        ApiResultEntity registerApiResult = taskApi.registerApi("");
+        ApiResultEntity registerApiResult = taskApi.registerApi("",false);
         rabbitTemplate.convertAndSend(registerApiResult);
 
         // 登录
@@ -46,7 +46,7 @@ public class LoginRewardCase extends BaseCase {
         ApiResultEntity myRewardApiResult = taskApi.myRewardApi(loginApiResult.getParamList());
         rabbitTemplate.convertAndSend(myRewardApiResult);
 
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 获取奖励
                 ApiResultEntity useFirstLoginRewardApiEntity = taskApi.useFirstLoginRewardApi(
@@ -54,14 +54,14 @@ public class LoginRewardCase extends BaseCase {
                         myRewardApiResult.getParamList());
                 rabbitTemplate.convertAndSend(useFirstLoginRewardApiEntity);
 
-                ThreadPoolUtil.countDownLatch.countDown();
+                this.threadPoolUtil.countDownLatch.countDown();
 
             }catch (Exception e){
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }

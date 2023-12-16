@@ -36,21 +36,21 @@ public class MessageCase extends BaseCase {
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
 
-
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        ThreadPoolUtil threadPoolUtil = new ThreadPoolUtil();
+        threadPoolUtil.start(this.requestNumber,()->{
 
             try {
                 // 发送站内信
                 adminBaseApi.sendMessageApi(adminLoginResult.getParamList());
 
-                ThreadPoolUtil.countDownLatch.countDown();
+                threadPoolUtil.countDownLatch.countDown();
 
             }catch (Exception e){
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }

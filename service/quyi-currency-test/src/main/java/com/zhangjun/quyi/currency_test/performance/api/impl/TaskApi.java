@@ -45,6 +45,7 @@ public class TaskApi extends BaseApi {
                 url,
                 st,
                 System.currentTimeMillis(),
+                JsonUtil.objectMapper.readValue(requestBody,Map.class),
                 JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 !AssertUtil.assertResponseTextEquals(responseBody, "data.reward.reward", 0),
                 paramsEntityList);
@@ -67,6 +68,7 @@ public class TaskApi extends BaseApi {
                 url,
                 st,
                 System.currentTimeMillis(),
+                JsonUtil.objectMapper.readValue(requestBody,Map.class),
                 JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "message", "success"),
                 ParamsSetUtil.setNullParams());

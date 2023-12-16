@@ -4,16 +4,19 @@ import com.zhangjun.quyi.ftp.service.FtpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.net.ftp.FtpClient;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/ftp")
 public class FtpController {
 
     @Autowired
     private FtpService ftpService;
+
 
     // 单上传文件
     @PostMapping(value = "upload", consumes = "multipart/*", headers = "content-type=multipart/form-data")
@@ -21,5 +24,6 @@ public class FtpController {
         InputStream inputStream = file.getInputStream();
         return ftpService.upload(inputStream,file.getOriginalFilename());
     }
+
 
 }

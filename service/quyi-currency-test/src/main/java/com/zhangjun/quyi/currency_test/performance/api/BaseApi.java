@@ -6,6 +6,7 @@ import com.zhangjun.quyi.currency_test.utils.AssertUtil;
 import com.zhangjun.quyi.currency_test.utils.BodyParamsBuilder;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
 import com.zhangjun.quyi.currency_test.utils.ParamsSetUtil;
+import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
 import lombok.AllArgsConstructor;
@@ -34,13 +35,27 @@ public class BaseApi {
      * @return
      * @throws Exception
      */
-    public ApiResultEntity registerApi(String personId) throws Exception {
+    public ApiResultEntity registerApi(String personId,boolean isActivity) throws Exception {
         String url = this.url  + "/user/register";
-        String requestBody = "{\n" +
-                "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
-                "                \"password\": \"zj123456\"," +
-                "                \"person\":\""+personId+"\","+
-                "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
+        String requestBody = "";
+        // 当是以转盘活动充值
+        if (isActivity){
+            requestBody = "{\n" +
+                    "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
+                    "                \"password\": \"zj123456\"," +
+                    "                \"person\":\""+personId+"\","+
+                    "                \"code\":\"\","+
+                    "                \"from\":\"act_raffle\","+
+                    "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
+        }
+        else {
+            requestBody = "{\n" +
+                    "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
+                    "                \"password\": \"zj123456\"," +
+                    "                \"person\":\""+personId+"\","+
+                    "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
+        }
+        logger.info("注册参数："+ requestBody);
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(url, "POST", requestBody, null);
         HashMap<String, String> keyValueMap = new HashMap<>();
@@ -49,7 +64,6 @@ public class BaseApi {
         keyValueMap.put("grecaptcha_token","grecaptcha_token");
         keyValueMap.put("user_id","data._id");
         if (!"".equals(personId)) keyValueMap.put("person","person");
-        logger.info("上级id：" + personId);
         logger.info("注册接口-账号："+ JsonUtil.objectMapper.readValue(requestBody, Map.class));
         logger.info("注册接口-响应：" + responseBody);
         if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data._id")) throw new Exception("断言错误：data._id");
@@ -62,6 +76,7 @@ public class BaseApi {
                 st,
                 System.currentTimeMillis(),
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 paramsEntityList);
     }
@@ -90,10 +105,7 @@ public class BaseApi {
             if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data.token")) throw new Exception("断言错误：data.token");
             paramsEntityList = ParamsSetUtil.setParamsByResponse(responseBody, keyValueMap);
         }catch (Exception e){
-            e.printStackTrace();
-            Map<String, Object> errorMap = new HashMap<>();
-            errorMap.put("errorMessage",e.getMessage());
-            return new ApiResultEntity("登录接口",url,st,System.currentTimeMillis(),errorMap, false, null);
+            throw new ExceptionEntity(20001,"登录接口报错：" + e.getMessage() + ",错误的响应为：" + responseBody);
         }
         logger.info("登录接口-响应：" + responseBody);
         return new ApiResultEntity("登录接口",
@@ -101,6 +113,7 @@ public class BaseApi {
                 st,
                 System.currentTimeMillis(),
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 paramsEntityList);
     }
@@ -111,9 +124,10 @@ public class BaseApi {
      * @return
      * @throws Exception
      */
-    public  ApiResultEntity rechargeApi(List<ParamsEntity> paramsEntities) throws Exception {
-        String requestBody = getPlatformBody();
+    public ApiResultEntity rechargeApi(List<ParamsEntity> paramsEntities,Integer amount,Integer taskId) throws Exception {
+        String requestBody = getPlatformBody(amount,taskId);
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
+        logger.info("充值接口-请求：" + requestBody);
         String url = this.url + "/user/recharge";
         long st = System.currentTimeMillis();
         String responseBody = RequestUtil.sendRequest(  url, "POST", requestBody, null);
@@ -137,6 +151,7 @@ public class BaseApi {
                 st,
                 en,
                 JsonUtil.objectMapper.readValue(requestBody,Map.class),
+                JsonUtil.objectMapper.readValue(responseBody,Map.class),
                 AssertUtil.assertResponseTextEquals(responseBody, "code", 200),
                 paramsEntityList);
     }
@@ -145,25 +160,25 @@ public class BaseApi {
      * 获取请求体
      * @return
      */
-    private String getPlatformBody(){
+    private String getPlatformBody(Integer amount,Integer taskId){
         String requestBody = "{\n" +
                 "    \"user_id\": \"${user_id}\",\n" +
                 "    \"token\": \"${token}\",\n" +
                 "    \"currency\": \"MXN\",\n" +
-                "    \"amount\": \"1000\",\n" +
-                "    \"task_id\": \"-1\",\n" +
+                "    \"amount\": \""+amount+"\",\n" +
+                "    \"task_id\": "+taskId+",\n" +
                 "    \"data\": {\n" +
                 "        \"typ\": \"SPEI(Personnal)\",\n" +
                 "        \"pay_method\": \"mex\"\n" +
                 "    }\n" +
                 "}";
-        if (this.url.contains("b1-api")){
+        if (this.url.contains("b1-api") || this.url.contains("b2-api") || this.url.contains("b3-api") || this.url.contains("api.rico000")){
             requestBody = "{\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"BRL\",\n" +
-                    "    \"amount\": \"10000\",\n" +
-                    "    \"task_id\": \"-1\",\n" +
+                    "    \"amount\": \""+amount+"\",\n" +
+                    "    \"task_id\": \""+taskId+"\",\n" +
                     "    \"data\": {\n" +
                     "        \"name\": \"zhangjun\",\n" +
                     "        \"pix\": \"36464134175\",\n" +
@@ -179,8 +194,8 @@ public class BaseApi {
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"NGN\",\n" +
-                    "    \"amount\": \"10000\",\n" +
-                    "    \"task_id\": \"-1\",\n" +
+                    "    \"amount\": \""+amount+"\",\n" +
+                    "    \"task_id\":"+taskId+",\n" +
                     "    \"data\": {\n" +
                     "        \"typ\": \"BANK\",\n" +
                     "        \"pay_method\": \"electronic_wallet\"\n" +
@@ -194,31 +209,15 @@ public class BaseApi {
                     "        \"fbp\": \"\"\n" +
                     "    }\n" +
                     "}";
-        }else if (this.url.contains("b3-api")){
-            requestBody="{\n" +
-                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
-                    "    \"user_id\": \"${user_id}\",\n" +
-                    "    \"token\": \"${token}\",\n" +
-                    "    \"currency\": \"BRL\",\n" +
-                    "    \"amount\": \"1000\",\n" +
-                    "    \"task_id\": \"-1\",\n" +
-                    "    \"data\": {\n" +
-                    "        \"name\": \"zhangjun\",\n" +
-                    "        \"pix\": \"34686201950\",\n" +
-                    "        \"email\": \"aaa@163.com\",\n" +
-                    "        \"phone\": \"55231263232\",\n" +
-                    "        \"typ\": \"PIXQR\",\n" +
-                    "        \"pay_method\": \"pix\"\n" +
-                    "    }\n" +
-                    "}";
+
         }else if (this.url.contains("philucky-api")){
             requestBody = "{\n" +
                     "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"PHP\",\n" +
-                    "    \"amount\": \"1000\",\n" +
-                    "    \"task_id\": \"-1\",\n" +
+                    "    \"amount\": \""+amount+"\",\n" +
+                    "    \"task_id\":"+taskId+",\n" +
                     "    \"data\": {\n" +
                     "        \"typ\": \"PAYMAYA\",\n" +
                     "        \"pay_method\": \"electronic_wallet\"\n" +
@@ -229,8 +228,8 @@ public class BaseApi {
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"KES\",\n" +
-                    "    \"amount\": \"10000\",\n" +
-                    "    \"task_id\": \"-1\",\n" +
+                    "    \"amount\": \""+amount+"\",\n" +
+                    "    \"task_id\":"+taskId+",\n" +
                     "    \"data\": {\n" +
                     "        \"phone\": \"768338531\",\n" +
                     "        \"typ\": \"M-PESA\",\n" +

@@ -37,7 +37,7 @@ public class MessageService {
     public void run() throws Exception {
         ProxyCase proxyCase = new ProxyCase(2,"https://philucky-api.office.coinmoney.xyz",null);
         try {
-            proxyCase.inviteUser();
+            proxyCase.inviteOneUser("B1",1000,-1,false);
         }catch (Exception e){
             e.printStackTrace();
         }finally {

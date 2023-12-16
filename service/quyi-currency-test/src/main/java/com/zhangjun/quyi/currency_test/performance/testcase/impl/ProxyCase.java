@@ -2,12 +2,14 @@ package com.zhangjun.quyi.currency_test.performance.testcase.impl;
 
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
 import com.zhangjun.quyi.currency_test.performance.api.AdminBaseApi;
+import com.zhangjun.quyi.currency_test.performance.api.impl.GameApi;
 import com.zhangjun.quyi.currency_test.performance.api.impl.TaskApi;
 import com.zhangjun.quyi.currency_test.performance.testcase.BaseCase;
 import com.zhangjun.quyi.currency_test.performance.utils.ResultWriterUtil;
 import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
 import com.zhangjun.quyi.currency_test.utils.ParamsBuilder;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
+import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.utils.JsonUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -35,32 +37,115 @@ public class ProxyCase extends BaseCase {
      * 邀请下级用户获取人头费
      * @return
      */
-    public ProxyCase inviteUser() throws Exception {
+    public ProxyCase inviteOneUser(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"B1");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
-        ApiResultEntity registerApiResult = taskApi.registerApi("");
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        this.results.add(adminLoginResult);
+        ApiResultEntity registerApiResult = taskApi.registerApi("",isActivity);
+        this.results.add(registerApiResult);
+        this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity result = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult.getParamList(),"user_id"));
+                ApiResultEntity result = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult.getParamList(),"user_id"),isActivity);
+                this.results.add(result);
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
-                Thread.sleep(3000);
+                this.results.add(loginApiResult);
+                Thread.sleep(1000);
                 // 充值
-                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList());
+                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
+                this.results.add(rechargeApiResult);
                 // 补单
-                adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(),adminLoginResult.getParamList());
-
-                ThreadPoolUtil.countDownLatch.countDown();
+                ApiResultEntity repair = adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(), adminLoginResult.getParamList());
+                this.results.add(repair);
+                this.threadPoolUtil.countDownLatch.countDown();
 
             }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        this.threadPoolUtil.countDownLatch.await();
+        this.close();
+        return this;
+    }
+
+
+
+    /**
+     * 邀请下级用户获取人头费并投注
+     * @return
+     */
+    public ProxyCase inviteOneUserBet(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+        TaskApi taskApi = new TaskApi(this.clientUrl);
+        GameApi gameApi = new GameApi(this.clientUrl);
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
+        // 后台登录
+        ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
+        ApiResultEntity registerApiResult = taskApi.registerApi("",isActivity);
+        this.threadPoolUtil.start(this.requestNumber,()->{
+            try {
+                // 注册
+                ApiResultEntity result = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult.getParamList(),"user_id"),isActivity);
+                // 登录
+                ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
+                Thread.sleep(3000);
+                // 充值
+                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
+                // 补单
+                adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(),adminLoginResult.getParamList());
+
+                gameApi.diceBet(loginApiResult.getParamList());
+                this.threadPoolUtil.countDownLatch.countDown();
+
+            }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
+                e.printStackTrace();
+            }
+        });
+        System.out.println("任务执行结束...");
+        this.threadPoolUtil.countDownLatch.await();
+        this.close();
+        return this;
+    }
+
+    /**
+     * 指定上级邀请下级并投注
+     * @return
+     */
+    public ProxyCase appointParentInviteOneUserBet(String platform ,Integer amount,Integer taskId,String parentId,boolean isActivity) throws Exception {
+        TaskApi taskApi = new TaskApi(this.clientUrl);
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
+        // 后台登录
+        ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
+        this.results.add(adminLoginResult);
+
+        this.threadPoolUtil.start(this.requestNumber,()->{
+            try {
+                ApiResultEntity result = taskApi.registerApi(parentId,isActivity);
+                this.results.add(result);
+                // 登录
+                ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
+                this.results.add(loginApiResult);
+                Thread.sleep(1000);
+                // 充值
+                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
+                this.results.add(rechargeApiResult);
+                // 补单
+                ApiResultEntity repair = adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(), adminLoginResult.getParamList());
+                this.results.add(repair);
+                this.threadPoolUtil.countDownLatch.countDown();
+
+            }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
+                e.printStackTrace();
+            }
+        });
+        System.out.println("任务执行结束...");
+        this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }
@@ -70,34 +155,43 @@ public class ProxyCase extends BaseCase {
      * 第三级人头充值
      * @return
      */
-    public ProxyCase threeRecomendar() throws Exception {
+    public ProxyCase threeLevelUserRecharge(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"K1");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
+        this.results.add(adminLoginResult);
         // 后台三级投注
-        ApiResultEntity registerApiResult1 = taskApi.registerApi("");
-        ApiResultEntity registerApiResult2 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult1.getParamList(),"user_id"));
-        ApiResultEntity registerApiResult3 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult2.getParamList(),"user_id"));
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        ApiResultEntity registerApiResult1 = taskApi.registerApi("",isActivity);
+        this.results.add(registerApiResult1);
+        ApiResultEntity registerApiResult2 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult1.getParamList(),"user_id"),isActivity);
+        this.results.add(registerApiResult2);
+        ApiResultEntity registerApiResult3 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult2.getParamList(),"user_id"),isActivity);
+        this.results.add(registerApiResult3);
+        this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity registerApiResult = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult3.getParamList(),"user_id"));
+                ApiResultEntity registerApiResult = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult3.getParamList(),"user_id"),isActivity);
+                this.results.add(registerApiResult);
 
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(registerApiResult.getParamList());
+                this.results.add(loginApiResult);
                 // 充值
-                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList());
+                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
+                this.results.add(rechargeApiResult);
                 Thread.sleep(2000);
                 // 补单
-                adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(),adminLoginResult.getParamList());
-                ThreadPoolUtil.countDownLatch.countDown();
+                ApiResultEntity repairOrder = adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(), adminLoginResult.getParamList());
+                this.results.add(repairOrder);
+                this.threadPoolUtil.countDownLatch.countDown();
             }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }
@@ -107,51 +201,154 @@ public class ProxyCase extends BaseCase {
      * 全三级人头充值
      * @return
      */
-    public ProxyCase allRecomendar() throws Exception {
+    public ProxyCase allThreeUserRecharge(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
-        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,"m1");
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
+        this.results.add(adminLoginResult);
         // 最上级注册
-        ApiResultEntity register = taskApi.registerApi("");
-        ThreadPoolUtil.start(this.requestNumber,()->{
+        ApiResultEntity register = taskApi.registerApi("",isActivity);
+        this.results.add(register);
+        this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity register1 = taskApi.registerApi((String) ParamsBuilder.getStr(register.getParamList(),"user_id"));
+                ApiResultEntity register1 = taskApi.registerApi((String) ParamsBuilder.getStr(register.getParamList(),"user_id"),isActivity);
+
+                this.results.add(register1);
                 // 登录
                 ApiResultEntity login1= taskApi.loginApi(register1.getParamList());
+
+                this.results.add(login1);
                 // 充值
-                ApiResultEntity recharge1 = taskApi.rechargeApi(login1.getParamList());
+                ApiResultEntity recharge1 = taskApi.rechargeApi(login1.getParamList(),amount,taskId);
+                this.results.add(recharge1);
                 Thread.sleep(2000);
                 // 补单
-                adminBaseApi.repairOrderApi(recharge1.getParamList(),adminLoginResult.getParamList());
+                ApiResultEntity repair1 = adminBaseApi.repairOrderApi(recharge1.getParamList(), adminLoginResult.getParamList());
+                this.results.add(repair1);
 
                 // 注册
-                ApiResultEntity register2 = taskApi.registerApi((String) ParamsBuilder.getStr(register1.getParamList(),"user_id"));
+                ApiResultEntity register2 = taskApi.registerApi((String) ParamsBuilder.getStr(register1.getParamList(),"user_id"),isActivity);
+
+                this.results.add(register2);
                 // 登录
                 ApiResultEntity login2= taskApi.loginApi(register2.getParamList());
+
+                this.results.add(login2);
                 // 充值
-                ApiResultEntity recharge2 = taskApi.rechargeApi(login2.getParamList());
+                ApiResultEntity recharge2 = taskApi.rechargeApi(login2.getParamList(),amount,taskId);
+                this.results.add(recharge2);
                 Thread.sleep(2000);
                 // 补单
-                adminBaseApi.repairOrderApi(recharge2.getParamList(),adminLoginResult.getParamList());
+                ApiResultEntity repair2 =  adminBaseApi.repairOrderApi(recharge2.getParamList(),adminLoginResult.getParamList());
+                this.results.add(repair2);
 
                 // 注册
-                ApiResultEntity register3 = taskApi.registerApi((String) ParamsBuilder.getStr(register2.getParamList(),"user_id"));
+                ApiResultEntity register3 = taskApi.registerApi((String) ParamsBuilder.getStr(register2.getParamList(),"user_id"),isActivity);
+                this.results.add(register3);
                 // 登录
                 ApiResultEntity login3= taskApi.loginApi(register3.getParamList());
+                this.results.add(login3);
                 // 充值
-                ApiResultEntity recharge3 = taskApi.rechargeApi(login3.getParamList());
+                ApiResultEntity recharge3 = taskApi.rechargeApi(login3.getParamList(),amount,taskId);
+                this.results.add(recharge3);
                 Thread.sleep(2000);
                 // 补单
-                adminBaseApi.repairOrderApi(recharge3.getParamList(),adminLoginResult.getParamList());
-                ThreadPoolUtil.countDownLatch.countDown();
+                ApiResultEntity repair3 =  adminBaseApi.repairOrderApi(recharge3.getParamList(),adminLoginResult.getParamList());
+                this.results.add(repair3);
+
+                this.threadPoolUtil.countDownLatch.countDown();
             }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
             }
         });
         System.out.println("任务执行结束...");
-        ThreadPoolUtil.countDownLatch.await();
+        this.threadPoolUtil.countDownLatch.await();
+        this.close();
+        return this;
+    }
+
+    /**
+     * 全三级人头充值和投注
+     * @return
+     */
+    public ProxyCase allThreeUserRechargeAndBet(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+        TaskApi taskApi = new TaskApi(this.clientUrl);
+        GameApi gameApi = new GameApi(this.clientUrl);
+        AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
+        // 后台登录
+        ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
+        this.results.add(adminLoginResult);
+        // 最上级注册
+        ApiResultEntity register = taskApi.registerApi("",isActivity);
+        this.results.add(register);
+        this.threadPoolUtil.start(this.requestNumber,()->{
+            try {
+                // 注册
+                ApiResultEntity register1 = taskApi.registerApi((String) ParamsBuilder.getStr(register.getParamList(),"user_id"),isActivity);
+
+                this.results.add(register1);
+                // 登录
+                ApiResultEntity login1= taskApi.loginApi(register1.getParamList());
+
+                this.results.add(login1);
+                // 充值
+                ApiResultEntity recharge1 = taskApi.rechargeApi(login1.getParamList(),amount,taskId);
+                this.results.add(recharge1);
+                Thread.sleep(2000);
+                // 补单
+                ApiResultEntity repair1 = adminBaseApi.repairOrderApi(recharge1.getParamList(), adminLoginResult.getParamList());
+                this.results.add(repair1);
+
+                ApiResultEntity bet1 = gameApi.diceBet(login1.getParamList());
+                this.results.add(bet1);
+
+                // 注册
+                ApiResultEntity register2 = taskApi.registerApi((String) ParamsBuilder.getStr(register1.getParamList(),"user_id"),isActivity);
+
+                this.results.add(register2);
+                // 登录
+                ApiResultEntity login2= taskApi.loginApi(register2.getParamList());
+
+                this.results.add(login2);
+                // 充值
+                ApiResultEntity recharge2 = taskApi.rechargeApi(login2.getParamList(),amount,taskId);
+                this.results.add(recharge2);
+                Thread.sleep(2000);
+                // 补单
+                ApiResultEntity repair2 =  adminBaseApi.repairOrderApi(recharge2.getParamList(),adminLoginResult.getParamList());
+                this.results.add(repair2);
+
+                ApiResultEntity bet2 = gameApi.diceBet(login2.getParamList());
+                this.results.add(bet2);
+
+                // 注册
+                ApiResultEntity register3 = taskApi.registerApi((String) ParamsBuilder.getStr(register2.getParamList(),"user_id"),isActivity);
+                this.results.add(register3);
+                // 登录
+                ApiResultEntity login3= taskApi.loginApi(register3.getParamList());
+                this.results.add(login3);
+                // 充值
+                ApiResultEntity recharge3 = taskApi.rechargeApi(login3.getParamList(),amount,taskId);
+                this.results.add(recharge3);
+                Thread.sleep(2000);
+                // 补单
+                ApiResultEntity repair3 =  adminBaseApi.repairOrderApi(recharge3.getParamList(),adminLoginResult.getParamList());
+                this.results.add(repair3);
+
+                ApiResultEntity bet3 = gameApi.diceBet(login3.getParamList());
+                this.results.add(bet3);
+
+                this.threadPoolUtil.countDownLatch.countDown();
+            }catch (Exception e){
+                this.threadPoolUtil.countDownLatch.countDown();
+                e.printStackTrace();
+            }
+        });
+        System.out.println("任务执行结束...");
+        this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
     }
