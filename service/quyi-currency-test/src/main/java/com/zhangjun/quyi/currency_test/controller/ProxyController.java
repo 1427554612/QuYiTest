@@ -19,20 +19,10 @@ public class ProxyController {
     @Data
     @ApiModel
     @NoArgsConstructor
-    public static class ProxyScriptBean extends BaseScriptEntity {
+    public static class ProxyScriptBean extends UserController.UserScriptBean {
 
          @ApiModelProperty("上级id")
          String parentId;
-
-         @ApiModelProperty("充值金额")
-         Integer amount;
-
-         @ApiModelProperty("任务id")
-         Integer taskId;
-
-         @ApiModelProperty("是否是转盘活动")
-         boolean activity;
-
 
     }
 

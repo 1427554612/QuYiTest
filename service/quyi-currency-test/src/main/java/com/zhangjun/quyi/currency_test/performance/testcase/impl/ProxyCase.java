@@ -65,9 +65,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
@@ -104,9 +105,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
@@ -142,9 +144,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
@@ -188,9 +191,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
@@ -262,9 +266,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;
@@ -345,9 +350,10 @@ public class ProxyCase extends BaseCase {
             }catch (Exception e){
                 this.threadPoolUtil.countDownLatch.countDown();
                 e.printStackTrace();
+                logger.error("当前线程脚本执行错误，" + Thread.currentThread().getName() + "，错误原因：" + e.getMessage());
             }
         });
-        System.out.println("任务执行结束...");
+        logger.info("脚本执行结束...");
         this.threadPoolUtil.countDownLatch.await();
         this.close();
         return this;

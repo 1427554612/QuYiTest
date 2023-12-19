@@ -5,6 +5,7 @@ import com.sun.org.apache.regexp.internal.RE;
 import com.zhangjun.quyi.currency_test.constant.PlatformStrConstant;
 import com.zhangjun.quyi.currency_test.entity.BaseScriptEntity;
 import com.zhangjun.quyi.currency_test.performance.testcase.impl.UserCase;
+import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -45,14 +46,21 @@ public class UserController {
         UserCase userCase = new UserCase(registerAndRechargeBean.getRequestNumber(),
                 registerAndRechargeBean.getClientUrl(),
                 registerAndRechargeBean.getAdminUrl());
-        try {
-            userCase.registerAndRecharge(registerAndRechargeBean.getPlatform(),
-                    registerAndRechargeBean.getAmount(),registerAndRechargeBean.getTaskId(),registerAndRechargeBean.isActivity()).close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            userCase.close();
-        }
+        userCase.registerAndRecharge(registerAndRechargeBean.getPlatform(),
+                registerAndRechargeBean.getAmount(),registerAndRechargeBean.getTaskId(),registerAndRechargeBean.isActivity());
+        return ResultModel.ok().data("data",userCase.results);
+    }
+
+
+    @PostMapping("/multipleRecharge")
+    @ApiOperation("用户多次充值")
+    public ResultModel multipleRecharge(@ApiParam(name = "configMap",value = "配置字段")
+                                            @RequestBody UserScriptBean registerAndRechargeBean) throws Exception {
+        UserCase userCase = new UserCase(registerAndRechargeBean.getRequestNumber(),
+                registerAndRechargeBean.getClientUrl(),
+                registerAndRechargeBean.getAdminUrl());
+        userCase.multipleRecharge(registerAndRechargeBean.getPlatform(),
+                registerAndRechargeBean.getAmount(),registerAndRechargeBean.getTaskId(),registerAndRechargeBean.isActivity());
         return ResultModel.ok().data("data",userCase.results);
     }
 }

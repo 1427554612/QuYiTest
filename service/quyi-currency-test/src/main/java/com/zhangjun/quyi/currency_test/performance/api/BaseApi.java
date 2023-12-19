@@ -53,6 +53,7 @@ public class BaseApi {
                     "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
                     "                \"password\": \"zj123456\"," +
                     "                \"person\":\""+personId+"\","+
+                    "                \"code\":\"\","+
                     "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
         }
         logger.info("注册参数："+ requestBody);
