@@ -1,7 +1,6 @@
 package com.zhangjun.quyi.currency_test.controller;
 
-import com.zhangjun.quyi.currency_test.entity.BaseScriptEntity;
-import com.zhangjun.quyi.currency_test.performance.testcase.impl.ProxyCase;
+import com.zhangjun.quyi.currency_test.core.testcase.impl.ProxyCase;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.*;
 import lombok.Data;

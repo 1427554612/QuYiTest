@@ -1,13 +1,9 @@
-package com.zhangjun.quyi.currency_test.performance.testcase.impl;
+package com.zhangjun.quyi.currency_test.core.testcase.impl;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
-import com.zhangjun.quyi.currency_test.performance.api.AdminBaseApi;
-import com.zhangjun.quyi.currency_test.performance.api.impl.GameApi;
-import com.zhangjun.quyi.currency_test.performance.api.impl.TaskApi;
-import com.zhangjun.quyi.currency_test.performance.testcase.BaseCase;
-import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
-import com.zhangjun.quyi.currency_test.utils.ParamsBuilder;
+import com.zhangjun.quyi.currency_test.core.api.AdminBaseApi;
+import com.zhangjun.quyi.currency_test.core.api.clientImpl.GameApi;
+import com.zhangjun.quyi.currency_test.core.testcase.BaseCase;
 
 public class GameCase extends BaseCase {
 

@@ -1,7 +1,7 @@
-package com.zhangjun.quyi.currency_test.performance.api;
+package com.zhangjun.quyi.currency_test.core.api;
 
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
-import com.zhangjun.quyi.currency_test.performance.utils.ContainerUtil;
+import com.zhangjun.quyi.currency_test.core.utils.ContainerUtil;
 import com.zhangjun.quyi.currency_test.utils.AssertUtil;
 import com.zhangjun.quyi.currency_test.utils.BodyParamsBuilder;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 基础api类

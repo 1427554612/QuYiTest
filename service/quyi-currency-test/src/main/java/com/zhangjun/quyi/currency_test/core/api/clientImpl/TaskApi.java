@@ -1,14 +1,13 @@
-package com.zhangjun.quyi.currency_test.performance.api.impl;
+package com.zhangjun.quyi.currency_test.core.api.clientImpl;
 
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
-import com.zhangjun.quyi.currency_test.performance.api.BaseApi;
+import com.zhangjun.quyi.currency_test.core.api.BaseApi;
 import com.zhangjun.quyi.currency_test.utils.AssertUtil;
 import com.zhangjun.quyi.currency_test.utils.BodyParamsBuilder;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
 import com.zhangjun.quyi.currency_test.utils.ParamsSetUtil;
 import com.zhangjun.quyi.utils.JsonUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
-import lombok.Data;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.zhangjun.quyi.currency_test.performance.utils;
+package com.zhangjun.quyi.currency_test.core.utils;
 
 
 import java.util.ArrayList;

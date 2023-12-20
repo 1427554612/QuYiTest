@@ -1,7 +1,4 @@
-package com.zhangjun.quyi.currency_test.performance.main;
-
-import com.zhangjun.quyi.currency_test.performance.testcase.impl.*;
-import org.python.antlr.ast.Str;
+package com.zhangjun.quyi.currency_test.core.main;
 
 public class RunApi {
 

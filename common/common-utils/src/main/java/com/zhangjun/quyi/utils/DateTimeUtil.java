@@ -62,5 +62,16 @@ public class DateTimeUtil {
                 + substring.substring(substring.length()-3));
     }
 
+    /**
+     * 以月份相加、获取未来的今天
+     * @return
+     */
+    public static String getNextMonthTime(){
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.MONTH,1);
+        return dateForString(instance.getTime());
+    }
+
 
 }

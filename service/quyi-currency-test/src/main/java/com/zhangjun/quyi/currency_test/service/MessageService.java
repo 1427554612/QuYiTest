@@ -2,7 +2,7 @@ package com.zhangjun.quyi.currency_test.service;
 
 import com.rabbitmq.client.Channel;
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
-import com.zhangjun.quyi.currency_test.performance.testcase.impl.ProxyCase;
+import com.zhangjun.quyi.currency_test.core.testcase.impl.ProxyCase;
 import com.zhangjun.quyi.service_base.handler.entity.ExceptionEntity;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

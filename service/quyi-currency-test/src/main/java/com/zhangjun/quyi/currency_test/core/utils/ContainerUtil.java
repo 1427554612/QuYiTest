@@ -1,10 +1,9 @@
-package com.zhangjun.quyi.currency_test.performance.utils;
+package com.zhangjun.quyi.currency_test.core.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
 import com.zhangjun.quyi.utils.JsonUtil;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

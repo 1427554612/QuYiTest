@@ -1,4 +1,4 @@
-package com.zhangjun.quyi.currency_test.performance.api;
+package com.zhangjun.quyi.currency_test.core.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

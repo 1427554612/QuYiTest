@@ -1,7 +1,7 @@
-package com.zhangjun.quyi.currency_test.performance.testcase.impl;
+package com.zhangjun.quyi.currency_test.core.testcase.impl;
 
-import com.zhangjun.quyi.currency_test.performance.api.AdminBaseApi;
-import com.zhangjun.quyi.currency_test.performance.testcase.BaseCase;
+import com.zhangjun.quyi.currency_test.core.api.AdminBaseApi;
+import com.zhangjun.quyi.currency_test.core.testcase.BaseCase;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;

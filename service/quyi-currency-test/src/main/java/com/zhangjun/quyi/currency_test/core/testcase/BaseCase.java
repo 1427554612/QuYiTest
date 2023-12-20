@@ -1,23 +1,16 @@
-package com.zhangjun.quyi.currency_test.performance.testcase;
+package com.zhangjun.quyi.currency_test.core.testcase;
 
 import com.zhangjun.quyi.currency_test.entity.ApiResultEntity;
-import com.zhangjun.quyi.currency_test.performance.testcase.impl.GPWalletCase;
-import com.zhangjun.quyi.currency_test.performance.testcase.impl.LoginRewardCase;
-import com.zhangjun.quyi.currency_test.performance.utils.ResultWriterUtil;
-import com.zhangjun.quyi.currency_test.performance.utils.ThreadPoolUtil;
+import com.zhangjun.quyi.currency_test.core.utils.ResultWriterUtil;
+import com.zhangjun.quyi.currency_test.core.utils.ThreadPoolUtil;
 import com.zhangjun.quyi.utils.RequestUtil;
 import org.apache.log4j.Logger;
-import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 基础case类
