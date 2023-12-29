@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/script/user")
+@RequestMapping("/api/script/referralCode")
 @Api(description = "兑换码脚本")
 public class ReferralCodeController {
 

@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/common/common-utils/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/service-base/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common/service-security/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infrastructure/service-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-acl/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/quyi-api-autotest/src/main/java" charset="UTF-8" />

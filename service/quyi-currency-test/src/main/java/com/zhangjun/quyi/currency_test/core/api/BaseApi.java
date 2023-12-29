@@ -91,6 +91,7 @@ public class BaseApi {
         String url = this.url +  "/user/login";
         String requestBody = "{\"account\":\"${account}\",\"password\":\"${password}\",\"grecaptcha_token\":\"${grecaptcha_token}\"}";
         requestBody = (String)new BodyParamsBuilder().parseParams(paramsEntities, requestBody);
+        logger.info("登录接口-请求： " + requestBody);
         String responseBody = null;
         List<ParamsEntity> paramsEntityList = null;
         Map<String,Object> headers = new HashMap<>();
@@ -104,10 +105,10 @@ public class BaseApi {
             keyValueMap.put("user_id","data.user._id");
             if (!AssertUtil.assertResponseTextNotIsNull(responseBody,"data.token")) throw new Exception("断言错误：data.token");
             paramsEntityList = ParamsSetUtil.setParamsByResponse(responseBody, keyValueMap);
+            logger.info("登录接口-响应：" + responseBody);
         }catch (Exception e){
             throw new ExceptionEntity(20001,"登录接口报错：" + e.getMessage() + ",错误的响应为：" + responseBody);
         }
-        logger.info("登录接口-响应：" + responseBody);
         return new ApiResultEntity("登录接口",
                 url,
                 st,
@@ -172,7 +173,7 @@ public class BaseApi {
                 "        \"pay_method\": \"mex\"\n" +
                 "    }\n" +
                 "}";
-        if (this.url.contains("b1-api") || this.url.contains("b2-api") || this.url.contains("b3-api") || this.url.contains("api.rico000")){
+        if (this.url.contains("b1-api") || this.url.contains("b2-api") || this.url.contains("b3-api") || this.url.contains("api.rico000") || this.url.contains("aajogo")){
             requestBody = "{\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +

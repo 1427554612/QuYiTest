@@ -1,0 +1,12 @@
+1，静态首页
+    Spring Boot 项目在启动后，首先回去静态资源路径（resources/static）下查找 index.html 作为首页文件。
+
+2、动态首页
+     如果在静态资源路径（resources/static）下找不到 index.html，
+     则会到 resources/templates 目录下找 index.html（使用 Thymeleaf 模版）作为首页文件。
+
+3、mvc内部跳转static的html文件：
+    1、controller类的注解不能是@RestController,如果走的是ResponseBody处理响应、那么请求就不是走视图解析器
+    2、application.properties添加配置：
+        spring.mvc.view.prefix= /
+        spring.mvc.view.suffix= .html

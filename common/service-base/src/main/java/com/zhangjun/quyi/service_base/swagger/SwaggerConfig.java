@@ -30,8 +30,8 @@ public class SwaggerConfig {
     }
     private ApiInfo webApiInfo(){
         return new ApiInfoBuilder()
-                .title("张军-个人项目-接口文档")
-                .description("本文档定义了微服务调研描述")
+                .title("张军-测试脚本-接口文档")
+                .description("详细运行日志打开ie浏览器，输入地址：ftp://192.168.5.213:2121 ,账号密码：admin/123456")
                 .version("1.0")
                 .contact(new Contact("java", "http://zhangjunApi.com", "1427554612@qq.com"))
                 .build();

@@ -23,6 +23,7 @@
         <module name="pressure-server" />
         <module name="quyi-concurrency-server-test" />
         <module name="quyi-pressure-server" />
+        <module name="service-security" />
         <module name="quyi-test-task" />
         <module name="pressure-client" />
         <module name="quyi-ftp" />
@@ -36,7 +37,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="QuYiTest" options="" />
-      <module name="common" options="" />
+      <module name="common" options="-parameters" />
       <module name="common-utils" options="-parameters" />
       <module name="infrastructure" options="" />
       <module name="pressure-client" options="-parameters" />
@@ -55,9 +56,10 @@
       <module name="quyi-test-task" options="-parameters" />
       <module name="quyi-ui-autotest" options="-parameters" />
       <module name="quyi-user" options="-parameters" />
-      <module name="service" options="-parameters" />
+      <module name="service" options="" />
       <module name="service-base" options="-parameters" />
       <module name="service-gateway" options="-parameters" />
+      <module name="service-security" options="-parameters" />
     </option>
   </component>
 </project>
