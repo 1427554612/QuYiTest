@@ -38,24 +38,23 @@ public class ProxyController {
         ProxyCase proxyCase = new ProxyCase(proxyScriptBean.getRequestNumber(),
                 proxyScriptBean.getClientUrl(),
                 proxyScriptBean.getAdminUrl());
-        proxyCase.inviteOneUser(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(), proxyScriptBean.isActivity());
+        proxyCase.inviteOneUser(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getParentId(),proxyScriptBean.getTaskId(), proxyScriptBean.isActivity());
         return ResultModel.ok().data("data",proxyCase.results);
     }
 
     /**
-     * 指定上级邀请下级并投注
+     * 邀请一级下级投注
      * @param proxyScriptBean
      * @return
      */
-    @PostMapping("/appointParentInviteOneUserBet")
-    @ApiOperation("指定上级邀请一级下级并充值")
-    public ResultModel appointParentInviteOneUserBet(@ApiParam(name = "proxyScriptBean",value = "代理配置对象")
+    @PostMapping("/inviteOneUserBet")
+    @ApiOperation("邀请一级下级充值并投注")
+    public ResultModel inviteOneUserBet(@ApiParam(name = "proxyScriptBean",value = "代理配置对象")
                                                      @RequestBody ProxyController.ProxyScriptBean proxyScriptBean) throws Exception {
-        System.out.println("proxyScriptBean = " + proxyScriptBean);
         ProxyCase proxyCase = new ProxyCase(proxyScriptBean.getRequestNumber(),
                 proxyScriptBean.getClientUrl(),
                 proxyScriptBean.getAdminUrl());
-        proxyCase.appointParentInviteOneUserBet(proxyScriptBean.getPlatform(),
+        proxyCase.inviteOneUserBet(proxyScriptBean.getPlatform(),
                 proxyScriptBean.getAmount(),
                 proxyScriptBean.getTaskId(),
                 proxyScriptBean.getParentId(),proxyScriptBean.isActivity());
@@ -75,7 +74,7 @@ public class ProxyController {
         ProxyCase proxyCase = new ProxyCase(proxyScriptBean.getRequestNumber(),
                 proxyScriptBean.getClientUrl(),
                 proxyScriptBean.getAdminUrl());
-        proxyCase.threeLevelUserRecharge(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(),proxyScriptBean.isActivity());
+        proxyCase.threeLevelUserRecharge(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getParentId(),proxyScriptBean.getTaskId(),proxyScriptBean.isActivity());
         return ResultModel.ok().data("data",proxyCase.results);
     }
 

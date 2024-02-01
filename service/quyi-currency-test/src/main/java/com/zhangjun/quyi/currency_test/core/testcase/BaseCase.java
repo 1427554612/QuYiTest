@@ -40,6 +40,7 @@ public class BaseCase{
         this.threadPoolUtil = new ThreadPoolUtil();
         threadPoolUtil.initThreadPool(this.requestNumber);
         this.executorService = threadPoolUtil.executors;
+        this.logger.info("测试地址：" + this.clientUrl);
     }
 
 

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 
 @RequestMapping(value = "/login")
-@Controller
+@RestController
 public class DemoController {
 
     @GetMapping(value = "/toLogin")
@@ -23,7 +23,11 @@ public class DemoController {
     @PostMapping(value = "/toFail")
     public String fail() {
         System.out.println("调用失败");
-        return "fail";
+        return "forward:/fail";
     }
 
+    @GetMapping(value = "hello")
+    public String hello() {
+        return "hello";
+    }
 }

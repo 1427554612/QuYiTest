@@ -74,7 +74,6 @@ public class UserCase extends BaseCase {
         this.threadPoolUtil.start(this.requestNumber,()->{
 
             try {
-                int j = 10/0;
                 // 注册
                 ApiResultEntity register1 = baseApi.registerApi("",isActivity);
                 this.results.add(register1);

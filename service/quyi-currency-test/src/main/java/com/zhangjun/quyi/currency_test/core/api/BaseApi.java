@@ -40,12 +40,13 @@ public class BaseApi {
         // 当是以转盘活动充值
         if (isActivity){
             requestBody = "{\n" +
-                    "                \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName()+"@qq.com\",\n" +
-                    "                \"password\": \"zj123456\"," +
-                    "                \"person\":\""+personId+"\","+
-                    "                \"code\":\"\","+
-                    "                \"from\":\"act_raffle\","+
-                    "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
+                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
+                    "    \"account\": \"zj_"+System.currentTimeMillis() + Thread.currentThread().getName().replaceAll("-","_")+"@qq.com"+"\",\n" +
+                    "    \"password\": \"zj123456\",\n" +
+                    "    \"person\": \""+personId+"\",\n" +
+                    "    \"code\": \"\",\n" +
+                    "    \"from\": \"act_raffle\"\n" +
+                    "}";
         }
         else {
             requestBody = "{\n" +
@@ -53,7 +54,7 @@ public class BaseApi {
                     "                \"password\": \"zj123456\"," +
                     "                \"person\":\""+personId+"\","+
                     "                \"code\":\"\","+
-                    "\"grecaptcha_token\":\"FAKE_TOKEN\"}";
+                    "\"grecaptcha_token\":\"03AFcWeA5rzVAsdG_06xnYKnLTGjYz7rmt-KlfleHJYo0zMYfGW9nYN0SeGQVR1TdTriIUvowTrgX8NmVIE2vKqSy9eBcd3YlxZjH16EITC2a-X_Bed8UNzMytzShwDavHU0j8_DFwlPt-ADAmpRkbm2FPbYTEel033EidWeLqpLqPZx_xJ1ByKbGWA60xFwwfRCARSwtV-P6KyMarsaL5X6iQ6Mbb0KhcbWsnunx_BTA6UmyMBI5eILtf_JknThlxlVRPQUJfO8MY-y7joQCr2zH7Nb8y7vgMzovqPH5IqtOEOwGRSSMtMf7DsbCWpalmZU69gxLJpe1YO9KgDch7LZ63wM_qGzUQE-jgwMjyeXytw0KSiaDry7cWRXW06Y3cJPy0SFRcoal-1z_Yq1XORk4LG7lxm4FhhrfVJaScm9z1vMLCHJJHdmOcgSSy7noh6V1WIel_cxr8tzusnXuelnIz-vG5Xp5WSWTwtLswDdv2kqvnoFxHWmw7tIoKFHwhKhVzvhjk0kxumVq_ibLwYBAynT9Q5GtiRJ_4AF8wSKjR_hHxRWs_vj8GnqAYpXX8PxEj9YemIIOh\"}";
         }
         logger.info("注册参数："+ requestBody);
         long st = System.currentTimeMillis();
@@ -213,12 +214,12 @@ public class BaseApi {
 
         }else if (this.url.contains("philucky-api")){
             requestBody = "{\n" +
-                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"PHP\",\n" +
                     "    \"amount\": \""+amount+"\",\n" +
-                    "    \"task_id\":"+taskId+",\n" +
+                    "    \"task_id\": \""+taskId+"\",\n" +
+                    "    \"device\": \"pc\",\n" +
                     "    \"data\": {\n" +
                     "        \"typ\": \"PAYMAYA\",\n" +
                     "        \"pay_method\": \"electronic_wallet\"\n" +

@@ -6,6 +6,7 @@ import com.zhangjun.quyi.currency_test.core.api.clientImpl.GameApi;
 import com.zhangjun.quyi.currency_test.core.api.clientImpl.TaskApi;
 import com.zhangjun.quyi.currency_test.core.testcase.BaseCase;
 import com.zhangjun.quyi.currency_test.utils.ParamsBuilder;
+import com.zhangjun.quyi.currency_test.utils.ParamsEntity;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
@@ -29,18 +30,26 @@ public class ProxyCase extends BaseCase {
      * 邀请下级用户获取人头费
      * @return
      */
-    public ProxyCase inviteOneUser(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+    public ProxyCase inviteOneUser(String platform ,Integer amount,String parentId,Integer taskId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         this.results.add(adminLoginResult);
-        ApiResultEntity registerApiResult = taskApi.registerApi("",isActivity);
-        this.results.add(registerApiResult);
+
+        ApiResultEntity registerApiResult = null;
+        if (parentId.equals("")){
+            registerApiResult = taskApi.registerApi("",isActivity);
+            this.results.add(registerApiResult);
+            for (ParamsEntity paramsEntity : registerApiResult.getParamList()) {
+                if (paramsEntity.getUseName().equals("user_id"))parentId = (String) paramsEntity.getKeyValue();
+            }
+        }
+        String finalParentId1 = parentId;
         this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity result = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult.getParamList(),"user_id"),isActivity);
+                ApiResultEntity result = taskApi.registerApi(finalParentId1,isActivity);
                 this.results.add(result);
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
@@ -107,19 +116,28 @@ public class ProxyCase extends BaseCase {
     }
 
     /**
-     * 指定上级邀请下级并投注
+     * 邀请一级下级并投注
      * @return
      */
-    public ProxyCase appointParentInviteOneUserBet(String platform ,Integer amount,Integer taskId,String parentId,boolean isActivity) throws Exception {
+    public ProxyCase inviteOneUserBet(String platform ,Integer amount,Integer taskId,String parentId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         this.results.add(adminLoginResult);
+        ApiResultEntity registerApiResult = null;
+        if (parentId.equals("")){
+            registerApiResult = taskApi.registerApi("",isActivity);
+            this.results.add(registerApiResult);
+            for (ParamsEntity paramsEntity : registerApiResult.getParamList()) {
+                if (paramsEntity.getUseName().equals("user_id"))parentId = (String) paramsEntity.getKeyValue();
+            }
+        }
 
+        String finalParentId = parentId;
         this.threadPoolUtil.start(this.requestNumber,()->{
             try {
-                ApiResultEntity result = taskApi.registerApi(parentId,isActivity);
+                ApiResultEntity result = taskApi.registerApi(finalParentId,isActivity);
                 this.results.add(result);
                 // 登录
                 ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
@@ -150,16 +168,23 @@ public class ProxyCase extends BaseCase {
      * 第三级人头充值
      * @return
      */
-    public ProxyCase threeLevelUserRecharge(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+    public ProxyCase threeLevelUserRecharge(String platform ,Integer amount,String parentId,Integer taskId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         this.results.add(adminLoginResult);
+
         // 后台三级投注
-        ApiResultEntity registerApiResult1 = taskApi.registerApi("",isActivity);
-        this.results.add(registerApiResult1);
-        ApiResultEntity registerApiResult2 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult1.getParamList(),"user_id"),isActivity);
+        ApiResultEntity registerApiResult1 = null;
+        if (parentId.equals("")){
+            registerApiResult1 = taskApi.registerApi("",isActivity);
+            this.results.add(registerApiResult1);
+            for (ParamsEntity paramsEntity : registerApiResult1.getParamList()) {
+                if (paramsEntity.getUseName().equals("user_id"))parentId = (String) paramsEntity.getKeyValue();
+            }
+        }
+        ApiResultEntity registerApiResult2 = taskApi.registerApi(parentId,isActivity);
         this.results.add(registerApiResult2);
         ApiResultEntity registerApiResult3 = taskApi.registerApi((String) ParamsBuilder.getStr(registerApiResult2.getParamList(),"user_id"),isActivity);
         this.results.add(registerApiResult3);
