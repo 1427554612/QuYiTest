@@ -212,7 +212,7 @@ public class BaseApi {
                     "    }\n" +
                     "}";
 
-        }else if (this.url.contains("philucky-api")){
+        }else if (this.url.contains("philucky-api") || this.url.contains("p2-api") ||  this.url.contains("p3-api")){
             requestBody = "{\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
