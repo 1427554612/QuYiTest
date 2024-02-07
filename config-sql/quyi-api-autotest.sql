@@ -11,11 +11,37 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 10/11/2023 14:32:48
+ Date: 07/02/2024 17:22:36
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for test_api
+-- ----------------------------
+DROP TABLE IF EXISTS `test_api`;
+CREATE TABLE `test_api`  (
+  `api_id` char(19) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '接口id',
+  `api_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '接口名称',
+  `api_path` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '接口地址',
+  `api_type` char(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '接口地址',
+  `request_method` char(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '请求方式',
+  `is_main_process_api` tinyint(1) NOT NULL COMMENT '是否是主流程api：0：非主流程,1：主流程',
+  `request_headers` json NOT NULL COMMENT '请求头',
+  `request_body` json NOT NULL COMMENT '请求体',
+  `is_run` tinyint(1) NOT NULL COMMENT '是否执行',
+  `assert_map` json NOT NULL COMMENT '断言集合',
+  `is_params` tinyint(1) NOT NULL COMMENT '是否要参数',
+  `param_list` json NOT NULL COMMENT '参数化数据',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间'
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of test_api
+-- ----------------------------
+INSERT INTO `test_api` VALUES ('1602494124925927426', '登录', '/login', '正常用例', 'post', 1, '{\"name\": \"zhangjun\"}', '{\"sex\": \"男\"}', 1, '{\"code\": 200}', 1, '{\"params\": \"zhangjun@qq.com\"}', '2022-12-13 10:42:26', '2022-12-13 10:42:26');
 
 -- ----------------------------
 -- Table structure for test_module
