@@ -41,7 +41,7 @@ public class RequestUtil {
                     .connectTimeout(CLIENT_TIME_OUT, TimeUnit.SECONDS)
                     .writeTimeout(CLIENT_TIME_OUT, TimeUnit.SECONDS)
                     .readTimeout(CLIENT_TIME_OUT, TimeUnit.SECONDS)
-//                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_IP, PROXY_PORT)))   // 使用系统代理
+                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_IP, PROXY_PORT)))   // 使用系统代理
                     .build();
         }
         return RequestUtil.client;

@@ -37,7 +37,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="QuYiTest" options="" />
-      <module name="common" options="-parameters" />
+      <module name="common" options="" />
       <module name="common-utils" options="-parameters" />
       <module name="infrastructure" options="" />
       <module name="pressure-client" options="-parameters" />
