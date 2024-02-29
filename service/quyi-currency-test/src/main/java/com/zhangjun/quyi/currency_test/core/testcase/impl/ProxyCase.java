@@ -55,12 +55,16 @@ public class ProxyCase extends BaseCase {
                 ApiResultEntity loginApiResult= taskApi.loginApi(result.getParamList());
                 this.results.add(loginApiResult);
                 Thread.sleep(1000);
-                // 充值
-                ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
-                this.results.add(rechargeApiResult);
-                // 补单
-                ApiResultEntity repair = adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(), adminLoginResult.getParamList());
-                this.results.add(repair);
+
+                if(amount!=0){
+                    // 充值
+                    ApiResultEntity rechargeApiResult = taskApi.rechargeApi(loginApiResult.getParamList(),amount,taskId);
+                    this.results.add(rechargeApiResult);
+
+                    // 补单
+                    ApiResultEntity repair = adminBaseApi.repairOrderApi(rechargeApiResult.getParamList(), adminLoginResult.getParamList());
+                    this.results.add(repair);
+                }
                 this.threadPoolUtil.countDownLatch.countDown();
 
             }catch (Exception e){
@@ -222,19 +226,28 @@ public class ProxyCase extends BaseCase {
      * 全三级人头充值
      * @return
      */
-    public ProxyCase allThreeUserRecharge(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+    public ProxyCase allThreeUserRecharge(String platform ,Integer amount,Integer taskId,String parentId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
         // 后台登录
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         this.results.add(adminLoginResult);
         // 最上级注册
-        ApiResultEntity register = taskApi.registerApi("",isActivity);
-        this.results.add(register);
+        ApiResultEntity registerApiResult = null;
+        if (parentId.equals("")){
+            registerApiResult = taskApi.registerApi("",isActivity);
+            this.results.add(registerApiResult);
+            for (ParamsEntity paramsEntity : registerApiResult.getParamList()) {
+                if (paramsEntity.getUseName().equals("user_id"))parentId = (String) paramsEntity.getKeyValue();
+            }
+        }
+        this.results.add(registerApiResult);
+
+        String finalParentId = parentId;
         this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity register1 = taskApi.registerApi((String) ParamsBuilder.getStr(register.getParamList(),"user_id"),isActivity);
+                ApiResultEntity register1 = taskApi.registerApi(finalParentId,isActivity);
 
                 this.results.add(register1);
                 // 登录
@@ -248,6 +261,8 @@ public class ProxyCase extends BaseCase {
                 // 补单
                 ApiResultEntity repair1 = adminBaseApi.repairOrderApi(recharge1.getParamList(), adminLoginResult.getParamList());
                 this.results.add(repair1);
+
+                Thread.sleep(5000);
 
                 // 注册
                 ApiResultEntity register2 = taskApi.registerApi((String) ParamsBuilder.getStr(register1.getParamList(),"user_id"),isActivity);
@@ -264,6 +279,8 @@ public class ProxyCase extends BaseCase {
                 // 补单
                 ApiResultEntity repair2 =  adminBaseApi.repairOrderApi(recharge2.getParamList(),adminLoginResult.getParamList());
                 this.results.add(repair2);
+
+                Thread.sleep(5000);
 
                 // 注册
                 ApiResultEntity register3 = taskApi.registerApi((String) ParamsBuilder.getStr(register2.getParamList(),"user_id"),isActivity);
@@ -296,7 +313,7 @@ public class ProxyCase extends BaseCase {
      * 全三级人头充值和投注
      * @return
      */
-    public ProxyCase allThreeUserRechargeAndBet(String platform ,Integer amount,Integer taskId,boolean isActivity) throws Exception {
+    public ProxyCase allThreeUserRechargeAndBet(String platform ,Integer amount,Integer taskId,String parentId,boolean isActivity) throws Exception {
         TaskApi taskApi = new TaskApi(this.clientUrl);
         GameApi gameApi = new GameApi(this.clientUrl);
         AdminBaseApi adminBaseApi = new AdminBaseApi(this.adminUrl,platform);
@@ -304,12 +321,22 @@ public class ProxyCase extends BaseCase {
         ApiResultEntity adminLoginResult = adminBaseApi.adminLoginApi();
         this.results.add(adminLoginResult);
         // 最上级注册
-        ApiResultEntity register = taskApi.registerApi("",isActivity);
-        this.results.add(register);
+        // 最上级注册
+        ApiResultEntity registerApiResult = null;
+        if (parentId.equals("")){
+            registerApiResult = taskApi.registerApi("",isActivity);
+            this.results.add(registerApiResult);
+            for (ParamsEntity paramsEntity : registerApiResult.getParamList()) {
+                if (paramsEntity.getUseName().equals("user_id"))parentId = (String) paramsEntity.getKeyValue();
+            }
+        }
+        this.results.add(registerApiResult);
+
+        String finalParentId = parentId;
         this.threadPoolUtil.start(this.requestNumber,()->{
             try {
                 // 注册
-                ApiResultEntity register1 = taskApi.registerApi((String) ParamsBuilder.getStr(register.getParamList(),"user_id"),isActivity);
+                ApiResultEntity register1 = taskApi.registerApi(finalParentId,isActivity);
 
                 this.results.add(register1);
                 // 登录

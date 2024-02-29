@@ -7,10 +7,9 @@ import com.zhangjun.quyi.constans.HttpConstant;
 import com.zhangjun.quyi.utils.ResultModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +30,43 @@ public class ApiController {
     public ResultModel selectAllApi() throws Exception {
         List<ApiEntity> apiList = apiService.list();
         return ResultModel.ok().data(HttpConstant.RESPONSE_STR_LIST,apiList);
+    }
+
+
+    /**
+     * 获取所有用例列表
+     * @return
+     */
+    @PostMapping("/save")
+    @ApiOperation(value = "添加接口")
+    public ResultModel saveApi(@ApiParam(name = "apiEntity",value = "接口实例") @RequestBody ApiEntity apiEntity) throws Exception {
+        boolean flag  = apiService.save(apiEntity);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,flag);
+    }
+
+
+    /**
+     * 获取所有用例列表
+     * @return
+     */
+    @PutMapping("/update")
+    @ApiOperation(value = "修改接口")
+    public ResultModel updateApi(@ApiParam(name = "",value = "")String apiId,
+                                 @ApiParam(name = "apiEntity",value = "接口实例") @RequestBody ApiEntity apiEntity) throws Exception {
+        apiEntity.setApiId(apiId);
+        boolean flag  = apiService.updateById(apiEntity);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,flag);
+    }
+
+
+    /**
+     * 获取所有用例列表
+     * @return
+     */
+    @DeleteMapping("/delete")
+    @ApiOperation(value = "删除接口")
+    public ResultModel updateApi(@ApiParam(name = "",value = "")String apiId) throws Exception {
+        boolean flag  = apiService.removeById(apiId);
+        return ResultModel.ok().data(HttpConstant.RESPONSE_STR_DATA,flag);
     }
 }

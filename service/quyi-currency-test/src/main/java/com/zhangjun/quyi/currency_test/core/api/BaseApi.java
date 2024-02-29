@@ -192,12 +192,12 @@ public class BaseApi {
                     "}";
         }else if (this.url.contains("n1-api")){
             requestBody = "{\n" +
-                    "    \"grecaptcha_token\": \"FAKE_TOKEN\",\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"NGN\",\n" +
                     "    \"amount\": \""+amount+"\",\n" +
-                    "    \"task_id\":"+taskId+",\n" +
+                    "    \"task_id\": \""+taskId+"\",\n" +
+                    "    \"device\": \"pc\",\n" +
                     "    \"data\": {\n" +
                     "        \"typ\": \"BANK\",\n" +
                     "        \"pay_method\": \"electronic_wallet\"\n" +
@@ -225,15 +225,15 @@ public class BaseApi {
                     "        \"pay_method\": \"electronic_wallet\"\n" +
                     "    }\n" +
                     "}";
-        }else if (this.url.contains("api.kelucky")){
+        }else if (this.url.contains("api.kelucky") || this.url.contains("k1-api")){
             requestBody = "{\n" +
                     "    \"user_id\": \"${user_id}\",\n" +
                     "    \"token\": \"${token}\",\n" +
                     "    \"currency\": \"KES\",\n" +
                     "    \"amount\": \""+amount+"\",\n" +
-                    "    \"task_id\":"+taskId+",\n" +
+                    "    \"task_id\": \""+taskId+"\",\n" +
+                    "    \"device\": \"pc\",\n" +
                     "    \"data\": {\n" +
-                    "        \"phone\": \"768338531\",\n" +
                     "        \"typ\": \"M-PESA\",\n" +
                     "        \"pay_method\": \"electronic_wallet\"\n" +
                     "    }\n" +

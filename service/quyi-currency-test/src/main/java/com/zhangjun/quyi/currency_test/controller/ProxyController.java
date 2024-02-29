@@ -91,7 +91,7 @@ public class ProxyController {
         ProxyCase proxyCase = new ProxyCase(proxyScriptBean.getRequestNumber(),
                 proxyScriptBean.getClientUrl(),
                 proxyScriptBean.getAdminUrl());
-        proxyCase.allThreeUserRecharge(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(),proxyScriptBean.isActivity());
+        proxyCase.allThreeUserRecharge(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(),proxyScriptBean.getParentId(),proxyScriptBean.isActivity());
         return ResultModel.ok().data("data",proxyCase.results);
     }
 
@@ -108,7 +108,7 @@ public class ProxyController {
         ProxyCase proxyCase = new ProxyCase(proxyScriptBean.getRequestNumber(),
                 proxyScriptBean.getClientUrl(),
                 proxyScriptBean.getAdminUrl());
-        proxyCase.allThreeUserRechargeAndBet(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(),proxyScriptBean.isActivity());
+        proxyCase.allThreeUserRechargeAndBet(proxyScriptBean.getPlatform(),proxyScriptBean.getAmount(),proxyScriptBean.getTaskId(),proxyScriptBean.getParentId(),proxyScriptBean.isActivity());
         return ResultModel.ok().data("data",proxyCase.results);
     }
 }
